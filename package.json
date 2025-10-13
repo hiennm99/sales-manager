@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@cloudflare/workers-types": "^4.20250904.0",
-    "@supabase/supabase-js": "^2.57.0",
+    "@supabase/supabase-js": "^2.75.0",
     "@tailwindcss/vite": "^4.1.12",
     "clsx": "^2.1.1",
     "gsap": "^3.13.0",

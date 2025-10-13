@@ -19,9 +19,16 @@ export const productServiceSupabase = {
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
+            if (!data) return [];
 
             return data.map(item => ({
-                ...item,
+                id: item.id,
+                sku: item.sku,
+                title: item.title,
+                etsy_url: item.etsy_url,
+                image_url: item.image_url,
+                status: item.status,
+                logo: item.logo,
                 created_at: new Date(item.created_at),
                 updated_at: new Date(item.updated_at),
             }));
@@ -49,8 +56,16 @@ export const productServiceSupabase = {
                 throw error;
             }
 
+            if (!data) throw new Error('Product not found');
+
             return {
-                ...data,
+                id: data.id,
+                sku: data.sku,
+                title: data.title,
+                etsy_url: data.etsy_url,
+                image_url: data.image_url,
+                status: data.status,
+                logo: data.logo,
                 created_at: new Date(data.created_at),
                 updated_at: new Date(data.updated_at),
             };
@@ -78,9 +93,16 @@ export const productServiceSupabase = {
                 .single();
 
             if (error) throw error;
+            if (!data) throw new Error('Failed to create product');
 
             return {
-                ...data,
+                id: data.id,
+                sku: data.sku,
+                title: data.title,
+                etsy_url: data.etsy_url,
+                image_url: data.image_url,
+                status: data.status,
+                logo: data.logo,
                 created_at: new Date(data.created_at),
                 updated_at: new Date(data.updated_at),
             };
@@ -95,20 +117,33 @@ export const productServiceSupabase = {
      */
     async updateProduct(id: string, formData: Partial<ProductFormData>): Promise<Product> {
         try {
+            const updateData: Record<string, unknown> = {
+                updated_at: new Date().toISOString(),
+            };
+
+            if (formData.sku !== undefined) updateData.sku = formData.sku;
+            if (formData.title !== undefined) updateData.title = formData.title;
+            if (formData.etsy_url !== undefined) updateData.etsy_url = formData.etsy_url;
+            if (formData.image_url !== undefined) updateData.image_url = formData.image_url;
+
             const { data, error } = await supabase
                 .from('products')
-                .update({
-                    ...formData,
-                    updated_at: new Date().toISOString(),
-                })
+                .update(updateData)
                 .eq('id', id)
                 .select()
                 .single();
 
             if (error) throw error;
+            if (!data) throw new Error('Failed to update product');
 
             return {
-                ...data,
+                id: data.id,
+                sku: data.sku,
+                title: data.title,
+                etsy_url: data.etsy_url,
+                image_url: data.image_url,
+                status: data.status,
+                logo: data.logo,
                 created_at: new Date(data.created_at),
                 updated_at: new Date(data.updated_at),
             };
@@ -148,6 +183,7 @@ export const productServiceSupabase = {
                 .single();
 
             if (fetchError) throw fetchError;
+            if (!currentProduct) throw new Error('Product not found');
 
             // Toggle status
             const newStatus = currentProduct.status === 'active' ? 'inactive' : 'active';
@@ -163,9 +199,16 @@ export const productServiceSupabase = {
                 .single();
 
             if (error) throw error;
+            if (!data) throw new Error('Failed to toggle status');
 
             return {
-                ...data,
+                id: data.id,
+                sku: data.sku,
+                title: data.title,
+                etsy_url: data.etsy_url,
+                image_url: data.image_url,
+                status: data.status,
+                logo: data.logo,
                 created_at: new Date(data.created_at),
                 updated_at: new Date(data.updated_at),
             };
@@ -187,9 +230,16 @@ export const productServiceSupabase = {
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
+            if (!data) return [];
 
             return data.map(item => ({
-                ...item,
+                id: item.id,
+                sku: item.sku,
+                title: item.title,
+                etsy_url: item.etsy_url,
+                image_url: item.image_url,
+                status: item.status,
+                logo: item.logo,
                 created_at: new Date(item.created_at),
                 updated_at: new Date(item.updated_at),
             }));
@@ -247,9 +297,16 @@ export const productServiceSupabase = {
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
+            if (!data) return [];
 
             return data.map(item => ({
-                ...item,
+                id: item.id,
+                sku: item.sku,
+                title: item.title,
+                etsy_url: item.etsy_url,
+                image_url: item.image_url,
+                status: item.status,
+                logo: item.logo,
                 created_at: new Date(item.created_at),
                 updated_at: new Date(item.updated_at),
             }));

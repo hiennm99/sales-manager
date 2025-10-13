@@ -23,8 +23,8 @@ export const shopServiceApi = {
         const newShop: Shop = {
             ...data,
             id: String(mockShops.length + 1),
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            created_at: new Date(),
+            updated_at: new Date(),
         };
         mockShops.push(newShop);
         return newShop;
@@ -38,7 +38,7 @@ export const shopServiceApi = {
         mockShops[index] = {
             ...mockShops[index],
             ...data,
-            updatedAt: new Date(),
+            updated_at: new Date(),
         };
         return mockShops[index];
     },

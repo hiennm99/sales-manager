@@ -9,7 +9,7 @@ import {Breadcrumbs} from "../../../components/layout/Breadcrumbs.tsx";
 export const ProductDetail: React.FC = () => {
     const { productId } = useParams<{ productId: string }>();
     const navigate = useNavigate();
-    const { getProductById, toggleProductStatus, deleteProduct, selectedProduct } = useProductStore();
+    const { getProductById, toggleProductStatus, deleteProduct, selectedProduct, setSelectedProduct } = useProductStore();
 
     const [product, setProduct] = useState(productId ? getProductById(productId) : undefined);
     const [imageError, setImageError] = useState(false);
@@ -18,9 +18,11 @@ export const ProductDetail: React.FC = () => {
     useEffect(() => {
         if (productId) {
             const foundProduct = getProductById(productId);
-            setProduct(foundProduct);
+            if (foundProduct) {
+                setSelectedProduct(foundProduct);
+            }
         }
-    }, [productId, getProductById]);
+    }, [productId, getProductById, setSelectedProduct]);
 
     if (!productId || !product) {
         return (
@@ -84,8 +86,8 @@ export const ProductDetail: React.FC = () => {
             <Breadcrumbs
                 items={[
                     { label: 'Trang chủ', path: '/dashboard' },
-                    { label: 'Sản phẩm' },
-                    { label: selectedProduct?.id }
+                    { label: 'Sản phẩm', path: '/products' },
+                    { label: selectedProduct?.sku }
                 ]}
             />
             {/* Header */}

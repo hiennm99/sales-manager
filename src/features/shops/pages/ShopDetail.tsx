@@ -58,9 +58,6 @@ export const ShopDetail: React.FC = () => {
                 items={[
                     { label: 'Trang chủ', path: '/dashboard' },
                     { label: 'Cửa hàng', path: '/shops' },
-                    { label: 'Sản phẩm', path: '/products' },
-                    { label: 'Đơn hàng', path: '/orders' },
-                    { label: 'Nhân viên', path: '/employees' },
                     { label: selectedShop.name },
                 ]}
             />

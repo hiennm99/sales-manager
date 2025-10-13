@@ -33,6 +33,6 @@ export interface SelectOption {
 export type Status = 'active' | 'inactive' | 'pending';
 
 export interface BreadcrumbItem {
-    label: string;
+    label?: string;
     path?: string;
 }
