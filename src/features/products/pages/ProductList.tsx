@@ -134,7 +134,7 @@ export const ProductList: React.FC = () => {
                         {/* Status Filter */}
                         <select
                             value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value as any)}
+                            onChange={(e) => setStatusFilter(e.target.value as never)}
                             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
                             <option value="all">Tất cả trạng thái</option>
@@ -200,7 +200,6 @@ export const ProductList: React.FC = () => {
                         <ProductCard
                             key={product.id}
                             product={product}
-                            onDelete={handleDelete}
                         />
                     ))}
                 </div>

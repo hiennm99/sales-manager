@@ -1,33 +1,27 @@
 // src/features/products/pages/ProductDetail.tsx
 
 import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { cn } from '../../../lib/utils';
 import { useProductStore } from '../store/useProductStore';
 
-interface ProductDetailProps {
-    productId: string;
-    onEdit?: (id: string) => void;
-    onDelete?: (id: string) => void;
-    onBack?: () => void;
-}
-
-export const ProductDetail: React.FC<ProductDetailProps> = ({
-                                                                productId,
-                                                                onEdit,
-                                                                onDelete,
-                                                                onBack
-                                                            }) => {
+export const ProductDetail: React.FC = () => {
+    const { productId } = useParams<{ productId: string }>();
+    const navigate = useNavigate();
     const { getProductById, toggleProductStatus, deleteProduct } = useProductStore();
-    const [product, setProduct] = useState(getProductById(productId));
+
+    const [product, setProduct] = useState(productId ? getProductById(productId) : undefined);
     const [imageError, setImageError] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     useEffect(() => {
-        const foundProduct = getProductById(productId);
-        setProduct(foundProduct);
+        if (productId) {
+            const foundProduct = getProductById(productId);
+            setProduct(foundProduct);
+        }
     }, [productId, getProductById]);
 
-    if (!product) {
+    if (!productId || !product) {
         return (
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
@@ -37,15 +31,22 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
                         Không tìm thấy sản phẩm
                     </h3>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 mb-4">
                         Sản phẩm không tồn tại hoặc đã bị xóa
                     </p>
+                    <button
+                        onClick={() => navigate('/products')}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                        Quay lại danh sách
+                    </button>
                 </div>
             </div>
         );
     }
 
     const handleToggleStatus = async () => {
+        if (!productId) return;
         try {
             await toggleProductStatus(productId);
             setProduct(getProductById(productId));
@@ -56,10 +57,11 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
     };
 
     const handleDelete = async () => {
+        if (!productId) return;
         try {
             await deleteProduct(productId);
             setShowDeleteModal(false);
-            onDelete?.(productId);
+            navigate('/products');
         } catch (error) {
             console.error('Failed to delete product:', error);
             alert('Không thể xóa sản phẩm. Vui lòng thử lại!');
@@ -81,16 +83,14 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
             {/* Header */}
             <div className="mb-8">
                 <div className="flex items-center gap-4 mb-4">
-                    {onBack && (
-                        <button
-                            onClick={onBack}
-                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                        >
-                            <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
-                    )}
+                    <button
+                        onClick={() => navigate('/products')}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                        <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
                     <div className="flex-1">
                         <h1 className="text-3xl font-bold text-gray-900">Chi tiết sản phẩm</h1>
                         <p className="text-gray-600 mt-1">Xem thông tin chi tiết sản phẩm</p>
@@ -108,7 +108,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                             {product.status === 'active' ? 'Tạm ngưng' : 'Kích hoạt'}
                         </button>
                         <button
-                            onClick={() => onEdit?.(productId)}
+                            onClick={() => navigate(`/products/${productId}/edit`)}
                             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                         >
                             Chỉnh sửa

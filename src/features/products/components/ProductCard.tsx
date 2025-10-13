@@ -1,20 +1,20 @@
 // src/features/products/components/ProductCard.tsx
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '../../../lib/utils';
 import type { Product } from '../../../types/product';
 import { useProductStore } from '../store/useProductStore';
 
 interface ProductCardProps {
     product: Product;
-    onDelete?: (id: string) => void;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+    const navigate = useNavigate();
     const [showMenu, setShowMenu] = useState(false);
     const [imageError, setImageError] = useState(false);
-    const { toggleProductStatus } = useProductStore();
+    const { toggleProductStatus, deleteProduct } = useProductStore();
 
     const handleToggleStatus = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -22,14 +22,26 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) =
             await toggleProductStatus(product.id);
         } catch (error) {
             console.error('Failed to toggle status:', error);
+            alert('Không thể thay đổi trạng thái. Vui lòng thử lại!');
         }
         setShowMenu(false);
     };
 
-    const handleDelete = (e: React.MouseEvent) => {
+    const handleEdit = (e: React.MouseEvent) => {
+        e.preventDefault();
+        navigate(`/products/${product.id}/edit`);
+        setShowMenu(false);
+    };
+
+    const handleDelete = async (e: React.MouseEvent) => {
         e.preventDefault();
         if (window.confirm(`Bạn có chắc muốn xóa "${product.title}"?`)) {
-            onDelete?.(product.id);
+            try {
+                await deleteProduct(product.id);
+            } catch (error) {
+                console.error('Failed to delete product:', error);
+                alert('Không thể xóa sản phẩm. Vui lòng thử lại!');
+            }
         }
         setShowMenu(false);
     };
@@ -93,16 +105,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) =
                                         }}
                                     />
                                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
-                                        <Link
-                                            to={`/products/${product.id}/edit`}
-                                            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                                            onClick={() => setShowMenu(false)}
+                                        <button
+                                            onClick={handleEdit}
+                                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                                         >
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
                                             Chỉnh sửa
-                                        </Link>
+                                        </button>
                                         <button
                                             onClick={handleToggleStatus}
                                             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
