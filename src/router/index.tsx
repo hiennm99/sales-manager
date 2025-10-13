@@ -4,6 +4,8 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { MainLayout } from '../layouts/MainLayout';
 import { ShopList } from '../features/shops/pages/ShopList';
 import { ShopDetail } from '../features/shops/pages/ShopDetail';
+import { ProductList } from "../features/products/pages/ProductList";
+import { ProductDetail } from "../features/products/pages/ProductDetail";
 
 export const router = createBrowserRouter([
     {
@@ -33,7 +35,16 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'products',
-                element: <div className="text-2xl font-bold">Products Page (Coming Soon)</div>,
+                children: [
+                    {
+                        index: true,
+                        element: <ProductList />,
+                    },
+                    {
+                        path: ':productId',
+                        element: <ProductDetail />,
+                    },
+                ],
             },
             {
                 path: 'orders',
