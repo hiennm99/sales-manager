@@ -6,6 +6,7 @@ import { ShopList } from '../features/shops/pages/ShopList';
 import { ShopDetail } from '../features/shops/pages/ShopDetail';
 import { ProductList } from "../features/products/pages/ProductList";
 import { ProductDetail } from "../features/products/pages/ProductDetail";
+import { ProductCreate } from "../features/products/pages/ProductCreate";
 
 export const router = createBrowserRouter([
     {
@@ -41,12 +42,16 @@ export const router = createBrowserRouter([
                         element: <ProductList />,
                     },
                     {
+                        path: 'create', // ✅ Route tạo mới
+                        element: <ProductCreate />,
+                    },
+                    {
                         path: ':productId',
                         element: <ProductDetail />,
                     },
                     {
-                        path: ':productId/edit',
-                        element: <ProductDetail />,
+                        path: ':productId/edit', // ✅ Route edit
+                        element: <ProductCreate />,
                     },
                 ],
             },

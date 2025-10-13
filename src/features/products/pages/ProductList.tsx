@@ -4,9 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ProductCard } from '../components/ProductCard';
 import { useProductStore } from '../store/useProductStore';
+import { Breadcrumbs } from '../../../components/layout/Breadcrumbs';
 
 export const ProductList: React.FC = () => {
-    const { products, isLoading, fetchProducts, deleteProduct } = useProductStore();
+    const { products, isLoading, fetchProducts } = useProductStore();
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
@@ -14,15 +15,6 @@ export const ProductList: React.FC = () => {
     useEffect(() => {
         fetchProducts();
     }, [fetchProducts]);
-
-    const handleDelete = async (id: string) => {
-        try {
-            await deleteProduct(id);
-        } catch (error) {
-            console.error('Failed to delete product:', error);
-            alert('Không thể xóa sản phẩm. Vui lòng thử lại!');
-        }
-    };
 
     // Filter products
     const filteredProducts = products.filter(product => {
@@ -50,13 +42,18 @@ export const ProductList: React.FC = () => {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="px-4 sm:px-6 lg:px-8 py-8">
+            <Breadcrumbs
+                items={[
+                    { label: 'Trang chủ', path: '/dashboard' },
+                    { label: 'Sản phẩm' },
+                ]}
+            />
             {/* Header */}
             <div className="mb-8">
                 <div className="flex items-center justify-between mb-6">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Sản phẩm</h1>
-                        <p className="text-gray-600 mt-1">Quản lý danh sách sản phẩm của bạn</p>
                     </div>
                     <Link
                         to="/products/create"

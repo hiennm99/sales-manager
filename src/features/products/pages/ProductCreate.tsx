@@ -1,20 +1,13 @@
 // src/features/products/pages/ProductCreate.tsx
 
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom'; // ✅ Import useParams
 import type { ProductFormData } from '../../../types/product';
 import { useProductStore } from '../store/useProductStore';
 
-interface ProductCreateProps {
-    productId?: string;
-    onSuccess?: () => void;
-    onCancel?: () => void;
-}
-
-export const ProductCreate: React.FC<ProductCreateProps> = ({
-                                                                productId,
-                                                                onSuccess,
-                                                                onCancel
-                                                            }) => {
+export const ProductCreate: React.FC = () => {
+    const { productId } = useParams<{ productId: string }>(); // ✅ Lấy productId từ URL
+    const navigate = useNavigate();
     const { getProductById, createProduct, updateProduct, isLoading } = useProductStore();
     const [imagePreview, setImagePreview] = useState<string>('');
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -95,10 +88,11 @@ export const ProductCreate: React.FC<ProductCreateProps> = ({
         try {
             if (productId) {
                 await updateProduct(productId, formData);
+                navigate(`/products/${productId}`); // ✅ Redirect về detail page
             } else {
-                await createProduct(formData);
+                const newProduct = await createProduct(formData);
+                navigate(`/products/${newProduct.id}`); // ✅ Redirect về detail page
             }
-            onSuccess?.();
         } catch (error) {
             console.error('Failed to save product:', error);
             alert('Có lỗi xảy ra. Vui lòng thử lại!');
@@ -114,6 +108,14 @@ export const ProductCreate: React.FC<ProductCreateProps> = ({
         });
         setImagePreview('');
         setErrors({});
+    };
+
+    const handleCancel = () => {
+        if (productId) {
+            navigate(`/products/${productId}`);
+        } else {
+            navigate('/products');
+        }
     };
 
     return (
@@ -301,15 +303,13 @@ export const ProductCreate: React.FC<ProductCreateProps> = ({
                         </button>
 
                         <div className="flex gap-3">
-                            {onCancel && (
-                                <button
-                                    type="button"
-                                    onClick={onCancel}
-                                    className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
-                                >
-                                    Hủy
-                                </button>
-                            )}
+                            <button
+                                type="button"
+                                onClick={handleCancel}
+                                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                            >
+                                Hủy
+                            </button>
                             <button
                                 type="submit"
                                 disabled={isLoading}

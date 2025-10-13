@@ -4,11 +4,12 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { cn } from '../../../lib/utils';
 import { useProductStore } from '../store/useProductStore';
+import {Breadcrumbs} from "../../../components/layout/Breadcrumbs.tsx";
 
 export const ProductDetail: React.FC = () => {
     const { productId } = useParams<{ productId: string }>();
     const navigate = useNavigate();
-    const { getProductById, toggleProductStatus, deleteProduct } = useProductStore();
+    const { getProductById, toggleProductStatus, deleteProduct, selectedProduct } = useProductStore();
 
     const [product, setProduct] = useState(productId ? getProductById(productId) : undefined);
     const [imageError, setImageError] = useState(false);
@@ -80,6 +81,13 @@ export const ProductDetail: React.FC = () => {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <Breadcrumbs
+                items={[
+                    { label: 'Trang chủ', path: '/dashboard' },
+                    { label: 'Sản phẩm' },
+                    { label: selectedProduct?.id }
+                ]}
+            />
             {/* Header */}
             <div className="mb-8">
                 <div className="flex items-center gap-4 mb-4">
