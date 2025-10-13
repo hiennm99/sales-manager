@@ -135,12 +135,12 @@ export const ShopDetail: React.FC = () => {
                     <div className="space-y-4">
                         <div>
                             <div className="text-sm text-gray-600 mb-1">Ngày tạo</div>
-                            <div className="text-gray-900">{formatDateTime(selectedShop.createdAt)}</div>
+                            <div className="text-gray-900">{formatDateTime(selectedShop.created_at)}</div>
                         </div>
 
                         <div>
                             <div className="text-sm text-gray-600 mb-1">Cập nhật lần cuối</div>
-                            <div className="text-gray-900">{formatDateTime(selectedShop.updatedAt)}</div>
+                            <div className="text-gray-900">{formatDateTime(selectedShop.updated_at)}</div>
                         </div>
 
                         <div>

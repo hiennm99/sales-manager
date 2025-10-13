@@ -21,8 +21,7 @@ export const ShopList: React.FC = () => {
     const filteredShops = shops.filter(shop => {
         const matchesSearch =
             shop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            shop.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            shop.address.toLowerCase().includes(searchQuery.toLowerCase());
+            shop.code.toLowerCase().includes(searchQuery.toLowerCase())
 
         const matchesStatus = statusFilter === 'all' || shop.status === statusFilter;
 
