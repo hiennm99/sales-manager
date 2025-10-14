@@ -1,30 +1,70 @@
 // src/features/products/pages/ProductCreate.tsx
 
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // ✅ Import useParams
+import { useParams, useNavigate } from 'react-router-dom';
 import type { ProductFormData } from '../../../types/product';
 import { useProductStore } from '../store/useProductStore';
 import { useShopStore } from "../../shops/store/useShopStore.ts";
 
 export const ProductCreate: React.FC = () => {
-    const { productId } = useParams<{ productId: string }>(); // ✅ Lấy productId từ URL
+    const { productId } = useParams<{ productId: string }>();
     const navigate = useNavigate();
-    const { getProductById, createProduct, updateProduct, isLoading } = useProductStore();
+    const { products, getProductById, createProduct, updateProduct, isLoading } = useProductStore();
     const { selectedShop } = useShopStore();
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string>('');
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [generatedSKU, setGeneratedSKU] = useState<string>('');
 
     const [formData, setFormData] = useState<ProductFormData>({
-        shop_code: '',
+        shop_code: selectedShop?.code || '',
         sku: '',
         title: '',
         etsy_url: '',
         image_url: '',
     });
 
+    // Calculate next SKU when shop code changes
+    useEffect(() => {
+        if (selectedShop && !productId) {
+            // Get products of this shop
+            const shopProducts = products.filter(p => p.shop_code === selectedShop.code);
+
+            let nextSerial = 1;
+            if (shopProducts.length > 0) {
+                // Sort by created_at to get the latest
+                const sortedProducts = [...shopProducts].sort((a, b) =>
+                    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                );
+
+                const lastSKU = sortedProducts[0].sku;
+                const shopCodeLength = selectedShop.code.length;
+                const serialPart = lastSKU.substring(shopCodeLength).replace(/^0+/, '');
+                const lastSerial = parseInt(serialPart, 10) || 0;
+                nextSerial = lastSerial + 1;
+            }
+
+            // Generate SKU preview
+            const shopCodeLength = selectedShop.code.length;
+            const maxLength = 8;
+            const serialStr = nextSerial.toString();
+            const zerosNeeded = maxLength - shopCodeLength - serialStr.length;
+            const sku = `${selectedShop.code}${'0'.repeat(zerosNeeded)}${serialStr}`;
+
+            setGeneratedSKU(sku);
+        }
+    }, [selectedShop, products, productId]);
+
+    useEffect(() => {
+        if (selectedShop) {
+            setFormData(prev => ({ ...prev, shop_code: selectedShop.code }));
+        }
+    }, [selectedShop]);
+
     useEffect(() => {
         if (productId) {
-            const product = getProductById(productId);
+            const numericId = parseInt(productId, 10);
+            const product = getProductById(numericId);
             if (product) {
                 setFormData({
                     shop_code: product.shop_code,
@@ -34,6 +74,7 @@ export const ProductCreate: React.FC = () => {
                     image_url: product.image_url,
                 });
                 setImagePreview(product.image_url);
+                setGeneratedSKU(product.sku);
             }
         }
     }, [productId, getProductById]);
@@ -41,8 +82,8 @@ export const ProductCreate: React.FC = () => {
     const validateForm = (): boolean => {
         const newErrors: Record<string, string> = {};
 
-        if (!formData.sku.trim()) {
-            newErrors.sku = 'SKU là bắt buộc';
+        if (!formData.shop_code) {
+            newErrors.shop_code = 'Vui lòng chọn cửa hàng';
         }
 
         if (!formData.title.trim()) {
@@ -57,10 +98,8 @@ export const ProductCreate: React.FC = () => {
             newErrors.etsy_url = 'Link Etsy không hợp lệ';
         }
 
-        if (!formData.image_url.trim()) {
-            newErrors.image_url = 'Link hình ảnh là bắt buộc';
-        } else if (!formData.image_url.startsWith('http')) {
-            newErrors.image_url = 'Link hình ảnh không hợp lệ';
+        if (!productId && !imageFile) {
+            newErrors.image = 'Vui lòng chọn hình ảnh sản phẩm';
         }
 
         setErrors(newErrors);
@@ -71,14 +110,35 @@ export const ProductCreate: React.FC = () => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
 
-        // Clear error for this field
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: '' }));
         }
+    };
 
-        // Update image preview
-        if (name === 'image_url' && value.startsWith('http')) {
-            setImagePreview(value);
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                setErrors(prev => ({ ...prev, image: 'Vui lòng chọn file hình ảnh' }));
+                return;
+            }
+
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                setErrors(prev => ({ ...prev, image: 'Kích thước file không được vượt quá 5MB' }));
+                return;
+            }
+
+            setImageFile(file);
+            setErrors(prev => ({ ...prev, image: '' }));
+
+            // Create preview
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
         }
     };
 
@@ -91,11 +151,11 @@ export const ProductCreate: React.FC = () => {
 
         try {
             if (productId) {
-                await updateProduct(productId, formData);
-                navigate(`/products/${productId}`); // ✅ Redirect về detail page
+                await updateProduct(productId.toString(), formData, imageFile || undefined);
+                navigate(`/products/${productId}`);
             } else {
-                const newProduct = await createProduct(formData);
-                navigate(`/products/${newProduct.id}`); // ✅ Redirect về detail page
+                const newProduct = await createProduct(formData, imageFile || undefined);
+                navigate(`/products/${newProduct.id}`);
             }
         } catch (error) {
             console.error('Failed to save product:', error);
@@ -105,12 +165,13 @@ export const ProductCreate: React.FC = () => {
 
     const handleReset = () => {
         setFormData({
-            'shop_code': '',
+            shop_code: selectedShop?.code || '',
             sku: '',
             title: '',
             etsy_url: '',
             image_url: '',
         });
+        setImageFile(null);
         setImagePreview('');
         setErrors({});
     };
@@ -147,41 +208,52 @@ export const ProductCreate: React.FC = () => {
 
                             {/* Shop Code */}
                             <div className="mb-4">
-                                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Cửa hàng <span className="text-red-500">*</span>
+                                <label htmlFor="shop" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Cửa hàng <span className="text-red-500">*</span>
                                 </label>
                                 <input
-                                    id="title"
-                                    name="title"
-                                    value={selectedShop?.name}
-                                    placeholder="Classic Black T-Shirt - Premium Cotton"
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
-                                        errors.title ? 'border-red-500' : 'border-gray-300'
-                                    }`}
+                                    id="shop"
+                                    value={selectedShop?.name || 'Chưa chọn cửa hàng'}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 cursor-not-allowed"
                                     disabled
                                 />
-                            </div>
-
-                            {/* SKU */}
-                            <div className="mb-4">
-                                <label htmlFor="sku" className="block text-sm font-medium text-gray-700 mb-1">
-                                    SKU <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    id="sku"
-                                    name="sku"
-                                    value={formData.sku}
-                                    onChange={handleChange}
-                                    placeholder="TSH-BLK-001"
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                        errors.sku ? 'border-red-500' : 'border-gray-300'
-                                    }`}
-                                />
-                                {errors.sku && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.sku}</p>
+                                {errors.shop_code && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.shop_code}</p>
                                 )}
                             </div>
+
+                            {/* SKU - Auto-generated, display only */}
+                            {productId && (
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        SKU
+                                    </label>
+                                    <input
+                                        value={formData.sku}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 font-mono cursor-not-allowed"
+                                        disabled
+                                    />
+                                    <p className="mt-1 text-sm text-gray-500">
+                                        SKU được tạo tự động
+                                    </p>
+                                </div>
+                            )}
+
+                            {!productId && (
+                                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                    <div className="flex items-start gap-2">
+                                        <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <div>
+                                            <p className="text-sm font-medium text-blue-900">SKU sẽ được tạo tự động</p>
+                                            <p className="text-xs text-blue-700 mt-1">
+                                                Mã SKU có độ dài 8 ký tự theo định dạng: {selectedShop?.code || 'XXX'}#####
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Title */}
                             <div className="mb-4">
@@ -236,25 +308,21 @@ export const ProductCreate: React.FC = () => {
                             </h2>
 
                             <div>
-                                <label htmlFor="image_url" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Link hình ảnh <span className="text-red-500">*</span>
+                                <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Upload hình ảnh <span className="text-red-500">*</span>
                                 </label>
                                 <input
-                                    type="url"
-                                    id="image_url"
-                                    name="image_url"
-                                    value={formData.image_url}
-                                    onChange={handleChange}
-                                    placeholder="https://images.unsplash.com/..."
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                        errors.image_url ? 'border-red-500' : 'border-gray-300'
-                                    }`}
+                                    type="file"
+                                    id="image"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
-                                {errors.image_url && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.image_url}</p>
+                                {errors.image && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.image}</p>
                                 )}
                                 <p className="mt-1 text-sm text-gray-500">
-                                    Nhập URL hình ảnh từ Unsplash, Imgur hoặc nguồn khác
+                                    JPG, PNG hoặc GIF. Tối đa 5MB. Ảnh sẽ được lưu tự động với tên SKU.
                                 </p>
                             </div>
                         </div>
@@ -279,19 +347,27 @@ export const ProductCreate: React.FC = () => {
                                         }}
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                        <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                                        <svg className="w-16 h-16 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
+                                        <p className="text-sm">Chọn hình ảnh</p>
                                     </div>
                                 )}
                             </div>
 
                             {/* Product Info Preview */}
                             <div className="space-y-2">
-                                <div className="text-xs text-gray-500">
-                                    SKU: {formData.sku || '---'}
-                                </div>
+                                {productId && (
+                                    <div className="text-xs text-gray-500">
+                                        SKU: {formData.sku}
+                                    </div>
+                                )}
+                                {!productId && (
+                                    <div className="text-xs text-gray-500">
+                                        SKU: Tự động tạo
+                                    </div>
+                                )}
                                 <h3 className="font-semibold text-gray-900 line-clamp-2">
                                     {formData.title || 'Tên sản phẩm'}
                                 </h3>

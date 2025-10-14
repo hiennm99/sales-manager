@@ -1,4 +1,4 @@
-// src/features/products/services/product.service.supabase.ts
+// src/features/products/services/product.service.api.ts
 
 import { supabase, handleSupabaseError } from '../../../lib/supabase';
 import type { Product, ProductFormData } from '../../../types/product';
@@ -20,6 +20,127 @@ const mapToRow = (data: Database['public']['Tables']['products']['Row']): Produc
         updated_at: new Date(data.updated_at),
     };
 };
+
+/**
+ * Generate SKU based on shop_code and serial_id
+ * Format: <shop_code><zeros><serial_id> = 8 characters
+ * Example: shop_code="ABC" serial_id=1 => "ABC00001"
+ */
+const generateSKU = (shopCode: string, serialId: number): string => {
+    const shopCodeLength = shopCode.length;
+    const maxLength = 8;
+    const serialStr = serialId.toString();
+    const zerosNeeded = maxLength - shopCodeLength - serialStr.length;
+
+    if (zerosNeeded < 0) {
+        throw new Error(`SKU would exceed 8 characters. Shop code: ${shopCode}, Serial: ${serialId}`);
+    }
+
+    return `${shopCode}${'0'.repeat(zerosNeeded)}${serialStr}`;
+};
+
+/**
+ * Get the next serial ID for a shop
+ */
+const getNextSerialId = async (shopCode: string): Promise<number> => {
+    try {
+        const { data, error } = await supabase
+            .from('products')
+            .select('sku')
+            .eq('shop_code', shopCode)
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            return 1; // First product for this shop
+        }
+
+        // Extract serial number from last SKU
+        const lastSKU = data[0].sku;
+        const shopCodeLength = shopCode.length;
+        const serialPart = lastSKU.substring(shopCodeLength).replace(/^0+/, '');
+        const lastSerial = parseInt(serialPart, 10) || 0;
+
+        return lastSerial + 1;
+    } catch (error) {
+        console.error('Error getting next serial ID:', error);
+        throw error;
+    }
+};
+
+/**
+ * Upload image to Supabase Storage
+ * @param file - Image file to upload
+ * @param sku - Product SKU (used as filename)
+ * @returns Public URL of uploaded image
+ */
+const uploadProductImage = async (file: File, sku: string): Promise<string> => {
+    try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${sku}.${fileExt}`;
+        const filePath = `products/${fileName}`;
+
+        // Delete existing file if exists
+        const { error: deleteError } = await supabase.storage
+            .from('images')
+            .remove([filePath]);
+
+        if (deleteError && deleteError.message !== 'The resource was not found') {
+            console.warn('Error deleting existing image:', deleteError);
+        }
+
+        // Upload new file
+        const { error: uploadError } = await supabase.storage
+            .from('images')
+            .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: true
+            });
+
+        if (uploadError) throw uploadError;
+
+        // Get public URL
+        const { data } = supabase.storage
+            .from('images')
+            .getPublicUrl(filePath);
+
+        return data.publicUrl;
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        throw new Error('Failed to upload image');
+    }
+};
+
+/**
+ * Delete image from Supabase Storage
+ */
+const deleteProductImage = async (sku: string): Promise<void> => {
+    try {
+        // List all files with this SKU prefix
+        const { data: files, error: listError } = await supabase.storage
+            .from('images')
+            .list('products', {
+                search: sku
+            });
+
+        if (listError) throw listError;
+
+        if (files && files.length > 0) {
+            const filesToDelete = files.map(file => `products/${file.name}`);
+            const { error: deleteError } = await supabase.storage
+                .from('images')
+                .remove(filesToDelete);
+
+            if (deleteError) throw deleteError;
+        }
+    } catch (error) {
+        console.error('Error deleting image:', error);
+        // Don't throw error for image deletion failures
+    }
+};
+
 /**
  * Product Supabase Service
  * Handles all database operations related to products using Supabase
@@ -38,7 +159,7 @@ export const productServiceApi = {
             if (error) throw error;
             if (!data || data.length === 0) return [];
 
-            return data.map(mapToRow)
+            return data.map(mapToRow);
         } catch (error) {
             console.error('Error fetching products:', error);
             throw new Error(handleSupabaseError(error));
@@ -48,7 +169,7 @@ export const productServiceApi = {
     /**
      * Fetch a single product by ID
      */
-    async getProductById(id: string): Promise<Product> {
+    async getProductById(id: number): Promise<Product> {
         try {
             const { data, error } = await supabase
                 .from('products')
@@ -73,16 +194,28 @@ export const productServiceApi = {
     },
 
     /**
-     * Create a new product
+     * Create a new product with auto-generated SKU and image upload
      */
-    async createProduct(formData: ProductFormData): Promise<Product> {
+    async createProduct(formData: ProductFormData, imageFile?: File): Promise<Product> {
         try {
+            // Get next serial ID for this shop
+            const serialId = await getNextSerialId(formData.shop_code);
+
+            // Generate SKU
+            const sku = generateSKU(formData.shop_code, serialId);
+
+            // Upload image if provided
+            let imageUrl = formData.image_url || '';
+            if (imageFile) {
+                imageUrl = await uploadProductImage(imageFile, sku);
+            }
+
             const insertData: Database['public']['Tables']['products']['Insert'] = {
                 shop_code: formData.shop_code,
-                sku: formData.sku,
+                sku,
                 title: formData.title,
                 etsy_url: formData.etsy_url,
-                image_url: formData.image_url,
+                image_url: imageUrl,
                 is_active: true,
             };
 
@@ -92,7 +225,14 @@ export const productServiceApi = {
                 .select()
                 .single();
 
-            if (error) throw error;
+            if (error) {
+                // Clean up uploaded image if product creation fails
+                if (imageFile) {
+                    await deleteProductImage(sku);
+                }
+                throw error;
+            }
+
             if (!data) throw new Error('Failed to create product');
 
             return mapToRow(data);
@@ -105,16 +245,25 @@ export const productServiceApi = {
     /**
      * Update an existing product
      */
-    async updateProduct(id: string, formData: Partial<ProductFormData>): Promise<Product> {
+    async updateProduct(id: number, formData: Partial<ProductFormData>, imageFile?: File): Promise<Product> {
         try {
+            // Get current product to access SKU
+            const currentProduct = await this.getProductById(id);
+
             const updateData: Record<string, unknown> = {
                 updated_at: new Date().toISOString(),
             };
 
-            if (formData.sku !== undefined) updateData.sku = formData.sku;
             if (formData.title !== undefined) updateData.title = formData.title;
             if (formData.etsy_url !== undefined) updateData.etsy_url = formData.etsy_url;
-            if (formData.image_url !== undefined) updateData.image_url = formData.image_url;
+
+            // Upload new image if provided
+            if (imageFile) {
+                const imageUrl = await uploadProductImage(imageFile, currentProduct.sku);
+                updateData.image_url = imageUrl;
+            } else if (formData.image_url !== undefined) {
+                updateData.image_url = formData.image_url;
+            }
 
             const { data, error } = await supabase
                 .from('products')
@@ -134,16 +283,23 @@ export const productServiceApi = {
     },
 
     /**
-     * Delete a product
+     * Delete a product and its image
      */
-    async deleteProduct(id: string): Promise<void> {
+    async deleteProduct(id: number): Promise<void> {
         try {
+            // Get product to access SKU for image deletion
+            const product = await this.getProductById(id);
+
+            // Delete from database
             const { error } = await supabase
                 .from('products')
                 .delete()
                 .eq('id', id);
 
             if (error) throw error;
+
+            // Delete associated image
+            await deleteProductImage(product.sku);
         } catch (error) {
             console.error('Error deleting product:', error);
             throw new Error(handleSupabaseError(error));
@@ -153,9 +309,8 @@ export const productServiceApi = {
     /**
      * Toggle product status (active/inactive)
      */
-    async toggleProductStatus(id: string): Promise<Product> {
+    async toggleProductStatus(id: number): Promise<Product> {
         try {
-            // Get current product
             const { data: currentProduct, error: fetchError } = await supabase
                 .from('products')
                 .select('is_active')
@@ -165,7 +320,6 @@ export const productServiceApi = {
             if (fetchError) throw fetchError;
             if (!currentProduct) throw new Error('Product not found');
 
-            // Toggle status
             const newStatus = currentProduct.is_active === true ? false : true;
 
             const { data, error } = await supabase
@@ -216,12 +370,28 @@ export const productServiceApi = {
         try {
             if (ids.length === 0) return;
 
+            // Get all products to delete their images
+            const { data: products, error: fetchError } = await supabase
+                .from('products')
+                .select('sku')
+                .in('id', ids);
+
+            if (fetchError) throw fetchError;
+
+            // Delete from database
             const { error } = await supabase
                 .from('products')
                 .delete()
                 .in('id', ids);
 
             if (error) throw error;
+
+            // Delete associated images
+            if (products) {
+                await Promise.all(
+                    products.map(p => deleteProductImage(p.sku))
+                );
+            }
         } catch (error) {
             console.error('Error bulk deleting products:', error);
             throw new Error(handleSupabaseError(error));
@@ -271,25 +441,14 @@ export const productServiceApi = {
     },
 
     /**
-     * Import products from array
+     * Upload product image (utility function)
      */
-    async importProducts(products: ProductFormData[]): Promise<{ success: number; failed: number }> {
-        let success = 0;
-        let failed = 0;
+    uploadImage: uploadProductImage,
 
-        for (const product of products) {
-            try {
-                // eslint-disable-next-line no-await-in-loop
-                await this.createProduct(product);
-                success += 1;
-            } catch (error) {
-                console.error('Failed to import product:', product, error);
-                failed += 1;
-            }
-        }
-
-        return { success, failed };
-    },
+    /**
+     * Delete product image (utility function)
+     */
+    deleteImage: deleteProductImage,
 };
 
 /**
@@ -304,10 +463,10 @@ export const downloadProductsCSV = async (): Promise<void> => {
             return;
         }
 
-        // Create CSV content
-        const headers = ['ID', 'SKU', 'Title', 'Etsy URL', 'Image URL', 'Status', 'Created At', 'Updated At'];
+        const headers = ['ID', 'Shop Code', 'SKU', 'Title', 'Etsy URL', 'Image URL', 'Status', 'Created At', 'Updated At'];
         const rows = products.map(p => [
             p.id,
+            p.shop_code,
             p.sku,
             p.title,
             p.etsy_url,
@@ -322,7 +481,6 @@ export const downloadProductsCSV = async (): Promise<void> => {
             ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
         ].join('\n');
 
-        // Download
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');

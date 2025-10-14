@@ -16,14 +16,14 @@ interface ProductStore {
 
     // Actions
     fetchProducts: () => Promise<void>;
-    getProductById: (id: string) => Product | undefined;
-    createProduct: (data: ProductFormData) => Promise<Product>;
-    updateProduct: (id: string, data: Partial<ProductFormData>) => Promise<Product>;
-    deleteProduct: (id: string) => Promise<void>;
-    toggleProductStatus: (id: string) => Promise<void>;
+    getProductById: (id: number) => Product | undefined;
+    createProduct: (data: ProductFormData, imageFile?: File) => Promise<Product>;
+    updateProduct: (id: number, data: Partial<ProductFormData>, imageFile?: File) => Promise<Product>;
+    deleteProduct: (id: number) => Promise<void>;
+    toggleProductStatus: (id: number) => Promise<void>;
     searchProducts: (query: string) => Promise<void>;
-    bulkDeleteProducts: (ids: string[]) => Promise<void>;
-    bulkUpdateStatus: (ids: string[], status: 'active' | 'inactive') => Promise<void>;
+    bulkDeleteProducts: (ids: number[]) => Promise<void>;
+    bulkUpdateStatus: (ids: number[], status: 'active' | 'inactive') => Promise<void>;
     clearError: () => void;
 }
 
@@ -49,14 +49,14 @@ export const useProductStore = create<ProductStore>()(
                 }
             },
 
-            getProductById: (id: string) => {
+            getProductById: (id: number) => {
                 return get().products.find(p => p.id === id);
             },
 
-            createProduct: async (data: ProductFormData) => {
+            createProduct: async (data: ProductFormData, imageFile?: File) => {
                 set({ isLoading: true, error: null });
                 try {
-                    const newProduct = await productServiceApi.createProduct(data);
+                    const newProduct = await productServiceApi.createProduct(data, imageFile);
 
                     set(state => ({
                         products: [newProduct, ...state.products],
@@ -72,10 +72,10 @@ export const useProductStore = create<ProductStore>()(
                 }
             },
 
-            updateProduct: async (id: string, data: Partial<ProductFormData>) => {
+            updateProduct: async (id: number, data: Partial<ProductFormData>, imageFile?: File) => {
                 set({ isLoading: true, error: null });
                 try {
-                    const updatedProduct = await productServiceApi.updateProduct(id, data);
+                    const updatedProduct = await productServiceApi.updateProduct(id, data, imageFile);
 
                     set(state => ({
                         products: state.products.map(p =>
@@ -97,7 +97,7 @@ export const useProductStore = create<ProductStore>()(
                 }
             },
 
-            deleteProduct: async (id: string) => {
+            deleteProduct: async (id: number) => {
                 set({ isLoading: true, error: null });
                 try {
                     await productServiceApi.deleteProduct(id);
@@ -114,7 +114,7 @@ export const useProductStore = create<ProductStore>()(
                 }
             },
 
-            toggleProductStatus: async (id: string) => {
+            toggleProductStatus: async (id: number) => {
                 set({ isLoading: true, error: null });
                 try {
                     const toggledProduct = await productServiceApi.toggleProductStatus(id);
@@ -153,7 +153,7 @@ export const useProductStore = create<ProductStore>()(
                 }
             },
 
-            bulkDeleteProducts: async (ids: string[]) => {
+            bulkDeleteProducts: async (ids: number[]) => {
                 set({ isLoading: true, error: null });
                 try {
                     await productServiceApi.bulkDeleteProducts(ids);
@@ -170,10 +170,10 @@ export const useProductStore = create<ProductStore>()(
                 }
             },
 
-            bulkUpdateStatus: async (ids: string[], status: 'active' | 'inactive') => {
+            bulkUpdateStatus: async (ids: number[], status: 'active' | 'inactive') => {
                 set({ isLoading: true, error: null });
                 try {
-                    await productServiceApi.bulkUpdateStatus(ids, status);
+                    await productServiceApi.bulkUpdateStatus(ids, status === 'active');
 
                     const updatedSelectedProduct = get().selectedProduct
                         ? {
