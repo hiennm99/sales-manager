@@ -12,8 +12,8 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     const navigate = useNavigate();
-    const [showMenu, setShowMenu] = useState(false);
-    const [imageError, setImageError] = useState(false);
+    const [ showMenu, setShowMenu ] = useState(false);
+    const [ imageError, setImageError ] = useState(false);
     const { toggleProductStatus, deleteProduct } = useProductStore();
 
     const handleToggleStatus = async (e: React.MouseEvent) => {

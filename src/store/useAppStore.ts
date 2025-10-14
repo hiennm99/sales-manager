@@ -2,17 +2,12 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Shop } from '../types/shop';
 
 interface AppState {
     // Sidebar state
     isSidebarCollapsed: boolean;
     toggleSidebar: () => void;
     setSidebarCollapsed: (collapsed: boolean) => void;
-
-    // Current shop
-    currentShop: Shop | null;
-    setCurrentShop: (shop: Shop | null) => void;
 
     // Theme
     theme: 'light' | 'dark';
@@ -29,10 +24,6 @@ export const useAppStore = create<AppState>()(
             setSidebarCollapsed: (collapsed) =>
                 set({ isSidebarCollapsed: collapsed }),
 
-            // Current shop
-            currentShop: null,
-            setCurrentShop: (shop) => set({ currentShop: shop }),
-
             // Theme
             theme: 'light',
             toggleTheme: () =>
@@ -41,8 +32,8 @@ export const useAppStore = create<AppState>()(
         {
             name: 'app-storage',
             partialize: (state) => ({
-                currentShop: state.currentShop,
                 theme: state.theme,
+                collapsed: state.isSidebarCollapsed,
             }),
         }
     )

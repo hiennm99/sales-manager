@@ -8,15 +8,16 @@ import { useShopStore } from '../../features/shops/store/useShopStore';
 import type { Shop } from '../../types/shop';
 
 export const ShopSelector: React.FC = () => {
-    const { currentShop, setCurrentShop, isSidebarCollapsed } = useAppStore();
+    const { isSidebarCollapsed } = useAppStore();
+    const { selectedShop, setSelectedShop } = useShopStore();
     const { shops, fetchShops } = useShopStore();
-    const [isOpen, setIsOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
+    const [ isOpen, setIsOpen ] = useState(false);
+    const [ searchQuery, setSearchQuery ] = useState('');
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         fetchShops();
-    }, []);
+    }, [fetchShops]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -42,7 +43,7 @@ export const ShopSelector: React.FC = () => {
     );
 
     const handleSelectShop = (shop: Shop) => {
-        setCurrentShop(shop);
+        setSelectedShop(shop);
         setIsOpen(false);
         setSearchQuery('');
     };
@@ -53,11 +54,11 @@ export const ShopSelector: React.FC = () => {
                 <button
                     onClick={() => setIsOpen(!isOpen)}
                     className="w-full flex items-center justify-center p-2 rounded-lg hover:bg-gray-800 transition-colors"
-                    title={currentShop?.name || 'Chọn cửa hàng'}
+                    title={selectedShop?.name || 'Chọn cửa hàng'}
                 >
-                    {currentShop ? (
+                    {selectedShop ? (
                         <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
-                            {currentShop.name.charAt(0)}
+                            {selectedShop.name.charAt(0)}
                         </div>
                     ) : (
                         <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,25 +81,25 @@ export const ShopSelector: React.FC = () => {
                     isOpen && "bg-gray-800"
                 )}
             >
-                {currentShop ? (
+                {selectedShop ? (
                     <>
-                        {currentShop.logo ? (
+                        {selectedShop.logo ? (
                             <img
-                                src={currentShop.logo}
-                                alt={currentShop.name}
+                                src={selectedShop.logo}
+                                alt={selectedShop.name}
                                 className="w-8 h-8 rounded-full flex-shrink-0"
                             />
                         ) : (
                             <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                                {currentShop.name.charAt(0)}
+                                {selectedShop.name.charAt(0)}
                             </div>
                         )}
                         <div className="flex-1 text-left min-w-0">
                             <div className="text-sm font-semibold text-white truncate">
-                                {currentShop.name}
+                                {selectedShop.name}
                             </div>
                             <div className="text-xs text-gray-400 truncate">
-                                {currentShop.code}
+                                {selectedShop.code}
                             </div>
                         </div>
                     </>
@@ -165,7 +166,7 @@ export const ShopSelector: React.FC = () => {
                                     onClick={() => handleSelectShop(shop)}
                                     className={cn(
                                         "w-full flex items-center gap-3 p-3 hover:bg-gray-700 transition-colors",
-                                        currentShop?.id === shop.id && "bg-gray-700"
+                                        selectedShop?.id === shop.id && "bg-gray-700"
                                     )}
                                 >
                                     {shop.logo ? (
@@ -184,10 +185,10 @@ export const ShopSelector: React.FC = () => {
                                             {shop.name}
                                         </div>
                                         <div className="text-xs text-gray-400 truncate">
-                                            {shop.code} • {shop.status === 'active' ? 'Hoạt động' : 'Tạm ngưng'}
+                                            {shop.code} • {shop.is_active === true ? 'Hoạt động' : 'Tạm ngưng'}
                                         </div>
                                     </div>
-                                    {currentShop?.id === shop.id && (
+                                    {selectedShop?.id === shop.id && (
                                         <svg className="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                         </svg>

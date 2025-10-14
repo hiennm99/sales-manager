@@ -3,6 +3,7 @@
 import type { BaseEntity, Status } from './common';
 
 export interface Product extends BaseEntity {
+    shop_code: string;
     sku: string;
     title: string;
     etsy_url: string;
@@ -12,6 +13,7 @@ export interface Product extends BaseEntity {
 }
 
 export interface ProductFormData {
+    shop_code: string;
     sku: string;
     title: string;
     etsy_url: string;

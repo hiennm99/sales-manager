@@ -2,12 +2,29 @@
 
 import { supabase, handleSupabaseError } from '../../../lib/supabase';
 import type { Product, ProductFormData } from '../../../types/product';
+import type { Database } from '../../../types/supabase';
 
+/**
+ * Helper function to map database row to Product type
+ */
+const mapToRow = (data: Database['public']['Tables']['products']['Row']): Product => {
+    return {
+        id: data.id,
+        shop_code: data.shop_code,
+        sku: data.sku,
+        title: data.title,
+        etsy_url: data.etsy_url,
+        image_url: data.image_url,
+        is_active: data.is_active,
+        created_at: new Date(data.created_at),
+        updated_at: new Date(data.updated_at),
+    };
+};
 /**
  * Product Supabase Service
  * Handles all database operations related to products using Supabase
  */
-export const productServiceSupabase = {
+export const productServiceApi = {
     /**
      * Fetch all products
      */
@@ -19,12 +36,9 @@ export const productServiceSupabase = {
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
+            if (!data || data.length === 0) return [];
 
-            return data.map(item => ({
-                ...item,
-                created_at: new Date(item.created_at),
-                updated_at: new Date(item.updated_at),
-            }));
+            return data.map(mapToRow)
         } catch (error) {
             console.error('Error fetching products:', error);
             throw new Error(handleSupabaseError(error));
@@ -49,11 +63,9 @@ export const productServiceSupabase = {
                 throw error;
             }
 
-            return {
-                ...data,
-                created_at: new Date(data.created_at),
-                updated_at: new Date(data.updated_at),
-            };
+            if (!data) throw new Error('Product not found');
+
+            return mapToRow(data);
         } catch (error) {
             console.error('Error fetching product:', error);
             throw error instanceof Error ? error : new Error(handleSupabaseError(error));
@@ -65,25 +77,25 @@ export const productServiceSupabase = {
      */
     async createProduct(formData: ProductFormData): Promise<Product> {
         try {
+            const insertData: Database['public']['Tables']['products']['Insert'] = {
+                shop_code: formData.shop_code,
+                sku: formData.sku,
+                title: formData.title,
+                etsy_url: formData.etsy_url,
+                image_url: formData.image_url,
+                is_active: true,
+            };
+
             const { data, error } = await supabase
                 .from('products')
-                .insert([{
-                    sku: formData.sku,
-                    title: formData.title,
-                    etsy_url: formData.etsy_url,
-                    image_url: formData.image_url,
-                    status: 'active',
-                }])
+                .insert([insertData])
                 .select()
                 .single();
 
             if (error) throw error;
+            if (!data) throw new Error('Failed to create product');
 
-            return {
-                ...data,
-                created_at: new Date(data.created_at),
-                updated_at: new Date(data.updated_at),
-            };
+            return mapToRow(data);
         } catch (error) {
             console.error('Error creating product:', error);
             throw new Error(handleSupabaseError(error));
@@ -95,23 +107,26 @@ export const productServiceSupabase = {
      */
     async updateProduct(id: string, formData: Partial<ProductFormData>): Promise<Product> {
         try {
+            const updateData: Record<string, unknown> = {
+                updated_at: new Date().toISOString(),
+            };
+
+            if (formData.sku !== undefined) updateData.sku = formData.sku;
+            if (formData.title !== undefined) updateData.title = formData.title;
+            if (formData.etsy_url !== undefined) updateData.etsy_url = formData.etsy_url;
+            if (formData.image_url !== undefined) updateData.image_url = formData.image_url;
+
             const { data, error } = await supabase
                 .from('products')
-                .update({
-                    ...formData,
-                    updated_at: new Date().toISOString(),
-                })
+                .update(updateData)
                 .eq('id', id)
                 .select()
                 .single();
 
             if (error) throw error;
+            if (!data) throw new Error('Failed to update product');
 
-            return {
-                ...data,
-                created_at: new Date(data.created_at),
-                updated_at: new Date(data.updated_at),
-            };
+            return mapToRow(data);
         } catch (error) {
             console.error('Error updating product:', error);
             throw new Error(handleSupabaseError(error));
@@ -143,19 +158,20 @@ export const productServiceSupabase = {
             // Get current product
             const { data: currentProduct, error: fetchError } = await supabase
                 .from('products')
-                .select('status')
+                .select('is_active')
                 .eq('id', id)
                 .single();
 
             if (fetchError) throw fetchError;
+            if (!currentProduct) throw new Error('Product not found');
 
             // Toggle status
-            const newStatus = currentProduct.status === 'active' ? 'inactive' : 'active';
+            const newStatus = currentProduct.is_active === true ? false : true;
 
             const { data, error } = await supabase
                 .from('products')
                 .update({
-                    status: newStatus,
+                    is_active: newStatus,
                     updated_at: new Date().toISOString(),
                 })
                 .eq('id', id)
@@ -163,12 +179,9 @@ export const productServiceSupabase = {
                 .single();
 
             if (error) throw error;
+            if (!data) throw new Error('Failed to toggle status');
 
-            return {
-                ...data,
-                created_at: new Date(data.created_at),
-                updated_at: new Date(data.updated_at),
-            };
+            return mapToRow(data);
         } catch (error) {
             console.error('Error toggling product status:', error);
             throw new Error(handleSupabaseError(error));
@@ -187,12 +200,9 @@ export const productServiceSupabase = {
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
+            if (!data || data.length === 0) return [];
 
-            return data.map(item => ({
-                ...item,
-                created_at: new Date(item.created_at),
-                updated_at: new Date(item.updated_at),
-            }));
+            return data.map(mapToRow);
         } catch (error) {
             console.error('Error searching products:', error);
             throw new Error(handleSupabaseError(error));
@@ -204,6 +214,8 @@ export const productServiceSupabase = {
      */
     async bulkDeleteProducts(ids: string[]): Promise<void> {
         try {
+            if (ids.length === 0) return;
+
             const { error } = await supabase
                 .from('products')
                 .delete()
@@ -219,12 +231,14 @@ export const productServiceSupabase = {
     /**
      * Bulk update product status
      */
-    async bulkUpdateStatus(ids: string[], status: 'active' | 'inactive'): Promise<void> {
+    async bulkUpdateStatus(ids: string[], is_active: boolean): Promise<void> {
         try {
+            if (ids.length === 0) return;
+
             const { error } = await supabase
                 .from('products')
                 .update({
-                    status,
+                    is_active,
                     updated_at: new Date().toISOString(),
                 })
                 .in('id', ids);
@@ -247,12 +261,9 @@ export const productServiceSupabase = {
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
+            if (!data || data.length === 0) return [];
 
-            return data.map(item => ({
-                ...item,
-                created_at: new Date(item.created_at),
-                updated_at: new Date(item.updated_at),
-            }));
+            return data.map(mapToRow);
         } catch (error) {
             console.error('Error exporting products:', error);
             throw new Error(handleSupabaseError(error));
@@ -268,11 +279,12 @@ export const productServiceSupabase = {
 
         for (const product of products) {
             try {
+                // eslint-disable-next-line no-await-in-loop
                 await this.createProduct(product);
-                success++;
+                success += 1;
             } catch (error) {
                 console.error('Failed to import product:', product, error);
-                failed++;
+                failed += 1;
             }
         }
 
@@ -283,9 +295,14 @@ export const productServiceSupabase = {
 /**
  * Helper function to download products as CSV
  */
-export const downloadProductsCSV = async () => {
+export const downloadProductsCSV = async (): Promise<void> => {
     try {
-        const products = await productServiceSupabase.exportProducts();
+        const products = await productServiceApi.exportProducts();
+
+        if (products.length === 0) {
+            console.warn('No products to export');
+            return;
+        }
 
         // Create CSV content
         const headers = ['ID', 'SKU', 'Title', 'Etsy URL', 'Image URL', 'Status', 'Created At', 'Updated At'];
@@ -302,19 +319,20 @@ export const downloadProductsCSV = async () => {
 
         const csvContent = [
             headers.join(','),
-            ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+            ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
         ].join('\n');
 
         // Download
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = window.URL.createObjectURL(blob);
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.href = url;
-        link.download = `products-${new Date().toISOString().split('T')[0]}.csv`;
+        link.setAttribute('href', url);
+        link.setAttribute('download', `products-${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
+        URL.revokeObjectURL(url);
     } catch (error) {
         console.error('Error downloading CSV:', error);
         throw error;

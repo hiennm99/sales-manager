@@ -1,124 +1,216 @@
-// features/shops/store/useShopStore.ts
+// src/features/shops/store/useShopStore.ts
 
 import { create } from 'zustand';
-import type { Shop } from '../../../types/shop';
-import { shopServiceApi } from "../services/shop.api.ts";
+import { persist } from 'zustand/middleware';
+import type { Shop, ShopFormData } from '../../../types/shop';
+import { shopServiceApi } from '../services/shop.service.api';
 
-interface ShopState {
+interface ShopStore {
     shops: Shop[];
-    selectedShop: Shop | null;
     isLoading: boolean;
     error: string | null;
 
+    // selected shop
+    selectedShop: Shop | null;
+    setSelectedShop: (shop: Shop | null) => void;
+
     // Actions
     fetchShops: () => Promise<void>;
-    fetchShopById: (id: string) => Promise<void>;
-    createShop: (data: Omit<Shop, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
-    updateShop: (id: string, data: Partial<Shop>) => Promise<void>;
+    fetchShopById: (id: string) => Shop | undefined;
+    createShop: (data: ShopFormData) => Promise<Shop>;
+    updateShop: (id: string, data: Partial<ShopFormData>) => Promise<Shop>;
     deleteShop: (id: string) => Promise<void>;
-    setSelectedShop: (shop: Shop | null) => void;
+    toggleShopStatus: (id: string) => Promise<void>;
+    searchShops: (query: string) => Promise<void>;
+    bulkDeleteShops: (ids: string[]) => Promise<void>;
+    bulkUpdateStatus: (ids: string[], is_active: boolean) => Promise<void>;
     clearError: () => void;
 }
 
-export const useShopStore = create<ShopState>((set) => ({
-    shops: [],
-    selectedShop: null,
-    isLoading: false,
-    error: null,
+export const useShopStore = create<ShopStore>()(
+    persist(
+        (set, get) => ({
+            shops: [],
+            isLoading: false,
+            error: null,
 
-    fetchShops: async () => {
-        set({ isLoading: true, error: null });
-        try {
-            const shops = await shopServiceApi.getAll();
-            set({ shops, isLoading: false });
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {
-            set({
-                error: 'Không thể tải danh sách cửa hàng',
-                isLoading: false
-            });
+            // selected shop
+            selectedShop: null,
+            setSelectedShop: (shop) => set({ selectedShop: shop }),
+
+            fetchShops: async () => {
+                set({ isLoading: true, error: null });
+                try {
+                    const shops = await shopServiceApi.getAll();
+                    set({ shops, isLoading: false });
+                } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch shops';
+                    set({ error: errorMessage, isLoading: false });
+                }
+            },
+
+            fetchShopById: (id: string) => {
+                return get().shops.find(s => s.id === id);
+            },
+
+            createShop: async (data: ShopFormData) => {
+                set({ isLoading: true, error: null });
+                try {
+                    const newShop = await shopServiceApi.create(data);
+
+                    set(state => ({
+                        shops: [newShop, ...state.shops],
+                        selectedShop: newShop,
+                        isLoading: false,
+                    }));
+
+                    return newShop;
+                } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : 'Failed to create shop';
+                    set({ error: errorMessage, isLoading: false });
+                    throw error;
+                }
+            },
+
+            updateShop: async (id: string, data: Partial<ShopFormData>) => {
+                set({ isLoading: true, error: null });
+                try {
+                    const updatedShop = await shopServiceApi.update(id, data);
+
+                    if (!updatedShop) throw new Error('Shop not found');
+
+                    set(state => ({
+                        shops: state.shops.map(s =>
+                            s.id === id ? updatedShop : s
+                        ),
+                        isLoading: false,
+                    }));
+
+                    // Update selected shop if it's the one being updated
+                    if (get().selectedShop?.id === id) {
+                        set({ selectedShop: updatedShop });
+                    }
+
+                    return updatedShop;
+                } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : 'Failed to update shop';
+                    set({ error: errorMessage, isLoading: false });
+                    throw error;
+                }
+            },
+
+            deleteShop: async (id: string) => {
+                set({ isLoading: true, error: null });
+                try {
+                    const success = await shopServiceApi.delete(id);
+
+                    if (!success) throw new Error('Failed to delete shop');
+
+                    set(state => ({
+                        shops: state.shops.filter(s => s.id !== id),
+                        selectedShop: state.selectedShop?.id === id ? null : state.selectedShop,
+                        isLoading: false,
+                    }));
+                } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : 'Failed to delete shop';
+                    set({ error: errorMessage, isLoading: false });
+                    throw error;
+                }
+            },
+
+            toggleShopStatus: async (id: string) => {
+                set({ isLoading: true, error: null });
+                try {
+                    const toggledShop = await shopServiceApi.toggleStatus(id);
+
+                    if (!toggledShop) throw new Error('Shop not found');
+
+                    set(state => ({
+                        shops: state.shops.map(s =>
+                            s.id === id ? toggledShop : s
+                        ),
+                        isLoading: false,
+                    }));
+
+                    // Update selected shop if it's the one being toggled
+                    if (get().selectedShop?.id === id) {
+                        set({ selectedShop: toggledShop });
+                    }
+                } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : 'Failed to toggle status';
+                    set({ error: errorMessage, isLoading: false });
+                    throw error;
+                }
+            },
+
+            searchShops: async (query: string) => {
+                set({ isLoading: true, error: null });
+                try {
+                    if (query.trim() === '') {
+                        await get().fetchShops();
+                        return;
+                    }
+
+                    const shops = await shopServiceApi.search(query);
+                    set({ shops, isLoading: false });
+                } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : 'Failed to search shops';
+                    set({ error: errorMessage, isLoading: false });
+                }
+            },
+
+            bulkDeleteShops: async (ids: string[]) => {
+                set({ isLoading: true, error: null });
+                try {
+                    await shopServiceApi.bulkDelete(ids);
+
+                    set(state => ({
+                        shops: state.shops.filter(s => !ids.includes(s.id)),
+                        selectedShop: ids.includes(state.selectedShop?.id ?? '') ? null : state.selectedShop,
+                        isLoading: false,
+                    }));
+                } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : 'Failed to delete shops';
+                    set({ error: errorMessage, isLoading: false });
+                    throw error;
+                }
+            },
+
+            bulkUpdateStatus: async (ids: string[], is_active: boolean) => {
+                set({ isLoading: true, error: null });
+                try {
+                    await shopServiceApi.bulkUpdateStatus(ids, is_active);
+
+                    const updatedSelectedShop = get().selectedShop
+                        ? {
+                            ...get().selectedShop!,
+                            is_active: ids.includes(get().selectedShop!.id) ? is_active : get().selectedShop!.is_active,
+                        }
+                        : null;
+
+                    set(state => ({
+                        shops: state.shops.map(s =>
+                            ids.includes(s.id)
+                                ? { ...s, is_active, updated_at: new Date() }
+                                : s
+                        ),
+                        selectedShop: updatedSelectedShop,
+                        isLoading: false,
+                    }));
+                } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : 'Failed to update status';
+                    set({ error: errorMessage, isLoading: false });
+                    throw error;
+                }
+            },
+
+            clearError: () => set({ error: null }),
+        }),
+        {
+            name: 'shop-storage',
+            partialize: (state) => ({
+                selectedShop: state.selectedShop,
+            }),
         }
-    },
-
-    fetchShopById: async (id: string) => {
-        set({ isLoading: true, error: null });
-        try {
-            const shop = await shopServiceApi.getById(id);
-            if (shop) {
-                set({ selectedShop: shop, isLoading: false });
-            } else {
-                set({
-                    error: 'Không tìm thấy cửa hàng',
-                    isLoading: false
-                });
-            }
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {
-            set({
-                error: 'Không thể tải thông tin cửa hàng',
-                isLoading: false
-            });
-        }
-    },
-
-    createShop: async (data) => {
-        set({ isLoading: true, error: null });
-        try {
-            const newShop = await shopServiceApi.create(data);
-            set((state) => ({
-                shops: [...state.shops, newShop],
-                isLoading: false
-            }));
-        } catch (error) {
-            set({
-                error: 'Không thể tạo cửa hàng mới',
-                isLoading: false
-            });
-            throw error;
-        }
-    },
-
-    updateShop: async (id, data) => {
-        set({ isLoading: true, error: null });
-        try {
-            const updatedShop = await shopServiceApi.update(id, data);
-            if (updatedShop) {
-                set((state) => ({
-                    shops: state.shops.map(shop =>
-                        shop.id === id ? updatedShop : shop
-                    ),
-                    selectedShop: state.selectedShop?.id === id ? updatedShop : state.selectedShop,
-                    isLoading: false,
-                }));
-            }
-        } catch (error) {
-            set({
-                error: 'Không thể cập nhật cửa hàng',
-                isLoading: false
-            });
-            throw error;
-        }
-    },
-
-    deleteShop: async (id) => {
-        set({ isLoading: true, error: null });
-        try {
-            await shopServiceApi.delete(id);
-            set((state) => ({
-                shops: state.shops.filter(shop => shop.id !== id),
-                selectedShop: state.selectedShop?.id === id ? null : state.selectedShop,
-                isLoading: false,
-            }));
-        } catch (error) {
-            set({
-                error: 'Không thể xóa cửa hàng',
-                isLoading: false
-            });
-            throw error;
-        }
-    },
-
-    setSelectedShop: (shop) => set({ selectedShop: shop }),
-
-    clearError: () => set({ error: null }),
-}));
+    )
+);

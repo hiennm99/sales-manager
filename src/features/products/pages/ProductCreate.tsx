@@ -4,15 +4,18 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom'; // ✅ Import useParams
 import type { ProductFormData } from '../../../types/product';
 import { useProductStore } from '../store/useProductStore';
+import { useShopStore } from "../../shops/store/useShopStore.ts";
 
 export const ProductCreate: React.FC = () => {
     const { productId } = useParams<{ productId: string }>(); // ✅ Lấy productId từ URL
     const navigate = useNavigate();
     const { getProductById, createProduct, updateProduct, isLoading } = useProductStore();
+    const { selectedShop } = useShopStore();
     const [imagePreview, setImagePreview] = useState<string>('');
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const [formData, setFormData] = useState<ProductFormData>({
+        shop_code: '',
         sku: '',
         title: '',
         etsy_url: '',
@@ -24,6 +27,7 @@ export const ProductCreate: React.FC = () => {
             const product = getProductById(productId);
             if (product) {
                 setFormData({
+                    shop_code: product.shop_code,
                     sku: product.sku,
                     title: product.title,
                     etsy_url: product.etsy_url,
@@ -101,6 +105,7 @@ export const ProductCreate: React.FC = () => {
 
     const handleReset = () => {
         setFormData({
+            'shop_code': '',
             sku: '',
             title: '',
             etsy_url: '',
@@ -139,6 +144,23 @@ export const ProductCreate: React.FC = () => {
                             <h2 className="text-lg font-semibold text-gray-900 mb-4">
                                 Thông tin cơ bản
                             </h2>
+
+                            {/* Shop Code */}
+                            <div className="mb-4">
+                                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Cửa hàng <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    id="title"
+                                    name="title"
+                                    value={selectedShop?.name}
+                                    placeholder="Classic Black T-Shirt - Premium Cotton"
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
+                                        errors.title ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                                    disabled
+                                />
+                            </div>
 
                             {/* SKU */}
                             <div className="mb-4">

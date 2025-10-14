@@ -16,31 +16,34 @@ export interface Database {
                     id: string
                     created_at: string
                     updated_at: string
+                    shop_code: string
                     sku: string
                     title: string
                     etsy_url: string
                     image_url: string
-                    status: 'active' | 'inactive' | 'pending'
+                    is_active: boolean
                 }
                 Insert: {
                     id?: string
                     created_at?: string
                     updated_at?: string
+                    shop_code?: string
                     sku: string
                     title: string
                     etsy_url: string
                     image_url: string
-                    status?: 'active' | 'inactive' | 'pending'
+                    is_active: boolean
                 }
                 Update: {
                     id?: string
                     created_at?: string
                     updated_at?: string
+                    shop_code?: string
                     sku?: string
                     title?: string
                     etsy_url?: string
                     image_url?: string
-                    status?: 'active' | 'inactive' | 'pending'
+                    is_active?: boolean
                 }
             }
             shops: {
@@ -50,7 +53,7 @@ export interface Database {
                     updated_at: string
                     name: string
                     code: string
-                    status: 'active' | 'inactive' | 'pending'
+                    is_active: boolean
                     logo: string | null
                 }
                 Insert: {
@@ -59,8 +62,8 @@ export interface Database {
                     updated_at?: string
                     name: string
                     code: string
-                    status?: 'active' | 'inactive' | 'pending'
-                    logo?: string | null
+                    is_active?: boolean
+                    logo: string
                 }
                 Update: {
                     id?: string
@@ -68,8 +71,8 @@ export interface Database {
                     updated_at?: string
                     name?: string
                     code?: string
-                    status?: 'active' | 'inactive' | 'pending'
-                    logo?: string | null
+                    is_active?: boolean
+                    logo: string | null
                 }
             }
         }

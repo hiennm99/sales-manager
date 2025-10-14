@@ -15,7 +15,7 @@ export const ShopList: React.FC = () => {
 
     useEffect(() => {
         fetchShops();
-    }, []);
+    }, [fetchShops]);
 
     // Filter shops
     const filteredShops = shops.filter(shop => {
@@ -23,7 +23,11 @@ export const ShopList: React.FC = () => {
             shop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             shop.code.toLowerCase().includes(searchQuery.toLowerCase())
 
-        const matchesStatus = statusFilter === 'all' || shop.status === statusFilter;
+        // Sửa logic này
+        const matchesStatus =
+            statusFilter === 'all' ||
+            (statusFilter === 'true' && shop.is_active) ||
+            (statusFilter === 'false' && !shop.is_active);
 
         return matchesSearch && matchesStatus;
     });

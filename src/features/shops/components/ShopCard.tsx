@@ -40,16 +40,16 @@ export const ShopCard: React.FC<ShopCardProps> = ({ shop, onSelect }) => {
 
                 {/* Status badge */}
                 <div className="absolute top-3 right-3">
-          <span
-              className={cn(
-                  'px-2 py-1 rounded-full text-xs font-semibold',
-                  shop.status === 'active'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-gray-100 text-gray-700'
-              )}
-          >
-            {shop.status === 'active' ? 'Hoạt động' : 'Tạm ngưng'}
-          </span>
+                      <span
+                          className={cn(
+                              'px-2 py-1 rounded-full text-xs font-semibold',
+                              shop.is_active === true
+                                  ? 'bg-green-100 text-green-700'
+                                  : 'bg-gray-100 text-gray-700'
+                          )}
+                      >
+                        {shop.is_active === true ? 'Hoạt động' : 'Tạm ngưng'}
+                      </span>
                 </div>
             </div>
 

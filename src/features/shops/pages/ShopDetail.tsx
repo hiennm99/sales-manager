@@ -92,13 +92,13 @@ export const ShopDetail: React.FC = () => {
                             <span
                                 className={cn(
                                     'px-3 py-1 rounded-full text-sm font-semibold',
-                                    selectedShop.status === 'active'
+                                    selectedShop.is_active
                                         ? 'bg-green-100 text-green-700'
                                         : 'bg-gray-100 text-gray-700'
                                 )}
                             >
-                {selectedShop.status === 'active' ? 'Hoạt động' : 'Tạm ngưng'}
-              </span>
+                                {selectedShop.is_active ? 'Hoạt động' : 'Tạm ngưng'}
+                            </span>
                         </div>
                         {/* Actions */}
                         <div className="flex gap-3">

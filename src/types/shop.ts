@@ -1,16 +1,16 @@
 // types/shop.ts
 
-import type { BaseEntity, Status } from './common';
+import type { BaseEntity } from './common';
 
 export interface Shop extends BaseEntity {
     name: string;
     code: string;
-    status: Status;
-    logo?: string;
+    is_active: boolean;
+    logo: string;
 }
 
 export interface ShopFormData {
     name: string;
     code: string;
-    logo?: string;
+    logo: string;
 }

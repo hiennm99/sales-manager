@@ -2,12 +2,25 @@
 
 import { supabase, handleSupabaseError } from '../../../lib/supabase';
 import type { Shop, ShopFormData } from '../../../types/shop';
-
+import type { Database } from "../../../types/supabase.ts";
 /**
  * Shop Supabase Service
  * Handles all database operations related to shops using Supabase
  */
-export const shopServiceSupabase = {
+// Helper function ở ngoài object
+const mapToRow = (data: Database['public']['Tables']['shops']['Row']): Shop => {
+    return {
+        id: data.id,
+        name: data.name,
+        code: data.code,
+        is_active: data.is_active,
+        logo: data.logo,
+        created_at: new Date(data.created_at),
+        updated_at: new Date(data.updated_at),
+    };
+};
+
+export const shopServiceApi = {
     /**
      * Get all shops
      */
@@ -16,20 +29,12 @@ export const shopServiceSupabase = {
             const { data, error } = await supabase
                 .from('shops')
                 .select('*')
-                .order('created_at', { ascending: false });
+                .order('created_at', { ascending: true });
 
             if (error) throw error;
             if (!data) return [];
 
-            return data.map(item => ({
-                id: item.id,
-                name: item.name,
-                code: item.code,
-                status: item.status,
-                logo: item.logo,
-                created_at: new Date(item.created_at),
-                updated_at: new Date(item.updated_at),
-            }));
+            return data.map(mapToRow);
         } catch (error) {
             console.error('Error fetching shops:', error);
             throw new Error(handleSupabaseError(error));
@@ -56,15 +61,7 @@ export const shopServiceSupabase = {
 
             if (!data) return undefined;
 
-            return {
-                id: data.id,
-                name: data.name,
-                code: data.code,
-                status: data.status,
-                logo: data.logo,
-                created_at: new Date(data.created_at),
-                updated_at: new Date(data.updated_at),
-            };
+            return mapToRow(data);
         } catch (error) {
             console.error('Error fetching shop:', error);
             throw new Error(handleSupabaseError(error));
@@ -78,27 +75,18 @@ export const shopServiceSupabase = {
         try {
             const { data, error } = await supabase
                 .from('shops')
-                .insert([{
+                .insert({
                     name: formData.name,
                     code: formData.code,
-                    logo: formData.logo || null,
-                    status: 'active',
-                }])
+                    logo: formData.logo
+                })
                 .select()
                 .single();
 
             if (error) throw error;
             if (!data) throw new Error('Failed to create shop');
 
-            return {
-                id: data.id,
-                name: data.name,
-                code: data.code,
-                status: data.status,
-                logo: data.logo,
-                created_at: new Date(data.created_at),
-                updated_at: new Date(data.updated_at),
-            };
+            return mapToRow(data);
         } catch (error) {
             console.error('Error creating shop:', error);
             throw new Error(handleSupabaseError(error));
@@ -134,15 +122,7 @@ export const shopServiceSupabase = {
 
             if (!data) return undefined;
 
-            return {
-                id: data.id,
-                name: data.name,
-                code: data.code,
-                status: data.status,
-                logo: data.logo,
-                created_at: new Date(data.created_at),
-                updated_at: new Date(data.updated_at),
-            };
+            return mapToRow(data);
         } catch (error) {
             console.error('Error updating shop:', error);
             throw new Error(handleSupabaseError(error));
@@ -176,7 +156,7 @@ export const shopServiceSupabase = {
             // Get current shop
             const { data: currentShop, error: fetchError } = await supabase
                 .from('shops')
-                .select('status')
+                .select('is_active')
                 .eq('id', id)
                 .single();
 
@@ -184,12 +164,12 @@ export const shopServiceSupabase = {
             if (!currentShop) return undefined;
 
             // Toggle status
-            const newStatus = currentShop.status === 'active' ? 'inactive' : 'active';
+            const newStatus = currentShop.is_active === true ? false : true;
 
             const { data, error } = await supabase
                 .from('shops')
                 .update({
-                    status: newStatus,
+                    is_active: newStatus,
                     updated_at: new Date().toISOString(),
                 })
                 .eq('id', id)
@@ -199,15 +179,7 @@ export const shopServiceSupabase = {
             if (error) throw error;
             if (!data) return undefined;
 
-            return {
-                id: data.id,
-                name: data.name,
-                code: data.code,
-                status: data.status,
-                logo: data.logo,
-                created_at: new Date(data.created_at),
-                updated_at: new Date(data.updated_at),
-            };
+            return mapToRow(data);
         } catch (error) {
             console.error('Error toggling shop status:', error);
             throw new Error(handleSupabaseError(error));
@@ -228,15 +200,7 @@ export const shopServiceSupabase = {
             if (error) throw error;
             if (!data) return [];
 
-            return data.map(item => ({
-                id: item.id,
-                name: item.name,
-                code: item.code,
-                status: item.status,
-                logo: item.logo,
-                created_at: new Date(item.created_at),
-                updated_at: new Date(item.updated_at),
-            }));
+            return data.map(mapToRow);
         } catch (error) {
             console.error('Error searching shops:', error);
             throw new Error(handleSupabaseError(error));
@@ -263,12 +227,12 @@ export const shopServiceSupabase = {
     /**
      * Bulk update shop status
      */
-    async bulkUpdateStatus(ids: string[], status: 'active' | 'inactive'): Promise<void> {
+    async bulkUpdateStatus(ids: string[], is_active: boolean): Promise<void> {
         try {
             const { error } = await supabase
                 .from('shops')
                 .update({
-                    status,
+                    is_active,
                     updated_at: new Date().toISOString(),
                 })
                 .in('id', ids);
