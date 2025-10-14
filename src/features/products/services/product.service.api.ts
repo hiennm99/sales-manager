@@ -1,8 +1,8 @@
 // src/features/products/services/product.service.api.ts
 
-import { supabase, handleSupabaseError } from '../../../lib/supabase';
-import type { Product, ProductFormData } from '../../../types/product';
-import type { Database } from '../../../types/supabase';
+import {handleSupabaseError, supabase} from '../../../lib/supabase';
+import type {Product, ProductFormData} from '../../../types/product';
+import type {Database} from '../../../types/supabase.ts';
 
 /**
  * Helper function to map database row to Product type
@@ -43,20 +43,18 @@ const generateSKU = (shopCode: string, serialId: number): string => {
  * Get the next serial ID for a shop
  */
 const getNextSerialId = async (shopCode: string): Promise<number> => {
-    try {
-        const { count, error } = await supabase
-            .from('products')
-            .select('*', { count: 'exact', head: true })
-            .eq('shop_code', shopCode);
+    const { count, error } = await supabase
+        .from('products')
+        .select('*', { count: 'exact', head: true })
+        .eq('shop_code', shopCode);
 
-        if (error) throw error;
-
-        // Return count + 1 (if no products, count is 0, so return 1)
-        return (count || 0) + 1;
-    } catch (error) {
+    if (error) {
         console.error('Error getting next serial ID:', error);
         throw error;
     }
+
+    // Return count + 1 (if no products, count is 0, so return 1)
+    return (count || 0) + 1;
 };
 
 /**
@@ -66,40 +64,38 @@ const getNextSerialId = async (shopCode: string): Promise<number> => {
  * @returns Public URL of uploaded image
  */
 const uploadProductImage = async (file: File, sku: string): Promise<string> => {
-    try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${sku}.${fileExt}`;
-        const filePath = `products/${fileName}`;
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${sku}.${fileExt}`;
+    const filePath = `products/${fileName}`;
 
-        // Delete existing file if exists
-        const { error: deleteError } = await supabase.storage
-            .from('images')
-            .remove([filePath]);
+    // Delete existing file if exists
+    const { error: deleteError } = await supabase.storage
+        .from('images')
+        .remove([filePath]);
 
-        if (deleteError && deleteError.message !== 'The resource was not found') {
-            console.warn('Error deleting existing image:', deleteError);
-        }
+    if (deleteError && deleteError.message !== 'The resource was not found') {
+        console.warn('Error deleting existing image:', deleteError);
+    }
 
-        // Upload new file
-        const { error: uploadError } = await supabase.storage
-            .from('images')
-            .upload(filePath, file, {
-                cacheControl: '3600',
-                upsert: true
-            });
+    // Upload new file
+    const { error: uploadError } = await supabase.storage
+        .from('images')
+        .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: true
+        });
 
-        if (uploadError) throw uploadError;
-
-        // Get public URL
-        const { data } = supabase.storage
-            .from('images')
-            .getPublicUrl(filePath);
-
-        return data.publicUrl;
-    } catch (error) {
-        console.error('Error uploading image:', error);
+    if (uploadError) {
+        console.error('Error uploading image:', uploadError);
         throw new Error('Failed to upload image');
     }
+
+    // Get public URL
+    const { data } = supabase.storage
+        .from('images')
+        .getPublicUrl(filePath);
+
+    return data.publicUrl;
 };
 
 /**
@@ -114,7 +110,10 @@ const deleteProductImage = async (sku: string): Promise<void> => {
                 search: sku
             });
 
-        if (listError) throw listError;
+        if (listError) {
+            console.error('Error listing images:', listError);
+            return; // ✅ Return thay vì throw
+        }
 
         if (files && files.length > 0) {
             const filesToDelete = files.map(file => `products/${file.name}`);
@@ -122,7 +121,10 @@ const deleteProductImage = async (sku: string): Promise<void> => {
                 .from('images')
                 .remove(filesToDelete);
 
-            if (deleteError) throw deleteError;
+            if (deleteError) {
+                console.error('Error removing images:', deleteError);
+                return; // ✅ Return thay vì throw
+            }
         }
     } catch (error) {
         console.error('Error deleting image:', error);
@@ -139,257 +141,247 @@ export const productServiceApi = {
      * Fetch all products
      */
     async getProducts(): Promise<Product[]> {
-        try {
-            const { data, error } = await supabase
-                .from('products')
-                .select('*')
-                .order('created_at', { ascending: false });
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .order('created_at', { ascending: false });
 
-            if (error) throw error;
-            if (!data || data.length === 0) return [];
-
-            return data.map(mapToRow);
-        } catch (error) {
+        if (error) {
             console.error('Error fetching products:', error);
             throw new Error(handleSupabaseError(error));
         }
+
+        if (!data || data.length === 0) return [];
+
+        return data.map(mapToRow);
     },
 
     /**
      * Fetch a single product by ID
      */
     async getProductById(id: number): Promise<Product> {
-        try {
-            const { data, error } = await supabase
-                .from('products')
-                .select('*')
-                .eq('id', id)
-                .single();
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .eq('id', id)
+            .single();
 
-            if (error) {
-                if (error.code === 'PGRST116') {
-                    throw new Error('Product not found');
-                }
-                throw error;
-            }
-
-            if (!data) throw new Error('Product not found');
-
-            return mapToRow(data);
-        } catch (error) {
+        if (error) {
             console.error('Error fetching product:', error);
-            throw error instanceof Error ? error : new Error(handleSupabaseError(error));
+            if (error.code === 'PGRST116') {
+                throw new Error('Product not found');
+            }
+            throw new Error(handleSupabaseError(error));
         }
+
+        if (!data) throw new Error('Product not found');
+
+        return mapToRow(data);
     },
 
     /**
      * Create a new product with auto-generated SKU and image upload
      */
     async createProduct(formData: ProductFormData, imageFile?: File): Promise<Product> {
-        try {
-            // Get next serial ID for this shop
-            const serialId = await getNextSerialId(formData.shop_code);
+        // Get next serial ID for this shop
+        const serialId = await getNextSerialId(formData.shop_code);
 
-            // Generate SKU
-            const sku = generateSKU(formData.shop_code, serialId);
+        // Generate SKU
+        const sku = generateSKU(formData.shop_code, serialId);
 
-            // Upload image if provided
-            let imageUrl = formData.image_url || '';
-            if (imageFile) {
-                imageUrl = await uploadProductImage(imageFile, sku);
-            }
+        // Upload image if provided
+        let imageUrl = formData.image_url || '';
+        if (imageFile) {
+            imageUrl = await uploadProductImage(imageFile, sku);
+        }
 
-            const insertData: Database['public']['Tables']['products']['Insert'] = {
-                shop_code: formData.shop_code,
-                sku,
-                title: formData.title,
-                etsy_url: formData.etsy_url,
-                image_url: imageUrl,
-                is_active: true,
-            };
+        const insertData = {
+            shop_code: formData.shop_code,
+            sku,
+            title: formData.title,
+            etsy_url: formData.etsy_url,
+            image_url: imageUrl,
+            is_active: true,
+        };
 
-            const { data, error } = await supabase
-                .from('products')
-                .insert([insertData])
-                .select()
-                .single();
+        const { data, error } = await supabase
+            .from('products')
+            .insert(insertData)
+            .select()
+            .single();
 
-            if (error) {
-                // Clean up uploaded image if product creation fails
-                if (imageFile) {
-                    await deleteProductImage(sku);
-                }
-                throw error;
-            }
-
-            if (!data) throw new Error('Failed to create product');
-
-            return mapToRow(data);
-        } catch (error) {
+        if (error) {
             console.error('Error creating product:', error);
+            // Clean up uploaded image if product creation fails
+            if (imageFile) {
+                await deleteProductImage(sku);
+            }
             throw new Error(handleSupabaseError(error));
         }
+
+        if (!data) throw new Error('Failed to create product');
+
+        return mapToRow(data);
     },
 
     /**
      * Update an existing product
      */
     async updateProduct(id: string, formData: Partial<ProductFormData>, imageFile?: File): Promise<Product> {
-        try {
-            const numericId = parseInt(id, 10);
+        const numericId = parseInt(id, 10);
 
-            // Get current product to access SKU
-            const currentProduct = await this.getProductById(numericId);
+        // Get current product to access SKU
+        const currentProduct = await this.getProductById(numericId);
 
-            const updateData: Record<string, unknown> = {
-                updated_at: new Date().toISOString(),
-            };
+        const updateData: Record<string, unknown> = {
+            updated_at: new Date().toISOString(),
+        };
 
-            if (formData.title !== undefined) updateData.title = formData.title;
-            if (formData.etsy_url !== undefined) updateData.etsy_url = formData.etsy_url;
+        if (formData.title !== undefined) updateData.title = formData.title;
+        if (formData.etsy_url !== undefined) updateData.etsy_url = formData.etsy_url;
 
-            // Upload new image if provided
-            if (imageFile) {
-                const imageUrl = await uploadProductImage(imageFile, currentProduct.sku);
-                updateData.image_url = imageUrl;
-            } else if (formData.image_url !== undefined) {
-                updateData.image_url = formData.image_url;
-            }
+        // Upload new image if provided
+        if (imageFile) {
+            updateData.image_url = await uploadProductImage(imageFile, currentProduct.sku);
+        } else if (formData.image_url !== undefined) {
+            updateData.image_url = formData.image_url;
+        }
 
-            const { data, error } = await supabase
-                .from('products')
-                .update(updateData)
-                .eq('id', numericId)
-                .select()
-                .single();
+        const { data, error } = await supabase
+            .from('products')
+            .update(updateData)
+            .eq('id', numericId)
+            .select()
+            .single();
 
-            if (error) throw error;
-            if (!data) throw new Error('Failed to update product');
-
-            return mapToRow(data);
-        } catch (error) {
+        if (error) {
             console.error('Error updating product:', error);
             throw new Error(handleSupabaseError(error));
         }
+
+        if (!data) throw new Error('Failed to update product');
+
+        return mapToRow(data);
     },
 
     /**
      * Delete a product and its image
      */
     async deleteProduct(id: string): Promise<void> {
-        try {
-            const numericId = parseInt(id, 10);
+        const numericId = parseInt(id, 10);
 
-            // Get product to access SKU for image deletion
-            const product = await this.getProductById(numericId);
+        // Get product to access SKU for image deletion
+        const product = await this.getProductById(numericId);
 
-            // Delete from database
-            const { error } = await supabase
-                .from('products')
-                .delete()
-                .eq('id', numericId);
+        // Delete from database
+        const { error } = await supabase
+            .from('products')
+            .delete()
+            .eq('id', numericId);
 
-            if (error) throw error;
-
-            // Delete associated image
-            await deleteProductImage(product.sku);
-        } catch (error) {
+        if (error) {
             console.error('Error deleting product:', error);
             throw new Error(handleSupabaseError(error));
         }
+
+        // Delete associated image
+        await deleteProductImage(product.sku);
     },
 
     /**
      * Toggle product status (active/inactive)
      */
     async toggleProductStatus(id: string): Promise<Product> {
-        try {
-            const numericId = parseInt(id, 10);
+        const numericId = parseInt(id, 10);
 
-            const { data: currentProduct, error: fetchError } = await supabase
-                .from('products')
-                .select('is_active')
-                .eq('id', numericId)
-                .single();
+        const { data: currentProduct, error: fetchError } = await supabase
+            .from('products')
+            .select('is_active')
+            .eq('id', numericId)
+            .single();
 
-            if (fetchError) throw fetchError;
-            if (!currentProduct) throw new Error('Product not found');
+        if (fetchError) {
+            console.error('Error toggling product status:', fetchError);
+            throw new Error(handleSupabaseError(fetchError));
+        }
 
-            const newStatus = currentProduct.is_active === true ? false : true;
+        if (!currentProduct) throw new Error('Product not found');
 
-            const { data, error } = await supabase
-                .from('products')
-                .update({
-                    is_active: newStatus,
-                    updated_at: new Date().toISOString(),
-                })
-                .eq('id', numericId)
-                .select()
-                .single();
+        const newStatus = !currentProduct.is_active;
 
-            if (error) throw error;
-            if (!data) throw new Error('Failed to toggle status');
+        const { data, error } = await supabase
+            .from('products')
+            .update({
+                is_active: newStatus,
+                updated_at: new Date().toISOString(),
+            })
+            .eq('id', numericId)
+            .select()
+            .single();
 
-            return mapToRow(data);
-        } catch (error) {
+        if (error) {
             console.error('Error toggling product status:', error);
             throw new Error(handleSupabaseError(error));
         }
+
+        if (!data) throw new Error('Failed to toggle status');
+
+        return mapToRow(data);
     },
 
     /**
      * Search products
      */
     async searchProducts(query: string): Promise<Product[]> {
-        try {
-            const { data, error } = await supabase
-                .from('products')
-                .select('*')
-                .or(`title.ilike.%${query}%,sku.ilike.%${query}%`)
-                .order('created_at', { ascending: false });
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .or(`title.ilike.%${query}%,sku.ilike.%${query}%`)
+            .order('created_at', { ascending: false });
 
-            if (error) throw error;
-            if (!data || data.length === 0) return [];
-
-            return data.map(mapToRow);
-        } catch (error) {
+        if (error) {
             console.error('Error searching products:', error);
             throw new Error(handleSupabaseError(error));
         }
+
+        if (!data || data.length === 0) return [];
+
+        return data.map(mapToRow);
     },
 
     /**
      * Bulk delete products
      */
     async bulkDeleteProducts(ids: number[]): Promise<void> {
-        try {
-            if (ids.length === 0) return;
+        if (!ids || ids.length === 0) return;
 
-            // Get all products to delete their images
-            const { data: products, error: fetchError } = await supabase
-                .from('products')
-                .select('sku')
-                .in('id', ids);
+        // Get all products to delete their images
+        const { data: products, error: fetchError } = await supabase
+            .from('products')
+            .select('sku')
+            .in('id', ids);
 
-            if (fetchError) throw fetchError;
+        if (fetchError) {
+            console.error('Error bulk deleting products:', fetchError);
+            throw new Error(handleSupabaseError(fetchError));
+        }
 
-            // Delete from database
-            const { error } = await supabase
-                .from('products')
-                .delete()
-                .in('id', ids);
+        // Delete from database
+        const { error } = await supabase
+            .from('products')
+            .delete()
+            .in('id', ids);
 
-            if (error) throw error;
-
-            // Delete associated images
-            if (products) {
-                await Promise.all(
-                    products.map(p => deleteProductImage(p.sku))
-                );
-            }
-        } catch (error) {
+        if (error) {
             console.error('Error bulk deleting products:', error);
             throw new Error(handleSupabaseError(error));
+        }
+
+        // Delete associated images
+        if (products) {
+            await Promise.all(
+                products.map(p => deleteProductImage(p.sku))
+            );
         }
     },
 
@@ -397,19 +389,17 @@ export const productServiceApi = {
      * Bulk update product status
      */
     async bulkUpdateStatus(ids: number[], is_active: boolean): Promise<void> {
-        try {
-            if (ids.length === 0) return;
+        if (!ids || ids.length === 0) return;
 
-            const { error } = await supabase
-                .from('products')
-                .update({
-                    is_active,
-                    updated_at: new Date().toISOString(),
-                })
-                .in('id', ids);
+        const { error } = await supabase
+            .from('products')
+            .update({
+                is_active,
+                updated_at: new Date().toISOString(),
+            })
+            .in('id', ids);
 
-            if (error) throw error;
-        } catch (error) {
+        if (error) {
             console.error('Error bulk updating status:', error);
             throw new Error(handleSupabaseError(error));
         }
@@ -419,20 +409,19 @@ export const productServiceApi = {
      * Export products to CSV (get all data for client-side export)
      */
     async exportProducts(): Promise<Product[]> {
-        try {
-            const { data, error } = await supabase
-                .from('products')
-                .select('*')
-                .order('created_at', { ascending: false });
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .order('created_at', { ascending: false });
 
-            if (error) throw error;
-            if (!data || data.length === 0) return [];
-
-            return data.map(mapToRow);
-        } catch (error) {
+        if (error) {
             console.error('Error exporting products:', error);
             throw new Error(handleSupabaseError(error));
         }
+
+        if (!data || data.length === 0) return [];
+
+        return data.map(mapToRow);
     },
 
     /**
@@ -450,44 +439,39 @@ export const productServiceApi = {
  * Helper function to download products as CSV
  */
 export const downloadProductsCSV = async (): Promise<void> => {
-    try {
-        const products = await productServiceApi.exportProducts();
+    const products = await productServiceApi.exportProducts();
 
-        if (products.length === 0) {
-            console.warn('No products to export');
-            return;
-        }
-
-        const headers = ['ID', 'Shop Code', 'SKU', 'Title', 'Etsy URL', 'Image URL', 'Status', 'Created At', 'Updated At'];
-        const rows = products.map(p => [
-            p.id,
-            p.shop_code,
-            p.sku,
-            p.title,
-            p.etsy_url,
-            p.image_url,
-            p.is_active ? 'active' : 'inactive',
-            p.created_at.toISOString(),
-            p.updated_at.toISOString(),
-        ]);
-
-        const csvContent = [
-            headers.join(','),
-            ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
-        ].join('\n');
-
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.setAttribute('href', url);
-        link.setAttribute('download', `products-${new Date().toISOString().split('T')[0]}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    } catch (error) {
-        console.error('Error downloading CSV:', error);
-        throw error;
+    if (products.length === 0) {
+        console.warn('No products to export');
+        return;
     }
+
+    const headers = ['ID', 'Shop Code', 'SKU', 'Title', 'Etsy URL', 'Image URL', 'Status', 'Created At', 'Updated At'];
+    const rows = products.map(p => [
+        p.id,
+        p.shop_code,
+        p.sku,
+        p.title,
+        p.etsy_url,
+        p.image_url,
+        p.is_active ? 'active' : 'inactive',
+        p.created_at.toISOString(),
+        p.updated_at.toISOString(),
+    ]);
+
+    const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `products-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
 };
