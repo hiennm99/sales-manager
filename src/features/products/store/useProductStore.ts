@@ -16,14 +16,14 @@ interface ProductStore {
 
     // Actions
     fetchProducts: () => Promise<void>;
-    getProductById: (id: number) => Product | undefined;
+    getProductById: (id: string | number) => Product | undefined;
     createProduct: (data: ProductFormData, imageFile?: File) => Promise<Product>;
-    updateProduct: (id: number, data: Partial<ProductFormData>, imageFile?: File) => Promise<Product>;
-    deleteProduct: (id: number) => Promise<void>;
-    toggleProductStatus: (id: number) => Promise<void>;
+    updateProduct: (id: string, data: Partial<ProductFormData>, imageFile?: File) => Promise<Product>;
+    deleteProduct: (id: string) => Promise<void>;
+    toggleProductStatus: (id: string) => Promise<void>;
     searchProducts: (query: string) => Promise<void>;
     bulkDeleteProducts: (ids: number[]) => Promise<void>;
-    bulkUpdateStatus: (ids: number[], status: 'active' | 'inactive') => Promise<void>;
+    bulkUpdateStatus: (ids: number[], is_active: boolean) => Promise<void>;
     clearError: () => void;
 }
 
@@ -49,8 +49,9 @@ export const useProductStore = create<ProductStore>()(
                 }
             },
 
-            getProductById: (id: number) => {
-                return get().products.find(p => p.id === id);
+            getProductById: (id: string | number) => {
+                const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+                return get().products.find(p => p.id === numericId);
             },
 
             createProduct: async (data: ProductFormData, imageFile?: File) => {
@@ -72,20 +73,21 @@ export const useProductStore = create<ProductStore>()(
                 }
             },
 
-            updateProduct: async (id: number, data: Partial<ProductFormData>, imageFile?: File) => {
+            updateProduct: async (id: string, data: Partial<ProductFormData>, imageFile?: File) => {
                 set({ isLoading: true, error: null });
                 try {
                     const updatedProduct = await productServiceApi.updateProduct(id, data, imageFile);
+                    const numericId = parseInt(id, 10);
 
                     set(state => ({
                         products: state.products.map(p =>
-                            p.id === id ? updatedProduct : p
+                            p.id === numericId ? updatedProduct : p
                         ),
                         isLoading: false,
                     }));
 
                     // Update selected product if it's the one being updated
-                    if (get().selectedProduct?.id === id) {
+                    if (get().selectedProduct?.id === numericId) {
                         set({ selectedProduct: updatedProduct });
                     }
 
@@ -97,14 +99,15 @@ export const useProductStore = create<ProductStore>()(
                 }
             },
 
-            deleteProduct: async (id: number) => {
+            deleteProduct: async (id: string) => {
                 set({ isLoading: true, error: null });
                 try {
                     await productServiceApi.deleteProduct(id);
+                    const numericId = parseInt(id, 10);
 
                     set(state => ({
-                        products: state.products.filter(p => p.id !== id),
-                        selectedProduct: state.selectedProduct?.id === id ? null : state.selectedProduct,
+                        products: state.products.filter(p => p.id !== numericId),
+                        selectedProduct: state.selectedProduct?.id === numericId ? null : state.selectedProduct,
                         isLoading: false,
                     }));
                 } catch (error) {
@@ -114,20 +117,21 @@ export const useProductStore = create<ProductStore>()(
                 }
             },
 
-            toggleProductStatus: async (id: number) => {
+            toggleProductStatus: async (id: string) => {
                 set({ isLoading: true, error: null });
                 try {
                     const toggledProduct = await productServiceApi.toggleProductStatus(id);
+                    const numericId = parseInt(id, 10);
 
                     set(state => ({
                         products: state.products.map(p =>
-                            p.id === id ? toggledProduct : p
+                            p.id === numericId ? toggledProduct : p
                         ),
                         isLoading: false,
                     }));
 
                     // Update selected product if it's the one being toggled
-                    if (get().selectedProduct?.id === id) {
+                    if (get().selectedProduct?.id === numericId) {
                         set({ selectedProduct: toggledProduct });
                     }
                 } catch (error) {
@@ -160,7 +164,7 @@ export const useProductStore = create<ProductStore>()(
 
                     set(state => ({
                         products: state.products.filter(p => !ids.includes(p.id)),
-                        selectedProduct: ids.includes(state.selectedProduct?.id ?? '') ? null : state.selectedProduct,
+                        selectedProduct: ids.includes(state.selectedProduct?.id ?? -1) ? null : state.selectedProduct,
                         isLoading: false,
                     }));
                 } catch (error) {
@@ -170,22 +174,22 @@ export const useProductStore = create<ProductStore>()(
                 }
             },
 
-            bulkUpdateStatus: async (ids: number[], status: 'active' | 'inactive') => {
+            bulkUpdateStatus: async (ids: number[], is_active: boolean) => {
                 set({ isLoading: true, error: null });
                 try {
-                    await productServiceApi.bulkUpdateStatus(ids, status === 'active');
+                    await productServiceApi.bulkUpdateStatus(ids, is_active);
 
                     const updatedSelectedProduct = get().selectedProduct
                         ? {
                             ...get().selectedProduct!,
-                            status: ids.includes(get().selectedProduct!.id) ? status : get().selectedProduct!.status,
+                            is_active: ids.includes(get().selectedProduct!.id) ? is_active : get().selectedProduct!.is_active,
                         }
                         : null;
 
                     set(state => ({
                         products: state.products.map(p =>
                             ids.includes(p.id)
-                                ? { ...p, status, updated_at: new Date() }
+                                ? { ...p, is_active, updated_at: new Date() }
                                 : p
                         ),
                         selectedProduct: updatedSelectedProduct,

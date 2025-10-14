@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { cn } from '../../../lib/utils';
 import { useProductStore } from '../store/useProductStore';
-import {Breadcrumbs} from "../../../components/layout/Breadcrumbs.tsx";
+import { Breadcrumbs } from "../../../components/layout/Breadcrumbs.tsx";
+import { getProductStatusLabel } from '../../../types/product';
 
 export const ProductDetail: React.FC = () => {
     const { productId } = useParams<{ productId: string }>();
@@ -20,6 +21,7 @@ export const ProductDetail: React.FC = () => {
             const foundProduct = getProductById(productId);
             if (foundProduct) {
                 setSelectedProduct(foundProduct);
+                setProduct(foundProduct);
             }
         }
     }, [productId, getProductById, setSelectedProduct]);
@@ -52,7 +54,10 @@ export const ProductDetail: React.FC = () => {
         if (!productId) return;
         try {
             await toggleProductStatus(productId);
-            setProduct(getProductById(productId));
+            const updatedProduct = getProductById(productId);
+            if (updatedProduct) {
+                setProduct(updatedProduct);
+            }
         } catch (error) {
             console.error('Failed to toggle status:', error);
             alert('Không thể thay đổi trạng thái. Vui lòng thử lại!');
@@ -86,7 +91,7 @@ export const ProductDetail: React.FC = () => {
             <Breadcrumbs
                 items={[
                     { label: 'Trang chủ', path: '/dashboard' },
-                    { label: 'Sản phẩm', path: '/products' },
+                    { label: 'Sản phẩm', path: '/products' },
                     { label: selectedProduct?.sku }
                 ]}
             />
@@ -110,12 +115,12 @@ export const ProductDetail: React.FC = () => {
                             onClick={handleToggleStatus}
                             className={cn(
                                 'px-4 py-2 rounded-lg font-medium transition-colors',
-                                product.status === 'active'
+                                product.is_active
                                     ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     : 'bg-green-100 text-green-700 hover:bg-green-200'
                             )}
                         >
-                            {product.status === 'active' ? 'Tạm ngưng' : 'Kích hoạt'}
+                            {product.is_active ? 'Tạm ngưng' : 'Kích hoạt'}
                         </button>
                         <button
                             onClick={() => navigate(`/products/${productId}/edit`)}
@@ -200,16 +205,16 @@ export const ProductDetail: React.FC = () => {
                                     <span
                                         className={cn(
                                             'inline-flex items-center px-3 py-1 text-sm font-medium rounded-full',
-                                            product.status === 'active'
+                                            product.is_active
                                                 ? 'bg-green-100 text-green-800'
                                                 : 'bg-gray-100 text-gray-800'
                                         )}
                                     >
                                         <span className={cn(
                                             'w-2 h-2 rounded-full mr-2',
-                                            product.status === 'active' ? 'bg-green-500' : 'bg-gray-500'
+                                            product.is_active ? 'bg-green-500' : 'bg-gray-500'
                                         )}></span>
-                                        {product.status === 'active' ? 'Hoạt động' : 'Tạm ngưng'}
+                                        {getProductStatusLabel(product.is_active)}
                                     </span>
                                 </div>
                             </div>
@@ -265,12 +270,6 @@ export const ProductDetail: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="flex items-center">
-                                <div className="w-32 text-sm font-medium text-gray-500">ID</div>
-                                <div className="flex-1">
-                                    <span className="text-gray-600 font-mono text-sm">{product.id}</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
 

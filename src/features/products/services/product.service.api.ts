@@ -44,26 +44,15 @@ const generateSKU = (shopCode: string, serialId: number): string => {
  */
 const getNextSerialId = async (shopCode: string): Promise<number> => {
     try {
-        const { data, error } = await supabase
+        const { count, error } = await supabase
             .from('products')
-            .select('sku')
-            .eq('shop_code', shopCode)
-            .order('created_at', { ascending: false })
-            .limit(1);
+            .select('*', { count: 'exact', head: true })
+            .eq('shop_code', shopCode);
 
         if (error) throw error;
 
-        if (!data || data.length === 0) {
-            return 1; // First product for this shop
-        }
-
-        // Extract serial number from last SKU
-        const lastSKU = data[0].sku;
-        const shopCodeLength = shopCode.length;
-        const serialPart = lastSKU.substring(shopCodeLength).replace(/^0+/, '');
-        const lastSerial = parseInt(serialPart, 10) || 0;
-
-        return lastSerial + 1;
+        // Return count + 1 (if no products, count is 0, so return 1)
+        return (count || 0) + 1;
     } catch (error) {
         console.error('Error getting next serial ID:', error);
         throw error;
@@ -245,10 +234,12 @@ export const productServiceApi = {
     /**
      * Update an existing product
      */
-    async updateProduct(id: number, formData: Partial<ProductFormData>, imageFile?: File): Promise<Product> {
+    async updateProduct(id: string, formData: Partial<ProductFormData>, imageFile?: File): Promise<Product> {
         try {
+            const numericId = parseInt(id, 10);
+
             // Get current product to access SKU
-            const currentProduct = await this.getProductById(id);
+            const currentProduct = await this.getProductById(numericId);
 
             const updateData: Record<string, unknown> = {
                 updated_at: new Date().toISOString(),
@@ -268,7 +259,7 @@ export const productServiceApi = {
             const { data, error } = await supabase
                 .from('products')
                 .update(updateData)
-                .eq('id', id)
+                .eq('id', numericId)
                 .select()
                 .single();
 
@@ -285,16 +276,18 @@ export const productServiceApi = {
     /**
      * Delete a product and its image
      */
-    async deleteProduct(id: number): Promise<void> {
+    async deleteProduct(id: string): Promise<void> {
         try {
+            const numericId = parseInt(id, 10);
+
             // Get product to access SKU for image deletion
-            const product = await this.getProductById(id);
+            const product = await this.getProductById(numericId);
 
             // Delete from database
             const { error } = await supabase
                 .from('products')
                 .delete()
-                .eq('id', id);
+                .eq('id', numericId);
 
             if (error) throw error;
 
@@ -309,12 +302,14 @@ export const productServiceApi = {
     /**
      * Toggle product status (active/inactive)
      */
-    async toggleProductStatus(id: number): Promise<Product> {
+    async toggleProductStatus(id: string): Promise<Product> {
         try {
+            const numericId = parseInt(id, 10);
+
             const { data: currentProduct, error: fetchError } = await supabase
                 .from('products')
                 .select('is_active')
-                .eq('id', id)
+                .eq('id', numericId)
                 .single();
 
             if (fetchError) throw fetchError;
@@ -328,7 +323,7 @@ export const productServiceApi = {
                     is_active: newStatus,
                     updated_at: new Date().toISOString(),
                 })
-                .eq('id', id)
+                .eq('id', numericId)
                 .select()
                 .single();
 
@@ -366,7 +361,7 @@ export const productServiceApi = {
     /**
      * Bulk delete products
      */
-    async bulkDeleteProducts(ids: string[]): Promise<void> {
+    async bulkDeleteProducts(ids: number[]): Promise<void> {
         try {
             if (ids.length === 0) return;
 
@@ -401,7 +396,7 @@ export const productServiceApi = {
     /**
      * Bulk update product status
      */
-    async bulkUpdateStatus(ids: string[], is_active: boolean): Promise<void> {
+    async bulkUpdateStatus(ids: number[], is_active: boolean): Promise<void> {
         try {
             if (ids.length === 0) return;
 
@@ -471,7 +466,7 @@ export const downloadProductsCSV = async (): Promise<void> => {
             p.title,
             p.etsy_url,
             p.image_url,
-            p.status,
+            p.is_active ? 'active' : 'inactive',
             p.created_at.toISOString(),
             p.updated_at.toISOString(),
         ]);

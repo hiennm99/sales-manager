@@ -20,14 +20,21 @@ export const ProductList: React.FC = () => {
     const filteredProducts = products.filter(product => {
         const matchesSearch = product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             product.sku.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesStatus = statusFilter === 'all' || product.status === statusFilter;
+
+        let matchesStatus = true;
+        if (statusFilter === 'active') {
+            matchesStatus = product.is_active === true;
+        } else if (statusFilter === 'inactive') {
+            matchesStatus = product.is_active === false;
+        }
+
         return matchesSearch && matchesStatus;
     });
 
     const stats = {
         total: products.length,
-        active: products.filter(p => p.status === 'active').length,
-        inactive: products.filter(p => p.status === 'inactive').length,
+        active: products.filter(p => p.is_active === true).length,
+        inactive: products.filter(p => p.is_active === false).length,
     };
 
     if (isLoading && products.length === 0) {
@@ -46,7 +53,7 @@ export const ProductList: React.FC = () => {
             <Breadcrumbs
                 items={[
                     { label: 'Trang chủ', path: '/dashboard' },
-                    { label: 'Sản phẩm' },
+                    { label: 'Sản phẩm' },
                 ]}
             />
             {/* Header */}
@@ -131,7 +138,7 @@ export const ProductList: React.FC = () => {
                         {/* Status Filter */}
                         <select
                             value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value as never)}
+                            onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
                             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
                             <option value="all">Tất cả trạng thái</option>
