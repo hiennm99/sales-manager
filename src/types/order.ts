@@ -129,3 +129,13 @@ export const formatCurrency = (amount: number, currency: 'USD' | 'VND'): string 
         currency: 'VND',
     }).format(amount);
 };
+
+// Helper function to get status string from is_active
+export const getOrderStatus = (is_active: boolean): 'active' | 'inactive' => {
+    return is_active ? 'active' : 'inactive';
+};
+
+// Helper function to get status label in Vietnamese
+export const getOrderStatusLabel = (is_active: boolean): string => {
+    return is_active ? 'Hoạt động' : 'Tạm ngưng';
+};

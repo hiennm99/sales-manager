@@ -5,6 +5,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import type { OrderFormData, OrderItemFormData, Order } from '../../../types/order';
 import { useOrderStore } from '../store/useOrderStore';
 import { useShopStore } from "../../shops/store/useShopStore";
+import {
+    GENERAL_STATUSES,
+    CUSTOMER_STATUSES,
+    FACTORY_STATUSES,
+    DELIVERY_STATUSES
+} from '../../../types/status';
 
 export const OrderCreate: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
@@ -39,6 +45,12 @@ export const OrderCreate: React.FC = () => {
     const [tax, setTax] = useState<number>(0);
     const [fees, setFees] = useState<number>(0);
 
+    // Status states
+    const [generalStatusId, setGeneralStatusId] = useState<number>(1); // Default: active
+    const [customerStatusId, setCustomerStatusId] = useState<number>(1); // Default: new
+    const [factoryStatusId, setFactoryStatusId] = useState<number>(1); // Default: pending
+    const [deliveryStatusId, setDeliveryStatusId] = useState<number>(1); // Default: not_shipped
+
     useEffect(() => {
         if (selectedShop) {
             setFormData(prev => ({ ...prev, shop_code: selectedShop.code }));
@@ -64,6 +76,12 @@ export const OrderCreate: React.FC = () => {
                 setDiscount(order.discount_usd);
                 setTax(order.tax_usd);
                 setFees(order.fees_usd);
+
+                // Load statuses
+                setGeneralStatusId(order.general_status_id || 1);
+                setCustomerStatusId(order.customer_status_id || 1);
+                setFactoryStatusId(order.factory_status_id || 1);
+                setDeliveryStatusId(order.delivery_status_id || 1);
 
                 // Load order items
                 getOrderItems(order.id).then(orderItems => {
@@ -223,6 +241,10 @@ export const OrderCreate: React.FC = () => {
                 profit_usd: orderEarnings,
                 profit_vnd: orderEarningsVND,
                 commission_program: 0,
+                general_status_id: generalStatusId,
+                customer_status_id: customerStatusId,
+                factory_status_id: factoryStatusId,
+                delivery_status_id: deliveryStatusId,
             };
 
             if (orderId) {
@@ -263,6 +285,10 @@ export const OrderCreate: React.FC = () => {
         setDiscount(0);
         setTax(0);
         setFees(0);
+        setGeneralStatusId(1);
+        setCustomerStatusId(1);
+        setFactoryStatusId(1);
+        setDeliveryStatusId(1);
         setErrors({});
     };
 
@@ -382,6 +408,87 @@ export const OrderCreate: React.FC = () => {
                                         placeholder="ARTIST001"
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Status Card */}
+                        <div className="bg-white rounded-lg border border-gray-200 p-6">
+                            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                                Trạng thái đơn hàng
+                            </h2>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* General Status */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Trạng thái tổng quan
+                                    </label>
+                                    <select
+                                        value={generalStatusId}
+                                        onChange={(e) => setGeneralStatusId(parseInt(e.target.value))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    >
+                                        {Object.values(GENERAL_STATUSES).map(status => (
+                                            <option key={status.id} value={status.id}>
+                                                {status.name_vi}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Customer Status */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Trạng thái khách hàng
+                                    </label>
+                                    <select
+                                        value={customerStatusId}
+                                        onChange={(e) => setCustomerStatusId(parseInt(e.target.value))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    >
+                                        {Object.values(CUSTOMER_STATUSES).map(status => (
+                                            <option key={status.id} value={status.id}>
+                                                {status.name_vi}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Factory Status */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Trạng thái nhà máy
+                                    </label>
+                                    <select
+                                        value={factoryStatusId}
+                                        onChange={(e) => setFactoryStatusId(parseInt(e.target.value))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    >
+                                        {Object.values(FACTORY_STATUSES).map(status => (
+                                            <option key={status.id} value={status.id}>
+                                                {status.name_vi}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Delivery Status */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Trạng thái giao hàng
+                                    </label>
+                                    <select
+                                        value={deliveryStatusId}
+                                        onChange={(e) => setDeliveryStatusId(parseInt(e.target.value))}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    >
+                                        {Object.values(DELIVERY_STATUSES).map(status => (
+                                            <option key={status.id} value={status.id}>
+                                                {status.name_vi}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
                         </div>

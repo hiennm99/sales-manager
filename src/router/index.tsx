@@ -7,6 +7,10 @@ import { ShopDetail } from '../features/shops/pages/ShopDetail';
 import { ProductList } from "../features/products/pages/ProductList";
 import { ProductDetail } from "../features/products/pages/ProductDetail";
 import { ProductCreate } from "../features/products/pages/ProductCreate";
+import { OrderList } from "../features/orders/pages/OrderList";
+import { OrderDetail } from "../features/orders/pages/OrderDetail";
+import { OrderCreate } from "../features/orders/pages/OrderCreate";
+
 
 export const router = createBrowserRouter([
     {
@@ -42,7 +46,7 @@ export const router = createBrowserRouter([
                         element: <ProductList />,
                     },
                     {
-                        path: 'create', // ✅ Route tạo mới
+                        path: 'create',
                         element: <ProductCreate />,
                     },
                     {
@@ -50,14 +54,31 @@ export const router = createBrowserRouter([
                         element: <ProductDetail />,
                     },
                     {
-                        path: ':productId/edit', // ✅ Route edit
+                        path: ':productId/edit',
                         element: <ProductCreate />,
                     },
                 ],
             },
             {
                 path: 'orders',
-                element: <div className="text-2xl font-bold">Orders Page (Coming Soon)</div>,
+                children: [
+                    {
+                        index: true,
+                        element: <OrderList />,
+                    },
+                    {
+                        path: 'create',
+                        element: <OrderCreate />,
+                    },
+                    {
+                        path: ':orderId',
+                        element: <OrderDetail />,
+                    },
+                    {
+                        path: ':orderId/edit',
+                        element: <OrderDetail />,
+                    },
+                ],
             },
             {
                 path: 'employees',
