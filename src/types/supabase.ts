@@ -13,7 +13,7 @@ export interface Database {
         Tables: {
             products: {
                 Row: {
-                    id: string
+                    id: number
                     created_at: string
                     updated_at: string
                     shop_code: string
@@ -24,7 +24,7 @@ export interface Database {
                     is_active: boolean
                 }
                 Insert: {
-                    id?: string
+                    id?: number
                     created_at?: string
                     updated_at?: string
                     shop_code?: string
@@ -35,7 +35,7 @@ export interface Database {
                     is_active: boolean
                 }
                 Update: {
-                    id?: string
+                    id?: number
                     created_at?: string
                     updated_at?: string
                     shop_code?: string
@@ -48,7 +48,7 @@ export interface Database {
             }
             shops: {
                 Row: {
-                    id: string
+                    id: number
                     created_at: string
                     updated_at: string
                     name: string
@@ -57,7 +57,7 @@ export interface Database {
                     logo: string | null
                 }
                 Insert: {
-                    id?: string
+                    id?: number
                     created_at?: string
                     updated_at?: string
                     name: string
@@ -66,7 +66,7 @@ export interface Database {
                     logo: string
                 }
                 Update: {
-                    id?: string
+                    id?: number
                     created_at?: string
                     updated_at?: string
                     name?: string

@@ -1,7 +1,7 @@
 // types/common.ts
 
 export interface BaseEntity {
-    id: string;
+    id: number;
     created_at: Date;
     updated_at: Date;
 }
