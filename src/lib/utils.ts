@@ -7,11 +7,37 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
+// Format VND with symbol ₫
 export function formatCurrency(amount: number): string {
     return new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
     }).format(amount);
+}
+
+// Format VND number only (no symbol) - for cleaner display
+export function formatVND(value: number): string {
+    if (value) {
+        return `${new Intl.NumberFormat('vi-VN').format(Math.round(value))} ₫`;
+    }
+    return '0 ₫'
+}
+
+// Format USD with 2 decimal places
+export function formatUSD(value: number): string {
+    if (value) {
+        return `$ ${value.toFixed(2)}`;
+    }
+    return '$ 0';
+
+}
+
+// Format number with custom decimal places
+export function formatNumber(value: number, decimals: number = 0): string {
+    return new Intl.NumberFormat('vi-VN', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+    }).format(value);
 }
 
 export function formatDate(date: Date | string): string {

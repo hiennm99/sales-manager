@@ -19,7 +19,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     const handleToggleStatus = async (e: React.MouseEvent) => {
         e.preventDefault();
         try {
-            await toggleProductStatus(product.id);
+            await toggleProductStatus(product.id.toString());
         } catch (error) {
             console.error('Failed to toggle status:', error);
             alert('Không thể thay đổi trạng thái. Vui lòng thử lại!');
@@ -37,7 +37,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         e.preventDefault();
         if (window.confirm(`Bạn có chắc muốn xóa "${product.title}"?`)) {
             try {
-                await deleteProduct(product.id);
+                await deleteProduct(product.id.toString());
             } catch (error) {
                 console.error('Failed to delete product:', error);
                 alert('Không thể xóa sản phẩm. Vui lòng thử lại!');

@@ -16,21 +16,15 @@ export interface Order extends BaseEntity {
 
     // USD amounts
     item_total_usd: number;
-    discount_usd: number;
-    subtotal_usd: number;
-    tax_usd: number;
-    order_total_usd: number;
-    fees_usd: number;
+    discount_rate: number;
+    buyer_paid_usd: number;
     order_earnings_usd: number;
 
     // VND amounts
     exchange_rate: number;
     item_total_vnd: number;
-    discount_vnd: number;
-    subtotal_vnd: number;
-    tax_vnd: number;
-    order_total_vnd: number;
-    fees_vnd: number;
+
+    buyer_paid_vnd: number;
     order_earnings_vnd: number;
 
     // Shipping info
@@ -59,8 +53,8 @@ export interface Order extends BaseEntity {
     profit_usd: number;
     profit_vnd: number;
 
-    // Artist and commission
-    commission_program: number;
+    // Artist
+    commission_rate: number; // Percentage (0-100)
     artist_code: string | null;
 
     // Statuses
@@ -76,8 +70,6 @@ export interface OrderItem extends BaseEntity {
     size: string;
     type: string;
     quantity: number;
-    unit_price_usd: number;
-    unit_price_vnd: number;
 }
 
 export interface OrderFormData {
@@ -97,8 +89,6 @@ export interface OrderItemFormData {
     size: string;
     type: string;
     quantity: number;
-    unit_price_usd: number;
-    unit_price_vnd: number;
 }
 
 // Helper function to calculate profit USD

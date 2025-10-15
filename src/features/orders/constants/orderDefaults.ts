@@ -19,6 +19,17 @@ export const ORDER_DEFAULT_VALUES = {
     ITEM_PRICE_VND: 0,
 } as const;
 
+// Product types
+export const ITEM_TYPES = [
+    { value: 'rolled', label: 'Cuộn' },
+    { value: 'stretched', label: 'Căng' },
+    { value: 'gold_frame', label: 'Khung vàng' },
+    { value: 'silver_frame', label: 'Khung bạc' },
+    { value: 'black_frame', label: 'Khung đen' },
+    { value: 'white_frame', label: 'Khung trắng' },
+    { value: 'wood_frame', label: 'Khung gỗ' },
+] as const;
+
 // Carrier/Shipping units
 export const CARRIER_UNITS = [
     { value: 'dhl', label: 'DHL' },

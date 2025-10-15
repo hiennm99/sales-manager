@@ -5,13 +5,9 @@ import React from 'react';
 interface OrderSummaryProps {
     itemTotal: number;
     itemTotalVND: number;
-    discount: number;
-    subtotal: number;
-    subtotalVND: number;
-    tax: number;
-    orderTotal: number;
-    orderTotalVND: number;
-    fees: number;
+    discountRate: number;
+    buyerPaid: number;
+    buyerPaidVND: number;
     orderEarnings: number;
     orderEarningsVND: number;
 }
@@ -19,16 +15,17 @@ interface OrderSummaryProps {
 export const OrderSummary: React.FC<OrderSummaryProps> = ({
     itemTotal,
     itemTotalVND,
-    discount,
-    subtotal,
-    subtotalVND,
-    tax,
-    orderTotal,
-    orderTotalVND,
-    fees,
+    discountRate,
+    buyerPaid,
+    buyerPaidVND,
     orderEarnings,
     orderEarningsVND,
 }) => {
+    // Calculate display values
+    const commissionAmount = itemTotal * discountRate / 100;
+    const subtotal = itemTotal * (100 - discountRate) / 100;
+    const subtotalVND = subtotal * (itemTotalVND / itemTotal);
+
     return (
         <div className="bg-white rounded-lg border border-gray-200 p-6 sticky top-4">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
@@ -47,13 +44,13 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
 
                 <div className="border-t border-gray-200 pt-3">
                     <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Giảm giá:</span>
-                        <span className="font-medium text-red-600">-${discount.toFixed(2)}</span>
+                        <span className="text-gray-600">Hoa hồng ({discountRate}%):</span>
+                        <span className="font-medium text-red-600">-${commissionAmount.toFixed(2)}</span>
                     </div>
                 </div>
 
                 <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Sau giảm giá:</span>
+                    <span className="text-gray-600">Tạm tính:</span>
                     <span className="font-medium text-gray-900">${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -62,33 +59,19 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                 </div>
 
                 <div className="border-t border-gray-200 pt-3">
-                    <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Thuế:</span>
-                        <span className="font-medium text-gray-900">+${tax.toFixed(2)}</span>
-                    </div>
-                </div>
-
-                <div className="border-t border-gray-200 pt-3">
                     <div className="flex justify-between text-base font-semibold">
-                        <span className="text-gray-900">Tổng đơn hàng:</span>
-                        <span className="text-blue-600">${orderTotal.toFixed(2)}</span>
+                        <span className="text-gray-900">Khách trả:</span>
+                        <span className="text-blue-600">${buyerPaid.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm mt-1">
                         <span className="text-gray-600">VND:</span>
-                        <span className="font-medium text-blue-600">{orderTotalVND.toLocaleString('vi-VN')} ₫</span>
-                    </div>
-                </div>
-
-                <div className="border-t border-gray-200 pt-3">
-                    <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Phí:</span>
-                        <span className="font-medium text-red-600">-${fees.toFixed(2)}</span>
+                        <span className="font-medium text-blue-600">{buyerPaidVND.toLocaleString('vi-VN')} ₫</span>
                     </div>
                 </div>
 
                 <div className="border-t border-gray-200 pt-3">
                     <div className="flex justify-between text-base font-semibold">
-                        <span className="text-gray-900">Thu nhập:</span>
+                        <span className="text-gray-900">Thu nhập shop:</span>
                         <span className="text-green-600">${orderEarnings.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between text-sm mt-1">
@@ -105,7 +88,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                     </svg>
                     <div className="text-sm text-blue-800">
                         <p className="font-medium mb-1">Lưu ý</p>
-                        <p className="text-xs">Giá VND được tính tự động theo tỷ giá. Lợi nhuận = Thu nhập - Chi phí vận chuyển - Hoàn tiền - Chi phí khác.</p>
+                        <p className="text-xs">Tạm tính chỉ dùng để hiển thị và không được lưu vào database. Lợi nhuận = Thu nhập - Chi phí vận chuyển - Hoàn tiền - Chi phí khác.</p>
                     </div>
                 </div>
             </div>

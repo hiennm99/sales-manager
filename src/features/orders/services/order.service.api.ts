@@ -19,19 +19,12 @@ const mapToOrderRow = (data: Database['public']['Tables']['orders']['Row']): Ord
         customer_phone: data.customer_phone,
         customer_notes: data.customer_notes,
         item_total_usd: data.item_total_usd,
-        discount_usd: data.discount_usd,
-        subtotal_usd: data.subtotal_usd,
-        tax_usd: data.tax_usd,
-        order_total_usd: data.order_total_usd,
-        fees_usd: data.fees_usd,
+        discount_rate: data.discount_rate,
+        buyer_paid_usd: data.buyer_paid_usd,
         order_earnings_usd: data.order_earnings_usd,
         exchange_rate: data.exchange_rate,
         item_total_vnd: data.item_total_vnd,
-        discount_vnd: data.discount_vnd,
-        subtotal_vnd: data.subtotal_vnd,
-        tax_vnd: data.tax_vnd,
-        order_total_vnd: data.order_total_vnd,
-        fees_vnd: data.fees_vnd,
+        buyer_paid_vnd: data.buyer_paid_vnd,
         order_earnings_vnd: data.order_earnings_vnd,
         carrier_notes: data.carrier_notes,
         internal_tracking_number: data.internal_tracking_number,
@@ -51,7 +44,7 @@ const mapToOrderRow = (data: Database['public']['Tables']['orders']['Row']): Ord
         other_fee_notes: data.other_fee_notes,
         profit_usd: data.profit_usd,
         profit_vnd: data.profit_vnd,
-        commission_program: data.commission_program,
+        commission_rate: data.commission_rate,
         artist_code: data.artist_code,
         general_status_id: data.general_status_id,
         customer_status_id: data.customer_status_id,
@@ -155,6 +148,8 @@ export const orderServiceApi = {
         items: OrderItemFormData[],
         financialData: Partial<Order>
     ): Promise<Order> {
+        console.log('🚀 Creating order with data:', { formData, items, financialData });
+        
         // Insert order
         const rawInsertData = {
             shop_code: formData.shop_code,
@@ -171,6 +166,7 @@ export const orderServiceApi = {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const insertData = cleanInsertData(rawInsertData) as any;
+        console.log('📝 Insert data after cleaning:', insertData);
 
         const { data: orderData, error: orderError } = await supabase
             .from('orders')
@@ -179,11 +175,12 @@ export const orderServiceApi = {
             .single();
 
         if (orderError) {
-            console.error('Error creating order:', orderError);
+            console.error('❌ Error creating order:', orderError);
             throw new Error(handleSupabaseError(orderError));
         }
 
         if (!orderData) throw new Error('Failed to create order');
+        console.log('✅ Order created successfully:', orderData);
 
         // Insert order items
         if (items.length > 0) {
@@ -193,20 +190,22 @@ export const orderServiceApi = {
                 size: item.size,
                 type: item.type,
                 quantity: item.quantity,
-                unit_price_usd: item.unit_price_usd,
-                unit_price_vnd: item.unit_price_vnd,
             })) as any;
+
+            console.log('📦 Inserting order items:', itemsData);
 
             const { error: itemsError } = await supabase
                 .from('order_items')
                 .insert(itemsData);
 
             if (itemsError) {
-                console.error('Error creating order items:', itemsError);
+                console.error('❌ Error creating order items:', itemsError);
                 // Rollback: delete the order
                 await supabase.from('orders').delete().eq('id', orderData.id);
                 throw new Error(handleSupabaseError(itemsError));
             }
+            
+            console.log('✅ Order items created successfully');
         }
 
         return mapToOrderRow(orderData);
@@ -262,6 +261,8 @@ export const orderServiceApi = {
      * Update order items
      */
     async updateOrderItems(orderId: number, items: OrderItemFormData[]): Promise<void> {
+        console.log('🔄 Updating order items for order:', orderId, items);
+        
         // Delete existing items
         const { error: deleteError } = await supabase
             .from('order_items')
@@ -269,7 +270,7 @@ export const orderServiceApi = {
             .eq('order_id', orderId);
 
         if (deleteError) {
-            console.error('Error deleting order items:', deleteError);
+            console.error('❌ Error deleting order items:', deleteError);
             throw new Error(handleSupabaseError(deleteError));
         }
 
@@ -282,18 +283,20 @@ export const orderServiceApi = {
                 size: item.size,
                 type: item.type,
                 quantity: item.quantity,
-                unit_price_usd: item.unit_price_usd,
-                unit_price_vnd: item.unit_price_vnd,
             })) as any;
+
+            console.log('📦 Inserting updated order items:', itemsData);
 
             const { error: insertError } = await supabase
                 .from('order_items')
                 .insert(itemsData);
 
             if (insertError) {
-                console.error('Error inserting order items:', insertError);
+                console.error('❌ Error inserting order items:', insertError);
                 throw new Error(handleSupabaseError(insertError));
             }
+            
+            console.log('✅ Order items updated successfully');
         }
     },
 
@@ -516,54 +519,4 @@ export const orderServiceApi = {
 
         return data.map(mapToOrderRow);
     },
-};
-
-/**
- * Helper function to download orders as CSV
- */
-export const downloadOrdersCSV = async (): Promise<void> => {
-    const orders = await orderServiceApi.exportOrders();
-
-    if (orders.length === 0) {
-        console.warn('No orders to export');
-        return;
-    }
-
-    const headers = [
-        'ID', 'Order ID', 'Shop Code', 'Order Date', 'Customer Name',
-        'Order Total USD', 'Order Total VND', 'Profit USD', 'Profit VND',
-        'Artist Code', 'Commission %', 'Status', 'Created At'
-    ];
-
-    const rows = orders.map(o => [
-        o.id,
-        o.order_id,
-        o.shop_code,
-        o.order_date,
-        o.customer_name,
-        o.order_total_usd,
-        o.order_total_vnd,
-        o.profit_usd,
-        o.profit_vnd,
-        o.artist_code || '',
-        o.commission_program,
-        o.actual_ship_date ? 'Shipped' : 'Pending',
-        o.created_at.toISOString(),
-    ]);
-
-    const csvContent = [
-        headers.join(','),
-        ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `orders-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
 };

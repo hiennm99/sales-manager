@@ -6,6 +6,7 @@ import { useOrderStore } from '../store/useOrderStore';
 import { useShopStore } from '../../shops/store/useShopStore';
 import { useStatusStore } from '../../statuses/store/useStatusStore';
 import { getStatusColorClasses } from '../../../types/status';
+import {formatUSD, formatVND} from "../../../lib/utils.ts";
 
 export const OrderList: React.FC = () => {
     const navigate = useNavigate();
@@ -87,9 +88,9 @@ export const OrderList: React.FC = () => {
                 case 'date-asc':
                     return new Date(a.order_date).getTime() - new Date(b.order_date).getTime();
                 case 'total-desc':
-                    return (b.order_total_usd || 0) - (a.order_total_usd || 0);
+                    return (b.order_earnings_usd || 0) - (a.order_earnings_usd || 0);
                 case 'total-asc':
-                    return (a.order_total_usd || 0) - (b.order_total_usd || 0);
+                    return (a.order_earnings_usd || 0) - (b.order_earnings_usd || 0);
                 case 'earnings-desc':
                     return (b.order_earnings_usd || 0) - (a.order_earnings_usd || 0);
                 default:
@@ -104,9 +105,7 @@ export const OrderList: React.FC = () => {
     const totals = useMemo(() => {
         return {
             orders: filteredOrders.length,
-            total_usd: filteredOrders.reduce((sum, o) => sum + (o.order_total_usd || 0), 0),
             earnings_usd: filteredOrders.reduce((sum, o) => sum + (o.order_earnings_usd || 0), 0),
-            total_vnd: filteredOrders.reduce((sum, o) => sum + (o.order_total_vnd || 0), 0),
             earnings_vnd: filteredOrders.reduce((sum, o) => sum + (o.order_earnings_vnd || 0), 0),
         };
     }, [filteredOrders]);
@@ -203,10 +202,6 @@ export const OrderList: React.FC = () => {
 
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
                     <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-gray-600 text-sm">Tổng doanh thu (USD)</p>
-                            <p className="text-3xl font-bold text-gray-900 mt-2">${totals.total_usd.toFixed(2)}</p>
-                        </div>
                         <div className="bg-green-100 p-3 rounded-lg">
                             <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -218,8 +213,8 @@ export const OrderList: React.FC = () => {
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-600 text-sm">Thu nhập (USD)</p>
-                            <p className="text-3xl font-bold text-green-600 mt-2">${totals.earnings_usd.toFixed(2)}</p>
+                            <p className="text-gray-600 text-sm">Tổng tiền kiếm được (USD)</p>
+                            <p className="text-3xl font-bold text-green-600 mt-2">{formatUSD(totals.earnings_usd)}</p>
                         </div>
                         <div className="bg-yellow-100 p-3 rounded-lg">
                             <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -232,8 +227,8 @@ export const OrderList: React.FC = () => {
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-600 text-sm">Thu nhập (VND)</p>
-                            <p className="text-2xl font-bold text-green-600 mt-2">{(totals.earnings_vnd / 1000000).toFixed(1)}M</p>
+                            <p className="text-gray-600 text-sm">Tổng tiền kiếm được (VND)</p>
+                            <p className="text-2xl font-bold text-green-600 mt-2">{formatVND(totals.earnings_vnd)}</p>
                         </div>
                         <div className="bg-indigo-100 p-3 rounded-lg">
                             <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -358,12 +353,13 @@ export const OrderList: React.FC = () => {
                                         className="rounded border-gray-300 text-blue-600"
                                     />
                                 </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Ngày đặt</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Ngày gửi hàng (dự kiến)</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Mã đơn</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Khách hàng</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Ngày đặt</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">Trạng thái</th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">Doanh thu (USD)</th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">Thu nhập (USD)</th>
+                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">Tiền kiếm được (USD)</th>
+                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase">Tiền kiếm được (VNĐ)</th>
                                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase">Hành động</th>
                             </tr>
                             </thead>
@@ -377,6 +373,12 @@ export const OrderList: React.FC = () => {
                                             onChange={() => handleSelectOrder(order.id.toString())}
                                             className="rounded border-gray-300 text-blue-600"
                                         />
+                                    </td>
+                                    <td className="px-6 py-4 text-sm text-gray-600">
+                                        {order.order_date}
+                                    </td>
+                                    <td className="px-6 py-4 text-sm text-gray-600">
+                                        {order.scheduled_ship_date}
                                     </td>
                                     <td className="px-6 py-4">
                                         <button
@@ -392,17 +394,14 @@ export const OrderList: React.FC = () => {
                                             <p className="text-sm text-gray-600">{order.customer_phone}</p>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">
-                                        {order.order_date}
-                                    </td>
                                     <td className="px-6 py-4">
                                         {getStatusBadge(order.general_status_id)}
                                     </td>
                                     <td className="px-6 py-4 text-right font-medium text-gray-900">
-                                        ${(order.order_total_usd || 0).toFixed(2)}
+                                        {formatUSD(order.order_earnings_usd)}
                                     </td>
                                     <td className="px-6 py-4 text-right font-medium text-green-600">
-                                        ${(order.order_earnings_usd || 0).toFixed(2)}
+                                        {formatVND(order.order_earnings_vnd)}
                                     </td>
                                     <td className="px-6 py-4 text-center">
                                         <div className="flex items-center justify-center gap-2">
