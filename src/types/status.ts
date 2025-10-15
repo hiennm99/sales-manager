@@ -3,6 +3,16 @@
 import type { BaseEntity } from './common';
 
 // ============================================
+// BASE STATUS TYPE
+// ============================================
+export interface Status extends BaseEntity {
+    name: string;
+    name_vi: string;
+    color: string;
+    description?: string;
+}
+
+// ============================================
 // GENERAL STATUS
 // ============================================
 export interface GeneralStatus extends BaseEntity {
@@ -12,29 +22,12 @@ export interface GeneralStatus extends BaseEntity {
     description?: string;
 }
 
-export const GENERAL_STATUSES: Record<string, GeneralStatus> = {
-    active: {
-        id: 1,
-        name: 'active',
-        name_vi: 'Hoạt động',
-        color: 'green',
-        is_active: true
-    },
-    cancelled: {
-        id: 2,
-        name: 'cancelled',
-        name_vi: 'Đã hủy',
-        color: 'red',
-        is_active: true,
-    },
-    on_hold: {
-        id: 3,
-        name: 'on_hold',
-        name_vi: 'Tạm giữ',
-        color: 'yellow',
-        is_active: true,
-    },
-};
+// Database statuses (for reference):
+// - new: Đơn hàng mới
+// - processing: Đang xử lý
+// - completed: Đã hoàn thành
+// - on_hold: Tạm dừng xử lý
+// - cancelled: Đã hủy
 
 // ============================================
 // CUSTOMER STATUS
@@ -46,36 +39,19 @@ export interface CustomerStatus extends BaseEntity {
     description?: string;
 }
 
-export const CUSTOMER_STATUSES: Record<string, CustomerStatus> = {
-    new: {
-        id: 1,
-        name: 'new',
-        name_vi: 'Mới',
-        color: 'blue',
-        is_active: true,
-    },
-    contacted: {
-        id: 2,
-        name: 'contacted',
-        name_vi: 'Đã liên hệ',
-        color: 'indigo',
-        is_active: true,
-    },
-    confirmed: {
-        id: 3,
-        name: 'confirmed',
-        name_vi: 'Đã xác nhận',
-        color: 'green',
-        is_active: true,
-    },
-    completed: {
-        id: 4,
-        name: 'completed',
-        name_vi: 'Hoàn thành',
-        color: 'purple',
-        is_active: true,
-    },
-};
+// Database statuses (for reference):
+// - new: Khách hàng vừa tạo đơn
+// - info_pending: Chờ khách xác nhận thông tin
+// - info_confirmed: Khách đã xác nhận thông tin
+// - preview_pending: Chờ khách xác nhận bản xem trước
+// - preview_confirmed: Khách đã xác nhận bản xem trước
+// - edit_requested: Khách yêu cầu chỉnh sửa
+// - redraw_requested: Khách yêu cầu vẽ lại
+// - pushing: Khách hối vẽ
+// - no_response: Khách không phản hồi
+// - reviewed: Khách hàng đã đánh giá đơn hàng
+// - cancel_requested: Khách yêu cầu hủy
+// - closed: Đơn hàng kết thúc
 
 // ============================================
 // FACTORY STATUS
@@ -87,36 +63,21 @@ export interface FactoryStatus extends BaseEntity {
     description?: string;
 }
 
-export const FACTORY_STATUSES: Record<string, FactoryStatus> = {
-    pending: {
-        id: 1,
-        name: 'pending',
-        name_vi: 'Chờ sản xuất',
-        color: 'gray',
-        is_active: true,
-    },
-    in_production: {
-        id: 2,
-        name: 'in_production',
-        name_vi: 'Đang sản xuất',
-        color: 'blue',
-        is_active: true,
-    },
-    quality_check: {
-        id: 3,
-        name: 'quality_check',
-        name_vi: 'Kiểm tra chất lượng',
-        color: 'yellow',
-        is_active: true,
-    },
-    ready: {
-        id: 4,
-        name: 'ready',
-        name_vi: 'Sẵn sàng',
-        color: 'green',
-        is_active: true,
-    },
-};
+// Database statuses (for reference):
+// - order_pending: Đợi tiếp nhận đơn hàng
+// - order_confirmed: Đã tiếp nhận đơn hàng
+// - material_prepared: Đã có vải vẽ
+// - drawing: Đang vẽ
+// - preview_sent: Đã gửi bản xem trước
+// - editing: Đang sửa
+// - redrawing: Đang vẽ lại
+// - drying: Đang đợi tranh khô
+// - quality_check: Đang kiểm tra chất lượng
+// - packaging: Đang đóng gói
+// - handover: Bàn giao vận chuyển
+// - rejected: Tranh không đạt, cần vẽ lại
+// - completed: Hoàn thành
+// - closed: Đơn hàng kết thúc
 
 // ============================================
 // DELIVERY STATUS
@@ -128,64 +89,30 @@ export interface DeliveryStatus extends BaseEntity {
     description?: string;
 }
 
-export const DELIVERY_STATUSES: Record<string, DeliveryStatus> = {
-    not_shipped: {
-        id: 1,
-        name: 'not_shipped',
-        name_vi: 'Chưa giao',
-        color: 'gray',
-        is_active: true,
-    },
-    preparing: {
-        id: 2,
-        name: 'preparing',
-        name_vi: 'Đang chuẩn bị',
-        color: 'yellow',
-        is_active: true,
-    },
-    in_transit: {
-        id: 3,
-        name: 'in_transit',
-        name_vi: 'Đang vận chuyển',
-        color: 'blue',
-    },
-    delivered: {
-        id: 4,
-        name: 'delivered',
-        name_vi: 'Đã giao',
-        color: 'green',
-    },
-    returned: {
-        id: 5,
-        name: 'returned',
-        name_vi: 'Hoàn trả',
-        color: 'red',
-    },
-};
+// Database statuses (for reference):
+// - tracking_pending: Đã nhận kiện hàng & đợi mã vận đơn
+// - on_tracking: Đang vận chuyển
+// - delivered: Đã nhận hàng
+// - delivery_failed: Giao hàng thất bại
+// - returned: Hàng bị hoàn
+// - action_needed: Cần hành động (Liên hệ đơn vị vận chuyển, bổ sung giấy tờ)
+// - closed: Đơn hàng kết thúc
+
+// ============================================
+// COLOR MAPPING LOGIC
+// ============================================
+// Colors are automatically assigned based on status code patterns:
+// - GREEN: completed, delivered, confirmed, reviewed
+// - RED: cancelled, cancel_requested, returned, rejected, delivery_failed
+// - YELLOW: pending, on_hold, drying, action_needed, pushing, no_response
+// - BLUE: processing, drawing, editing, redrawing, quality_check, packaging, on_tracking
+// - GRAY: new, order_pending, info_pending, preview_pending, tracking_pending
+// - PURPLE: sent, handover, prepared
+// - INDIGO: closed
 
 // ============================================
 // HELPER FUNCTIONS
 // ============================================
-
-export const getGeneralStatusById = (id: number | null): GeneralStatus | null => {
-    if (!id) return null;
-    return Object.values(GENERAL_STATUSES).find(s => s.id === id) || null;
-};
-
-export const getCustomerStatusById = (id: number | null): CustomerStatus | null => {
-    if (!id) return null;
-    return Object.values(CUSTOMER_STATUSES).find(s => s.id === id) || null;
-};
-
-export const getFactoryStatusById = (id: number | null): FactoryStatus | null => {
-    if (!id) return null;
-    return Object.values(FACTORY_STATUSES).find(s => s.id === id) || null;
-};
-
-export const getDeliveryStatusById = (id: number | null): DeliveryStatus | null => {
-    if (!id) return null;
-    return Object.values(DELIVERY_STATUSES).find(s => s.id === id) || null;
-};
 
 // Get badge color classes
 export const getStatusColorClasses = (color: string): { bg: string; text: string } => {

@@ -1,6 +1,6 @@
 // src/features/orders/services/order.service.api.ts
 
-import { handleSupabaseError, supabase } from '../../../lib/supabase';
+import { handleSupabaseError, supabase, cleanInsertData } from '../../../lib/supabase';
 import type { Order, OrderFormData, OrderItem, OrderItemFormData } from '../../../types/order';
 import type { Database } from '../../../types/supabase.ts';
 
@@ -156,7 +156,7 @@ export const orderServiceApi = {
         financialData: Partial<Order>
     ): Promise<Order> {
         // Insert order
-        const insertData = {
+        const rawInsertData = {
             shop_code: formData.shop_code,
             order_id: formData.order_id,
             order_date: formData.order_date,
@@ -168,6 +168,9 @@ export const orderServiceApi = {
             artist_code: formData.artist_code,
             ...financialData,
         };
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const insertData = cleanInsertData(rawInsertData) as any;
 
         const { data: orderData, error: orderError } = await supabase
             .from('orders')
@@ -192,7 +195,7 @@ export const orderServiceApi = {
                 quantity: item.quantity,
                 unit_price_usd: item.unit_price_usd,
                 unit_price_vnd: item.unit_price_vnd,
-            }));
+            })) as any;
 
             const { error: itemsError } = await supabase
                 .from('order_items')
@@ -272,6 +275,7 @@ export const orderServiceApi = {
 
         // Insert new items
         if (items.length > 0) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const itemsData = items.map(item => ({
                 order_id: orderId,
                 sku: item.sku,
@@ -280,7 +284,7 @@ export const orderServiceApi = {
                 quantity: item.quantity,
                 unit_price_usd: item.unit_price_usd,
                 unit_price_vnd: item.unit_price_vnd,
-            }));
+            })) as any;
 
             const { error: insertError } = await supabase
                 .from('order_items')

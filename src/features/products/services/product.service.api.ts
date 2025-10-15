@@ -1,6 +1,6 @@
 // src/features/products/services/product.service.api.ts
 
-import {handleSupabaseError, supabase} from '../../../lib/supabase';
+import {handleSupabaseError, supabase, cleanInsertData} from '../../../lib/supabase';
 import type {Product, ProductFormData} from '../../../types/product';
 import type {Database} from '../../../types/supabase.ts';
 
@@ -195,7 +195,7 @@ export const productServiceApi = {
             imageUrl = await uploadProductImage(imageFile, sku);
         }
 
-        const insertData = {
+        const rawInsertData = {
             shop_code: formData.shop_code,
             sku,
             title: formData.title,
@@ -203,6 +203,9 @@ export const productServiceApi = {
             image_url: imageUrl,
             is_active: true,
         };
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const insertData = cleanInsertData(rawInsertData) as any;
 
         const { data, error } = await supabase
             .from('products')

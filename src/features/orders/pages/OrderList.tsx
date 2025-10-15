@@ -4,18 +4,35 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrderStore } from '../store/useOrderStore';
 import { useShopStore } from '../../shops/store/useShopStore';
+import { useStatusStore } from '../../statuses/store/useStatusStore';
+import { getStatusColorClasses } from '../../../types/status';
 
 export const OrderList: React.FC = () => {
     const navigate = useNavigate();
     const { orders, deleteOrder, fetchOrders } = useOrderStore();
     const { selectedShop } = useShopStore();
+    const { 
+        generalStatuses, 
+        customerStatuses, 
+        factoryStatuses, 
+        deliveryStatuses,
+        getGeneralStatusById,
+        fetchAllStatuses 
+    } = useStatusStore();
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [filterStatus, setFilterStatus] = useState('all');
+    const [filterGeneralStatus, setFilterGeneralStatus] = useState<number | 'all'>('all');
+    const [filterCustomerStatus, setFilterCustomerStatus] = useState<number | 'all'>('all');
+    const [filterFactoryStatus, setFilterFactoryStatus] = useState<number | 'all'>('all');
+    const [filterDeliveryStatus, setFilterDeliveryStatus] = useState<number | 'all'>('all');
     const [sortBy, setSortBy] = useState('date-desc');
     const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+    useEffect(() => {
+        fetchAllStatuses();
+    }, [fetchAllStatuses]);
 
     useEffect(() => {
         if (selectedShop) {
@@ -38,13 +55,28 @@ export const OrderList: React.FC = () => {
             filtered = filtered.filter(order =>
                 order.order_id.toLowerCase().includes(term) ||
                 order.customer_name.toLowerCase().includes(term) ||
-                order.customer_phone.toLowerCase().includes(term)
+                (order.customer_phone && order.customer_phone.toLowerCase().includes(term))
             );
         }
 
-        // Filter by status
-        if (filterStatus !== 'all') {
-            filtered = filtered.filter(order => order.status === filterStatus);
+        // Filter by general status
+        if (filterGeneralStatus !== 'all') {
+            filtered = filtered.filter(order => order.general_status_id === filterGeneralStatus);
+        }
+
+        // Filter by customer status
+        if (filterCustomerStatus !== 'all') {
+            filtered = filtered.filter(order => order.customer_status_id === filterCustomerStatus);
+        }
+
+        // Filter by factory status
+        if (filterFactoryStatus !== 'all') {
+            filtered = filtered.filter(order => order.factory_status_id === filterFactoryStatus);
+        }
+
+        // Filter by delivery status
+        if (filterDeliveryStatus !== 'all') {
+            filtered = filtered.filter(order => order.delivery_status_id === filterDeliveryStatus);
         }
 
         // Sort
@@ -66,7 +98,7 @@ export const OrderList: React.FC = () => {
         });
 
         return filtered;
-    }, [orders, searchTerm, filterStatus, sortBy, selectedShop]);
+    }, [orders, searchTerm, filterGeneralStatus, filterCustomerStatus, filterFactoryStatus, filterDeliveryStatus, sortBy, selectedShop]);
 
     // Calculate totals
     const totals = useMemo(() => {
@@ -114,19 +146,20 @@ export const OrderList: React.FC = () => {
         }
     };
 
-    const getStatusBadge = (status: string) => {
-        const statusMap: Record<string, { bg: string; text: string; label: string }> = {
-            pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Chờ xử lý' },
-            confirmed: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Đã xác nhận' },
-            shipped: { bg: 'bg-purple-100', text: 'text-purple-800', label: 'Đã gửi' },
-            delivered: { bg: 'bg-green-100', text: 'text-green-800', label: 'Đã giao' },
-            cancelled: { bg: 'bg-red-100', text: 'text-red-800', label: 'Đã hủy' },
-        };
+    const getStatusBadge = (statusId: number | null | undefined) => {
+        const status = getGeneralStatusById(statusId || null);
+        if (!status) {
+            return (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                    Không xác định
+                </span>
+            );
+        }
 
-        const s = statusMap[status] || statusMap.pending;
+        const colors = getStatusColorClasses(status.color);
         return (
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${s.bg} ${s.text}`}>
-                {s.label}
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colors.bg} ${colors.text}`}>
+                {status.name_vi}
             </span>
         );
     };
@@ -200,7 +233,7 @@ export const OrderList: React.FC = () => {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-gray-600 text-sm">Thu nhập (VND)</p>
-                            <p className="text-3xl font-bold text-green-600 mt-2">{totals.earnings_vnd.toLocaleString('vi-VN')}</p>
+                            <p className="text-2xl font-bold text-green-600 mt-2">{(totals.earnings_vnd / 1000000).toFixed(1)}M</p>
                         </div>
                         <div className="bg-indigo-100 p-3 rounded-lg">
                             <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -213,9 +246,9 @@ export const OrderList: React.FC = () => {
 
             {/* Filters and Search */}
             <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {/* Search */}
-                    <div className="md:col-span-2">
+                    <div className="lg:col-span-3">
                         <input
                             type="text"
                             placeholder="Tìm kiếm theo mã đơn, tên khách, SĐT..."
@@ -225,24 +258,69 @@ export const OrderList: React.FC = () => {
                         />
                     </div>
 
-                    {/* Status Filter */}
+                    {/* General Status Filter */}
                     <div>
+                        <label className="block text-xs text-gray-600 mb-1">Trạng thái tổng quan</label>
                         <select
-                            value={filterStatus}
-                            onChange={(e) => setFilterStatus(e.target.value)}
+                            value={filterGeneralStatus}
+                            onChange={(e) => setFilterGeneralStatus(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
-                            <option value="all">Tất cả trạng thái</option>
-                            <option value="pending">Chờ xử lý</option>
-                            <option value="confirmed">Đã xác nhận</option>
-                            <option value="shipped">Đã gửi</option>
-                            <option value="delivered">Đã giao</option>
-                            <option value="cancelled">Đã hủy</option>
+                            <option value="all">Tất cả</option>
+                            {generalStatuses.map(status => (
+                                <option key={status.id} value={status.id}>{status.name_vi}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Customer Status Filter */}
+                    <div>
+                        <label className="block text-xs text-gray-600 mb-1">Trạng thái khách hàng</label>
+                        <select
+                            value={filterCustomerStatus}
+                            onChange={(e) => setFilterCustomerStatus(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                            <option value="all">Tất cả</option>
+                            {customerStatuses.map(status => (
+                                <option key={status.id} value={status.id}>{status.name_vi}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Factory Status Filter */}
+                    <div>
+                        <label className="block text-xs text-gray-600 mb-1">Trạng thái nhà máy</label>
+                        <select
+                            value={filterFactoryStatus}
+                            onChange={(e) => setFilterFactoryStatus(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                            <option value="all">Tất cả</option>
+                            {factoryStatuses.map(status => (
+                                <option key={status.id} value={status.id}>{status.name_vi}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Delivery Status Filter */}
+                    <div>
+                        <label className="block text-xs text-gray-600 mb-1">Trạng thái giao hàng</label>
+                        <select
+                            value={filterDeliveryStatus}
+                            onChange={(e) => setFilterDeliveryStatus(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                            <option value="all">Tất cả</option>
+                            {deliveryStatuses.map(status => (
+                                <option key={status.id} value={status.id}>{status.name_vi}</option>
+                            ))}
                         </select>
                     </div>
 
                     {/* Sort */}
                     <div>
+                        <label className="block text-xs text-gray-600 mb-1">Sắp xếp</label>
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value)}
@@ -295,8 +373,8 @@ export const OrderList: React.FC = () => {
                                     <td className="px-6 py-4">
                                         <input
                                             type="checkbox"
-                                            checked={selectedOrders.includes(order.id)}
-                                            onChange={() => handleSelectOrder(order.id)}
+                                            checked={selectedOrders.includes(order.id.toString())}
+                                            onChange={() => handleSelectOrder(order.id.toString())}
                                             className="rounded border-gray-300 text-blue-600"
                                         />
                                     </td>
@@ -315,10 +393,10 @@ export const OrderList: React.FC = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-600">
-                                        {new Date(order.order_date).toLocaleDateString('vi-VN')}
+                                        {order.order_date}
                                     </td>
                                     <td className="px-6 py-4">
-                                        {getStatusBadge(order.status)}
+                                        {getStatusBadge(order.general_status_id)}
                                     </td>
                                     <td className="px-6 py-4 text-right font-medium text-gray-900">
                                         ${(order.order_total_usd || 0).toFixed(2)}
@@ -348,7 +426,7 @@ export const OrderList: React.FC = () => {
                                                 </svg>
                                             </button>
                                             <button
-                                                onClick={() => handleDeleteOrder(order.id)}
+                                                onClick={() => handleDeleteOrder(order.id.toString())}
                                                 title="Xóa"
                                                 className="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded"
                                             >

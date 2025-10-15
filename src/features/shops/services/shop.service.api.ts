@@ -70,13 +70,15 @@ export const shopServiceApi = {
      * Create a new shop
      */
     async create(formData: ShopFormData): Promise<Shop> {
+        const insertData = {
+            name: formData.name,
+            code: formData.code,
+            logo: formData.logo
+        };
+
         const { data, error } = await supabase
             .from('shops')
-            .insert({
-                name: formData.name,
-                code: formData.code,
-                logo: formData.logo
-            })
+            .insert(insertData)
             .select()
             .single();
 

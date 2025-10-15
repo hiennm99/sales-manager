@@ -295,7 +295,7 @@ export const useOrderStore = create<OrderStore>()(
             exportOrders: async () => {
                 set({ isLoading: true, error: null });
                 try {
-                    await orderServiceApi.downloadOrdersCSV();
+                    await orderServiceApi.exportOrders();
                     set({ isLoading: false });
                 } catch (error) {
                     const errorMessage = error instanceof Error ? error.message : 'Failed to export orders';
