@@ -17,6 +17,7 @@ interface ProductStore {
     // Actions
     fetchProducts: () => Promise<void>;
     getProductById: (id: string | number) => Product | undefined;
+    getProductBySku: (sku: string) => Product | undefined;
     createProduct: (data: ProductFormData, imageFile?: File) => Promise<Product>;
     updateProduct: (id: string, data: Partial<ProductFormData>, imageFile?: File) => Promise<Product>;
     deleteProduct: (id: string) => Promise<void>;
@@ -50,9 +51,13 @@ export const useProductStore = create<ProductStore>()(
             },
 
             getProductById: (id: string | number) => {
-                const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
-                return get().products.find(p => p.id === numericId);
+            const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+            return get().products.find(p => p.id === numericId);
             },
+
+    getProductBySku: (sku: string) => {
+        return get().products.find(p => p.sku === sku);
+    },
 
             createProduct: async (data: ProductFormData, imageFile?: File) => {
                 set({ isLoading: true, error: null });

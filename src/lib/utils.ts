@@ -16,7 +16,7 @@ export function formatCurrency(amount: number): string {
 }
 
 // Format VND number only (no symbol) - for cleaner display
-export function formatVND(value: number): string {
+export function formatVND(value: number | undefined): string {
     if (value) {
         return `${new Intl.NumberFormat('vi-VN').format(Math.round(value))} ₫`;
     }
@@ -24,12 +24,19 @@ export function formatVND(value: number): string {
 }
 
 // Format USD with 2 decimal places
-export function formatUSD(value: number): string {
+export function formatUSD(value: number | undefined): string {
     if (value) {
         return `$ ${value.toFixed(2)}`;
     }
     return '$ 0';
 
+}
+
+export function formatPercentage(value: number | undefined): string {
+    if (value) {
+        return `${value.toFixed(2)} %`;
+    }
+    return '0 %'
 }
 
 // Format number with custom decimal places

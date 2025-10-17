@@ -3,7 +3,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { MainLayout } from '../layouts/MainLayout';
 import { ShopList } from '../features/shops/pages/ShopList';
-import { ShopDetail } from '../features/shops/pages/ShopDetail';
 import { ProductList } from "../features/products/pages/ProductList";
 import { ProductDetail } from "../features/products/pages/ProductDetail";
 import { ProductCreate } from "../features/products/pages/ProductCreate";
@@ -31,11 +30,7 @@ export const router = createBrowserRouter([
                     {
                         index: true,
                         element: <ShopList />,
-                    },
-                    {
-                        path: ':id',
-                        element: <ShopDetail />,
-                    },
+                    }
                 ],
             },
             {

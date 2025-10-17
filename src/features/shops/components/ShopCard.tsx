@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import type { Shop } from '../../../types/shop';
 import { cn } from '../../../lib/utils';
 import { Button } from '../../../components/ui/Button';
-import { useAppStore } from '../../../store/useAppStore';
+import { useShopStore } from "../store/useShopStore.ts";
 
 interface ShopCardProps {
     shop: Shop;
@@ -13,11 +13,11 @@ interface ShopCardProps {
 }
 
 export const ShopCard: React.FC<ShopCardProps> = ({ shop, onSelect }) => {
-    const { currentShop, setCurrentShop } = useAppStore();
-    const isSelected = currentShop?.id === shop.id;
+    const { selectedShop, setSelectedShop } = useShopStore();
+    const isSelected = selectedShop?.id === shop.id;
 
     const handleSelect = () => {
-        setCurrentShop(shop);
+        setSelectedShop(shop);
         onSelect?.(shop);
     };
 

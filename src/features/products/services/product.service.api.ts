@@ -41,20 +41,31 @@ const generateSKU = (shopCode: string, serialId: number): string => {
 
 /**
  * Get the next serial ID for a shop
+ * Uses max id to ensure unique serial numbers
  */
 const getNextSerialId = async (shopCode: string): Promise<number> => {
-    const { count, error } = await supabase
+    const { data, error } = await supabase
         .from('products')
-        .select('*', { count: 'exact', head: true })
-        .eq('shop_code', shopCode);
+        .select('id')
+        .eq('shop_code', shopCode)
+        .order('id', { ascending: false })
+        .limit(1);
 
     if (error) {
         console.error('Error getting next serial ID:', error);
         throw error;
     }
 
-    // Return count + 1 (if no products, count is 0, so return 1)
-    return (count || 0) + 1;
+    // If no products exist for this shop, start with 1
+    if (!data || data.length === 0) {
+        return 1;
+    }
+
+    // Get max id and increment
+    const maxSerial = data[0].id;
+
+    // Return max + 1
+    return maxSerial + 1;
 };
 
 /**

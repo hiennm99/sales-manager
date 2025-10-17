@@ -48,8 +48,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
     return (
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+            {/* Image */}
             <Link to={`/products/${product.id}`} className="block">
-                {/* Image */}
                 <div className="relative aspect-square bg-gray-100">
                     {!imageError ? (
                         <img
@@ -71,12 +71,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                         <span
                             className={cn(
                                 'px-2 py-1 text-xs font-medium rounded-full',
-                                product.status === 'active'
+                                product.is_active
                                     ? 'bg-green-100 text-green-800'
                                     : 'bg-gray-100 text-gray-800'
                             )}
                         >
-                            {product.status === 'active' ? 'Hoạt động' : 'Tạm ngưng'}
+                            {product.is_active ? 'Hoạt động' : 'Tạm ngưng'}
                         </span>
                     </div>
 
@@ -121,7 +121,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                                             </svg>
-                                            {product.status === 'active' ? 'Tạm ngưng' : 'Kích hoạt'}
+                                            {product.is_active ? 'Tạm ngưng' : 'Kích hoạt'}
                                         </button>
                                         <hr className="my-1" />
                                         <button
@@ -139,29 +139,30 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                         </div>
                     </div>
                 </div>
+            </Link>
 
-                {/* Content */}
-                <div className="p-4">
+            {/* Content */}
+            <div className="p-4">
+                <Link to={`/products/${product.id}`} className="block">
                     <div className="text-xs text-gray-500 mb-1">SKU: {product.sku}</div>
                     <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 h-12">
                         {product.title}
                     </h3>
+                </Link>
 
-                    {/* Etsy Link */}
-                    <a
-                        href={product.etsy_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
-                    >
-                        <span>Xem trên Etsy</span>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                    </a>
-                </div>
-            </Link>
+                {/* Etsy Link - Outside of Link to avoid nested <a> */}
+                <a
+                    href={product.etsy_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
+                >
+                    <span>Xem trên Etsy</span>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            </div>
         </div>
     );
 };

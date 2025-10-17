@@ -1,15 +1,31 @@
 // src/features/orders/components/sections/CustomerInfoSection.tsx
+/**
+ * CustomerInfoSection - Thông tin khách hàng
+ * Uses common TextBox components with specific onChange handlers
+ */
 
 import React from 'react';
-import { SectionCard } from '../shared/SectionCard';
-import { FormField, TextAreaField } from '../';
+import { User, MapPin, Phone, Mail, MessageSquare } from 'lucide-react';
+import { SectionCard } from '../../../../components/common';
+import { TextBox } from '../../../../components/common';
 import type { OrderFormData } from '../../../../types/order';
 
 interface CustomerInfoSectionProps {
     mode: 'view' | 'edit';
     formData: OrderFormData;
     errors?: Record<string, string>;
+    editableFields?: {
+        customer_name?: boolean;
+        customer_address?: boolean;
+        customer_phone?: boolean;
+        customer_email?: boolean;
+        customer_notes?: boolean;
+    };
+    // For edit mode
     onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+    // For view mode inline editing
+    onFieldChange?: (fieldName: string, value: string | number | React.ReactNode | undefined) => void;
+    onFieldSave?: (fieldName: string) => Promise<void>;
 }
 
 const CustomerIcon = (
@@ -19,11 +35,37 @@ const CustomerIcon = (
 );
 
 export const CustomerInfoSection: React.FC<CustomerInfoSectionProps> = ({
-                                                                            mode,
-                                                                            formData,
-                                                                            errors = {},
-                                                                            onChange
-                                                                        }) => {
+    mode,
+    formData,
+    errors = {},
+    editableFields = {},
+    onChange,
+    onFieldChange,
+    onFieldSave
+}) => {
+    // Handler for standard form input change (edit mode)
+    const handleStandardChange = (name: string, value: string | number | React.ReactNode | undefined) => {
+        if (onChange) {
+            const fakeEvent = {
+                target: { name, value }
+            } as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>;
+            onChange(fakeEvent);
+        }
+    };
+
+    // Handler for inline edit change (view mode)
+    const handleInlineChange = (name: string, value: string | number | React.ReactNode | undefined) => {
+        if (onFieldChange) {
+            onFieldChange(name, value);
+        }
+    };
+
+    const handleInlineSave = async (name: string) => {
+        if (onFieldSave) {
+            await onFieldSave(name);
+        }
+    };
+
     if (mode === 'view') {
         return (
             <SectionCard
@@ -32,43 +74,77 @@ export const CustomerInfoSection: React.FC<CustomerInfoSectionProps> = ({
                 iconGradient="from-pink-500 to-rose-600"
             >
                 <div className="space-y-6">
-                    <div>
-                        <p className="text-sm text-gray-600 mb-2 font-medium">Tên khách hàng</p>
-                        <p className="text-lg font-semibold text-gray-900">{formData.customer_name}</p>
-                    </div>
-                    <div>
-                        <p className="text-sm text-gray-600 mb-2 font-medium">Địa chỉ</p>
-                        <p className="text-gray-900 whitespace-pre-wrap leading-relaxed">{formData.customer_address}</p>
-                    </div>
-                    {formData.customer_phone && (
-                        <div>
-                            <p className="text-sm text-gray-600 mb-2 font-medium">Số điện thoại</p>
-                            <p className="text-gray-900">
-                                <a
-                                    href={`tel:${formData.customer_phone}`}
-                                    className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                    </svg>
-                                    {formData.customer_phone}
-                                </a>
-                            </p>
-                        </div>
-                    )}
-                    {formData.customer_notes && (
-                        <div>
-                            <p className="text-sm text-gray-600 mb-2 font-medium">Ghi chú</p>
-                            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                                <p className="text-gray-900 whitespace-pre-wrap leading-relaxed">{formData.customer_notes}</p>
-                            </div>
-                        </div>
-                    )}
+                    <TextBox
+                        label="Tên khách hàng"
+                        name="customer_name"
+                        value={formData.customer_name}
+                        editable={editableFields.customer_name}
+                        placeholder="Tên khách hàng ..."
+                        onChange={handleInlineChange}
+                        onBlur={() => editableFields.customer_name && handleInlineSave('customer_name')}
+                        icon={<User className="w-5 h-5" />}
+                    />
+
+                    <TextBox
+                        label="Địa chỉ"
+                        name="customer_address"
+                        value={formData.customer_address}
+                        editable={editableFields.customer_address}
+                        placeholder="Địa chỉ khách hàng ..."
+                        onChange={handleInlineChange}
+                        onBlur={() => editableFields.customer_address && handleInlineSave('customer_address')}
+                        icon={<MapPin className="w-5 h-5" />}
+                    />
+
+                    <TextBox
+                        label="Số điện thoại"
+                        name="customer_phone"
+                        value={formData.customer_phone}
+                        editable={editableFields.customer_phone}
+                        placeholder="Số điện thoại khách hàng ..."
+                        onChange={handleInlineChange}
+                        onBlur={() => editableFields.customer_phone && handleInlineSave('customer_phone')}
+                        icon={<Phone className="w-5 h-5" />}
+                    />
+
+                    <TextBox
+                        label="Email"
+                        name="customer_email"
+                        type="email"
+                        value={formData.customer_email}
+                        editable={editableFields.customer_email}
+                        placeholder="email@example.com"
+                        onChange={handleInlineChange}
+                        onBlur={() => editableFields.customer_email && handleInlineSave('customer_email')}
+                        icon={<Mail className="w-5 h-5" />}
+                    />
+                    
+                    <TextBox
+                        label="Ghi chú"
+                        name="customer_notes"
+                        type="textarea"
+                        value={formData.customer_notes || ''}
+                        editable={editableFields.customer_notes}
+                        placeholder="Ghi chú từ khách hàng..."
+                        onChange={handleInlineChange}
+                        onBlur={() => editableFields.customer_notes && handleInlineSave('customer_notes')}
+                        icon={<MessageSquare className="w-5 h-5" />}
+                    />
                 </div>
+                
+                {(editableFields.customer_name || editableFields.customer_notes) && (
+                    <div className="mt-4 text-xs text-gray-500 flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Click vào các trường để chỉnh sửa (Enter để lưu, Esc để hủy)
+                    </div>
+                )}
             </SectionCard>
         );
     }
 
+    // Edit mode
     return (
         <SectionCard
             title="Thông tin khách hàng"
@@ -76,42 +152,62 @@ export const CustomerInfoSection: React.FC<CustomerInfoSectionProps> = ({
             iconGradient="from-pink-500 to-rose-600"
         >
             <div className="space-y-4">
-                <FormField
+                <TextBox
                     label="Tên khách hàng"
                     name="customer_name"
                     value={formData.customer_name}
-                    onChange={onChange!}
+                    editable={true}
                     placeholder="Nguyễn Văn A"
                     required
                     error={errors.customer_name}
+                    onChange={handleStandardChange}
+                    icon={<User className="w-5 h-5" />}
                 />
 
-                <TextAreaField
+                <TextBox
                     label="Địa chỉ"
                     name="customer_address"
+                    type="textarea"
                     value={formData.customer_address}
-                    onChange={onChange!}
+                    editable={true}
                     placeholder="123 Đường ABC, Phường XYZ, Quận 1, TP.HCM"
                     required
                     error={errors.customer_address}
+                    onChange={handleStandardChange}
+                    icon={<MapPin className="w-5 h-5" />}
                 />
 
-                <FormField
+                <TextBox
                     label="Số điện thoại"
                     name="customer_phone"
                     type="tel"
-                    value={formData.customer_phone}
-                    onChange={onChange!}
+                    value={formData.customer_phone || ''}
+                    editable={true}
                     placeholder="0901234567"
+                    onChange={handleStandardChange}
+                    icon={<Phone className="w-5 h-5" />}
                 />
 
-                <TextAreaField
+                <TextBox
+                    label="Email"
+                    name="customer_email"
+                    type="email"
+                    value={formData.customer_email || ''}
+                    editable={true}
+                    placeholder="email@example.com"
+                    onChange={handleStandardChange}
+                    icon={<Mail className="w-5 h-5" />}
+                />
+
+                <TextBox
                     label="Ghi chú"
                     name="customer_notes"
-                    value={formData.customer_notes}
-                    onChange={onChange!}
+                    type="textarea"
+                    value={formData.customer_notes || ''}
+                    editable={true}
                     placeholder="Ghi chú từ khách hàng..."
-                    rows={4}
+                    onChange={handleStandardChange}
+                    icon={<MessageSquare className="w-5 h-5" />}
                 />
             </div>
         </SectionCard>

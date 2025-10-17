@@ -1,20 +1,38 @@
 // src/features/orders/components/sections/FinancialInputSection.tsx
+/**
+ * FinancialInputSection - Nhập thông tin tài chính
+ * Standardized to match CustomerInfoSection pattern
+ */
 
 import React from 'react';
-import { SectionCard } from '../shared/SectionCard';
-import { formatVND } from '../../../../lib/utils';
+import { DollarSign, TrendingDown, CreditCard, Wallet, RefreshCw, AlertCircle, XCircle, Gift } from 'lucide-react';
+import { SectionCard } from '../../../../components/common';
+import { TextBox } from '../../../../components/common';
+import type { OrderFormData } from '../../../../types/order';
+import {formatPercentage, formatUSD, formatVND} from "../../../../lib/utils.ts";
 
 interface FinancialInputSectionProps {
-    itemTotal: number;
-    discountRate: number;
-    buyerPaidUSD: number;
-    orderEarnings: number;
-    exchangeRate: number;
-    onItemTotalChange: (value: number) => void;
-    onDiscountRateChange: (value: number) => void;
-    onbuyerPaidUSDChange: (value: number) => void;
-    onOrderEarningsChange: (value: number) => void;
-    onExchangeRateChange: (value: number) => void;
+    mode: 'view' | 'edit';
+    formData: OrderFormData;
+    errors?: Record<string, string>;
+    editableFields?: {
+        itemTotalUsd?: boolean;
+        discountRate?: boolean;
+        buyerPaidUsd?: boolean;
+        orderEarningsUsd?: boolean;
+        exchangeRate?: boolean;
+        refundFeeUsd?: boolean;
+        refundFeeExchangeRate?: boolean;
+        otherFeeUsd?: boolean;
+        otherFeeExchangeRate?: boolean;
+        otherBonusUsd?: boolean;
+        otherBonusExchangeRate?: boolean;
+    };
+    // For edit mode
+    onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+    // For view mode inline editing
+    onFieldChange?: (fieldName: string, value: string | number | React.ReactNode | undefined) => void;
+    onFieldSave?: (fieldName: string) => Promise<void>;
 }
 
 const FinancialIcon = (
@@ -24,19 +42,276 @@ const FinancialIcon = (
 );
 
 export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
-    itemTotal,
-    discountRate,
-    buyerPaidUSD,
-    orderEarnings,
-    exchangeRate,
-    onItemTotalChange,
-    onDiscountRateChange,
-    onbuyerPaidUSDChange,
-    onOrderEarningsChange,
-    onExchangeRateChange
+    mode,
+    formData,
+    errors = {},
+    editableFields = {},
+    onChange,
+    onFieldChange,
+    onFieldSave
 }) => {
-    const subtotal = itemTotal * (100 - discountRate) / 100;
 
+    // Handler for standard form input change (edit mode)
+    const handleStandardChange = (name: string, value: string | number | React.ReactNode | undefined) => {
+        if (onChange) {
+            const fakeEvent = {
+                target: { name, value }
+            } as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>;
+            onChange(fakeEvent);
+        }
+    };
+
+    // Handler for inline edit change (view mode)
+    const handleInlineChange = (name: string, value: string | number | React.ReactNode | undefined) => {
+        if (onFieldChange) {
+            onFieldChange(name, value);
+        }
+    };
+
+    // Handler for inline edit save (view mode)
+    const handleInlineSave = async (name: string) => {
+        if (onFieldSave) {
+            await onFieldSave(name);
+        }
+    };
+
+    const calculatedDiscountUsd = (formData?.itemTotalUsd || 0) * (formData?.discountRate || 0) / 100;
+    const calculatedSubtotal = (formData?.itemTotalUsd || 0) - calculatedDiscountUsd;
+
+    if (mode === 'view') {
+        return (
+            <SectionCard
+                title="Thông tin tài chính"
+                icon={FinancialIcon}
+                iconGradient="from-green-500 to-emerald-600"
+            >
+                <div className="space-y-6">
+                    {/* Exchange Rate - Highlighted */}
+                    <div className="p-4 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl border-2 border-purple-200">
+                        <TextBox
+                            label="Tỷ giá hối đoái"
+                            name="exchangeRate"
+                            type="number"
+                            value={formData?.exchangeRate || 25000}
+                            displayValue={formatVND(formData?.exchangeRate || 25000)}
+                            editable={editableFields.exchangeRate}
+                            onChange={handleInlineChange}
+                            onBlur={() => editableFields.exchangeRate && handleInlineSave('exchangeRate')}
+                            icon={<RefreshCw className="w-5 h-5" />}
+                        />
+                        <p className="text-xs text-purple-700 mt-2 ml-7">* Tỷ giá cho các giao dịch chính (sản phẩm, khách trả, thực nhận)</p>
+                    </div>
+
+                    {/* USD Amounts */}
+                    <div className="space-y-4">
+                        <TextBox
+                            label="Tổng tiền sản phẩm (USD)"
+                            name="itemTotalUsd"
+                            type="number"
+                            value={formData?.itemTotalUsd || 0}
+                            displayValue={formatUSD(formData?.itemTotalUsd)}
+                            editable={editableFields.itemTotalUsd}
+                            onChange={handleInlineChange}
+                            onBlur={() => editableFields.itemTotalUsd && handleInlineSave('itemTotalUsd')}
+                            icon={<DollarSign className="w-5 h-5" />}
+                        />
+
+                        <TextBox
+                            label="Giảm giá (%)"
+                            name="discountRate"
+                            type="number"
+                            value={formData?.discountRate || 0}
+                            displayValue={formatPercentage(formData?.discountRate)}
+                            editable={editableFields.discountRate}
+                            onChange={handleInlineChange}
+                            onBlur={() => editableFields.discountRate && handleInlineSave('discountRate')}
+                            icon={<TrendingDown className="w-5 h-5" />}
+                        />
+
+                        {/* Subtotal - Calculated, always read-only */}
+                        <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                            <div className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                                <DollarSign className="w-4 h-4 text-gray-500" />
+                                Tổng tiền sau giảm
+                            </div>
+                            <div className="text-lg font-bold text-gray-900">
+                                {formatUSD(calculatedSubtotal)}
+                                <span className="text-sm font-normal text-gray-600 ml-2">
+                                    ≈ {formatVND(calculatedSubtotal * (formData?.exchangeRate || 25000))}
+                                </span>
+                            </div>
+                        </div>
+
+                        <TextBox
+                            label="Tổng tiền khách trả (USD)"
+                            name="buyerPaidUsd"
+                            type="number"
+                            value={formData?.buyerPaidUsd || 0}
+                            displayValue={formatUSD(formData?.buyerPaidUsd)}
+                            editable={editableFields.buyerPaidUsd}
+                            onChange={handleInlineChange}
+                            onBlur={() => editableFields.buyerPaidUsd && handleInlineSave('buyerPaidUsd')}
+                            icon={<CreditCard className="w-5 h-5" />}
+                        />
+
+                        <TextBox
+                            label="Tổng tiền thực nhận (USD)"
+                            name="orderEarningsUsd"
+                            type="number"
+                            value={formData?.orderEarningsUsd || 0}
+                            displayValue={formatUSD(formData?.orderEarningsUsd)}
+                            editable={editableFields.orderEarningsUsd}
+                            onChange={handleInlineChange}
+                            onBlur={() => editableFields.orderEarningsUsd && handleInlineSave('orderEarningsUsd')}
+                            icon={<Wallet className="w-5 h-5" />}
+                        />
+                    </div>
+
+                    {/* Fees Section */}
+                    <div className="space-y-4 pt-4 border-t-2 border-gray-200">
+                        <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4" />
+                            Các khoản phí khấu trừ
+                        </h3>
+
+                        {/* Refund Fee */}
+                        <div className="space-y-3">
+                            <TextBox
+                                label="Phí hoàn tiền (USD)"
+                                name="refundFeeUsd"
+                                type="number"
+                                value={formData?.refundFeeUsd || 0}
+                                displayValue={formatUSD(formData?.refundFeeUsd || 0)}
+                                editable={editableFields.refundFeeUsd}
+                                onChange={handleInlineChange}
+                                onBlur={() => editableFields.refundFeeUsd && handleInlineSave('refundFeeUsd')}
+                                icon={<XCircle className="w-5 h-5" />}
+                            />
+                            
+                            {formData.refundFeeUsd && (
+                                <div className="ml-7">
+                                    <TextBox
+                                        label="Tỷ giá phí hoàn tiền"
+                                        name="refundFeeExchangeRate"
+                                        type="number"
+                                        value={formData?.refundFeeExchangeRate || formData?.exchangeRate || 25000}
+                                        displayValue={formatVND(formData?.refundFeeExchangeRate || formData?.exchangeRate || 25000)}
+                                        editable={editableFields.refundFeeExchangeRate}
+                                        onChange={handleInlineChange}
+                                        onBlur={() => editableFields.refundFeeExchangeRate && handleInlineSave('refundFeeExchangeRate')}
+                                        icon={<RefreshCw className="w-4 h-4" />}
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        = {formatVND((formData?.refundFeeUsd || 0) * (formData?.refundFeeExchangeRate || formData?.exchangeRate || 25000))}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Other Fee */}
+                        <div className="space-y-3">
+                            <TextBox
+                                label="Phí khác (USD)"
+                                name="otherFeeUsd"
+                                type="number"
+                                value={formData?.otherFeeUsd || 0}
+                                displayValue={formatUSD(formData?.otherFeeUsd || 0)}
+                                editable={editableFields.otherFeeUsd}
+                                onChange={handleInlineChange}
+                                onBlur={() => editableFields.otherFeeUsd && handleInlineSave('otherFeeUsd')}
+                                icon={<AlertCircle className="w-5 h-5" />}
+                            />
+                            
+                            {(formData?.otherFeeUsd || 0) > 0 && (
+                                <div className="ml-7">
+                                    <TextBox
+                                        label="Tỷ giá phí khác"
+                                        name="otherFeeExchangeRate"
+                                        type="number"
+                                        value={formData?.otherFeeExchangeRate || formData?.exchangeRate || 25000}
+                                        displayValue={formatVND(formData?.otherFeeExchangeRate || formData?.exchangeRate || 25000)}
+                                        editable={editableFields.otherFeeExchangeRate}
+                                        onChange={handleInlineChange}
+                                        onBlur={() => editableFields.otherFeeExchangeRate && handleInlineSave('otherFeeExchangeRate')}
+                                        icon={<RefreshCw className="w-4 h-4" />}
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        = {formatVND((formData?.otherFeeUsd || 0) * (formData?.otherFeeExchangeRate || formData?.exchangeRate || 25000))}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        <p className="text-xs text-gray-500 italic">💡 Phí ship xem ở phần "Thông tin vận chuyển"</p>
+                    </div>
+
+                    {/* Bonus Section */}
+                    <div className="space-y-4 pt-4 border-t-2 border-green-200">
+                        <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                            <Gift className="w-4 h-4" />
+                            Tiền thưởng/Bonus
+                        </h3>
+
+                        {/* Other Bonus */}
+                        <div className="space-y-3">
+                            <TextBox
+                                label="Tiền thưởng khác (USD)"
+                                name="otherBonusUsd"
+                                type="number"
+                                value={formData?.otherBonusUsd || 0}
+                                displayValue={formatUSD(formData?.otherBonusUsd || 0)}
+                                editable={editableFields.otherBonusUsd}
+                                onChange={handleInlineChange}
+                                onBlur={() => editableFields.otherBonusUsd && handleInlineSave('otherBonusUsd')}
+                                icon={<Gift className="w-5 h-5" />}
+                            />
+                            
+                            {(formData?.otherBonusUsd || 0) > 0 && (
+                                <div className="ml-7">
+                                    <TextBox
+                                        label="Tỷ giá tiền thưởng"
+                                        name="otherBonusExchangeRate"
+                                        type="number"
+                                        value={formData?.otherBonusExchangeRate || formData?.exchangeRate || 25000}
+                                        displayValue={formatVND(formData?.otherBonusExchangeRate || formData?.exchangeRate || 25000)}
+                                        editable={editableFields.otherBonusExchangeRate}
+                                        onChange={handleInlineChange}
+                                        onBlur={() => editableFields.otherBonusExchangeRate && handleInlineSave('otherBonusExchangeRate')}
+                                        icon={<RefreshCw className="w-4 h-4" />}
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        = {formatVND((formData?.otherBonusUsd || 0) * (formData?.otherBonusExchangeRate || formData?.exchangeRate || 25000))}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Formula Info */}
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                        <p className="text-xs font-semibold text-blue-900 mb-2">📝 Lưu ý:</p>
+                        <div className="space-y-1 text-xs text-blue-800">
+                            <p>• Tổng tiền sau giảm = Tổng tiền sản phẩm × (100 - Giảm giá%) / 100</p>
+                            <p>• Mỗi khoản phí/bonus có thể có tỷ giá riêng để tính VND chính xác</p>
+                            <p>• Lợi nhuận = Thực nhận + Bonus - Ship - Hoàn tiền - Phí khác</p>
+                        <p>• Profit sẽ được tính TỰ ĐỘNG bởi database trigger</p>
+                        </div>
+                    </div>
+                </div>
+                
+                {Object.values(editableFields).some(v => v) && (
+                    <div className="mt-4 text-xs text-gray-500 flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Click vào các trường để chỉnh sửa (Enter để lưu, Esc để hủy)
+                    </div>
+                )}
+            </SectionCard>
+        );
+    }
+
+    // Edit mode
     return (
         <SectionCard
             title="Thông tin tài chính"
@@ -44,159 +319,216 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
             iconGradient="from-green-500 to-emerald-600"
         >
             <div className="space-y-6">
-                {/* Exchange Rate */}
-                <div className="p-4 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl border border-purple-200">
-                    <label className="block text-sm font-bold text-gray-900 mb-2">
-                        <div className="flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-                            </svg>
-                            Tỷ giá hối đoái
-                        </div>
-                    </label>
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-700">1 USD =</span>
-                        <input
-                            type="number"
-                            min="0"
-                            step="100"
-                            value={exchangeRate}
-                            onChange={(e) => onExchangeRateChange(parseFloat(e.target.value) || 0)}
-                            className="flex-1 px-4 py-3 border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg font-bold text-purple-700"
-                        />
-                    </div>
-                    <p className="text-xs text-gray-600 mt-2">* Tất cả giá VND sẽ được tính tự động theo tỷ giá này</p>
+                {/* Exchange Rate - Highlighted */}
+                <div className="p-4 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl border-2 border-purple-200">
+                    <TextBox
+                        label="Tỷ giá hối đoái"
+                        name="exchangeRate"
+                        type="number"
+                        value={formData?.exchangeRate || 0}
+                        displayValue={formatVND(formData?.exchangeRate || 0)}
+                        editable={true}
+                        required
+                        error={errors.exchangeRate}
+                        onChange={handleStandardChange}
+                        icon={<RefreshCw className="w-5 h-5" />}
+                    />
+                    <p className="text-xs text-purple-700 mt-2 ml-7">* Tỷ giá cho các giao dịch chính (sản phẩm, khách trả, thực nhận)</p>
                 </div>
 
-                {/* USD Inputs */}
+                {/* USD Amounts */}
                 <div className="space-y-4">
-                    <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 pb-2 border-b border-gray-200">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                        </svg>
-                        Nhập số tiền (USD)
+                    {/* Item Total - Auto-calculated from items */}
+                    <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                        <div className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                            <DollarSign className="w-4 h-4 text-blue-600" />
+                            Tổng tiền sản phẩm (USD)
+                        </div>
+                        <div className="text-lg font-bold text-gray-900">
+                            {formatUSD(formData?.itemTotalUsd || 0)}
+                            <span className="text-sm font-normal text-gray-600 ml-2">
+                                ≈ {formatVND((formData?.itemTotalUsd || 0) * (formData?.exchangeRate || 25000))}
+                            </span>
+                        </div>
+                        <p className="text-xs text-blue-600 mt-1">✨ Tự động tính từ các sản phẩm (Số lượng × Giá)</p>
+                    </div>
+
+                    <TextBox
+                        label="Giảm giá (%)"
+                        name="discountRate"
+                        type="number"
+                        value={formData?.discountRate || 0}
+                        displayValue={formatPercentage(formData?.discountRate)}
+                        editable={true}
+                        error={errors.discountRate}
+                        onChange={handleStandardChange}
+                        icon={<TrendingDown className="w-5 h-5" />}
+                    />
+
+                    {/* Subtotal - Calculated, always read-only */}
+                    <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                        <div className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                            <DollarSign className="w-4 h-4 text-gray-500" />
+                            Tổng tiền sau giảm
+                        </div>
+                        <div className="text-lg font-bold text-gray-900">
+                            {formatUSD(calculatedSubtotal)}
+                            <span className="text-sm font-normal text-gray-600 ml-2">
+                                ≈ {formatVND(calculatedSubtotal * (formData?.exchangeRate || 25000))}
+                            </span>
+                        </div>
+                    </div>
+
+                    <TextBox
+                        label="Tổng tiền khách trả (USD)"
+                        name="buyerPaidUsd"
+                        type="number"
+                        value={formData?.buyerPaidUsd || 0}
+                        displayValue={formatUSD(formData?.buyerPaidUsd)}
+                        editable={true}
+                        required
+                        error={errors.buyerPaidUsd}
+                        onChange={handleStandardChange}
+                        icon={<CreditCard className="w-5 h-5" />}
+                    />
+
+                    <TextBox
+                        label="Tổng tiền thực nhận (USD)"
+                        name="orderEarningsUsd"
+                        type="number"
+                        value={formData?.orderEarningsUsd || 0}
+                        displayValue={formatUSD(formData?.orderEarningsUsd)}
+                        editable={true}
+                        required
+                        error={errors.orderEarningsUsd}
+                        onChange={handleStandardChange}
+                        icon={<Wallet className="w-5 h-5" />}
+                    />
+                </div>
+
+                {/* Fees Section */}
+                <div className="space-y-4 pt-4 border-t-2 border-gray-200">
+                    <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" />
+                        Các khoản phí khấu trừ
                     </h3>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Item Total */}
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Tổng tiền sản phẩm <span className="text-red-500">*</span>
-                            </label>
-                            <div className="space-y-2">
-                                <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">$</span>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        value={itemTotal}
-                                        onChange={(e) => onItemTotalChange(parseFloat(e.target.value) || 0)}
-                                        className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    />
-                                </div>
-                                <div className="text-xs text-gray-500 pl-2">
-                                    ≈ {formatVND(itemTotal * exchangeRate)}
-                                </div>
+                    {/* Refund Fee */}
+                    <div className="space-y-3">
+                        <TextBox
+                            label="Phí hoàn tiền (USD)"
+                            name="refundFeeUsd"
+                            type="number"
+                            value={formData?.refundFeeUsd || 0}
+                            displayValue={formatUSD(formData?.refundFeeUsd)}
+                            editable={true}
+                            error={errors.refundFeeUsd}
+                            onChange={handleStandardChange}
+                            icon={<XCircle className="w-5 h-5" />}
+                        />
+                        
+                        {(formData?.refundFeeUsd || 0) > 0 && (
+                            <div className="ml-7">
+                                <TextBox
+                                    label="Tỷ giá phí hoàn tiền"
+                                    name="refundFeeExchangeRate"
+                                    type="number"
+                                    value={formData?.refundFeeExchangeRate || formData?.exchangeRate || 25000}
+                                    displayValue={formatVND(formData?.refundFeeExchangeRate || formData?.exchangeRate || 25000)}
+                                    editable={true}
+                                    onChange={handleStandardChange}
+                                    icon={<RefreshCw className="w-4 h-4" />}
+                                />
+                                <p className="text-xs text-gray-500 mt-1">
+                                    = {formatVND((formData?.refundFeeUsd || 0) * (formData?.refundFeeExchangeRate || formData?.exchangeRate || 25000))}
+                                </p>
                             </div>
-                        </div>
+                        )}
+                    </div>
 
-                        {/* Commission Rate */}
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Giảm giá (%)
-                            </label>
-                            <div className="space-y-2">
-                                <div className="relative">
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        max="100"
-                                        step="0.1"
-                                        value={discountRate}
-                                        onChange={(e) => onDiscountRateChange(parseFloat(e.target.value) || 0)}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    />
-                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">%</span>
-                                </div>
+                    {/* Other Fee */}
+                    <div className="space-y-3">
+                        <TextBox
+                            label="Phí khác (USD)"
+                            name="otherFeeUsd"
+                            type="number"
+                            value={formData?.otherFeeUsd || 0}
+                            displayValue={formatUSD(formData?.otherFeeUsd)}
+                            editable={true}
+                            error={errors.otherFeeUsd}
+                            onChange={handleStandardChange}
+                            icon={<AlertCircle className="w-5 h-5" />}
+                        />
+                        
+                        {(formData?.otherFeeUsd || 0) > 0 && (
+                            <div className="ml-7">
+                                <TextBox
+                                    label="Tỷ giá phí khác"
+                                    name="otherFeeExchangeRate"
+                                    type="number"
+                                    value={formData?.otherFeeExchangeRate || formData?.exchangeRate || 25000}
+                                    editable={true}
+                                    onChange={handleStandardChange}
+                                    icon={<RefreshCw className="w-4 h-4" />}
+                                />
+                                <p className="text-xs text-gray-500 mt-1">
+                                    = {formatVND((formData?.otherFeeUsd || 0) * (formData?.otherFeeExchangeRate || formData?.exchangeRate || 25000))}
+                                </p>
                             </div>
-                        </div>
+                        )}
+                    </div>
 
-                        {/* Subtotal - Display only */}
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Tổng tiền sau giảm
-                            </label>
-                            <div className="space-y-2">
-                                <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">$</span>
-                                    <input
-                                        type="text"
-                                        value={subtotal.toFixed(2)}
-                                        disabled
-                                        className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 font-semibold cursor-not-allowed"
-                                    />
-                                </div>
-                                <div className="text-xs text-gray-500 pl-2">
-                                    ≈ {formatVND(subtotal * exchangeRate)}
-                                </div>
-                            </div>
-                        </div>
+                    <p className="text-xs text-gray-500 italic">💡 Phí ship xem ở phần "Thông tin vận chuyển"</p>
+                    </div>
 
-                        {/* Buyer Paid */}
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-bold text-gray-900 mb-1">
-                                Tổng tiền khách trả <span className="text-red-500">*</span>
-                            </label>
-                            <div className="space-y-2">
-                                <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-600 font-bold text-lg">$</span>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        value={buyerPaidUSD}
-                                        onChange={(e) => onbuyerPaidUSDChange(parseFloat(e.target.value) || 0)}
-                                        className="w-full pl-8 pr-4 py-3 border-2 border-blue-300 rounded-lg bg-blue-50 text-blue-700 font-bold text-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    />
-                                </div>
-                                <div className="text-sm font-semibold text-blue-600 pl-2">
-                                    ≈ {formatVND(buyerPaidUSD * exchangeRate)}
-                                </div>
-                            </div>
-                        </div>
+                        {/* Bonus Section */}
+                    <div className="space-y-4 pt-4 border-t-2 border-green-200">
+                        <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                            <Gift className="w-4 h-4" />
+                            Tiền thưởng/Bonus
+                        </h3>
 
-                        {/* Order Earnings */}
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-bold text-gray-900 mb-1">
-                                Tổng tiền thực nhận <span className="text-red-500">*</span>
-                            </label>
-                            <div className="space-y-2">
-                                <div className="relative">
-                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-green-600 font-bold text-lg">$</span>
-                                    <input
+                        {/* Other Bonus */}
+                        <div className="space-y-3">
+                            <TextBox
+                                label="Tiền thưởng khác (USD)"
+                                name="otherBonusUsd"
+                                type="number"
+                                value={formData?.otherBonusUsd || 0}
+                                displayValue={formatUSD(formData?.otherBonusUsd)}
+                                editable={true}
+                                error={errors.otherBonusUsd}
+                                onChange={handleStandardChange}
+                                icon={<Gift className="w-5 h-5" />}
+                            />
+                            
+                            {(formData?.otherBonusUsd || 0) > 0 && (
+                                <div className="ml-7">
+                                    <TextBox
+                                        label="Tỷ giá tiền thưởng"
+                                        name="otherBonusExchangeRate"
                                         type="number"
-                                        min="0"
-                                        step="0.01"
-                                        value={orderEarnings}
-                                        onChange={(e) => onOrderEarningsChange(parseFloat(e.target.value) || 0)}
-                                        className="w-full pl-8 pr-4 py-3 border-2 border-green-300 rounded-lg bg-green-50 text-green-700 font-bold text-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        value={formData?.otherBonusExchangeRate || formData?.exchangeRate || 25000}
+                                        editable={true}
+                                        onChange={handleStandardChange}
+                                        icon={<RefreshCw className="w-4 h-4" />}
                                     />
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        = {formatVND((formData?.otherBonusUsd || 0) * (formData?.otherBonusExchangeRate || formData?.exchangeRate || 25000))}
+                                    </p>
                                 </div>
-                                <div className="text-sm font-semibold text-green-600 pl-2">
-                                    ≈ {formatVND(orderEarnings * exchangeRate)}
-                                </div>
-                            </div>
+                            )}
                         </div>
                     </div>
-                </div>
 
-                {/* Calculation Formula */}
+                {/* Formula Info */}
                 <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                    <p className="text-xs font-semibold text-blue-900 mb-2">📝 Công thức tính:</p>
+                    <p className="text-xs font-semibold text-blue-900 mb-2">📝 Lưu ý:</p>
                     <div className="space-y-1 text-xs text-blue-800">
-                        <p>• Tổng tiền sau giảm = Tổng tiền sản phẩm - Tiền giảm giá</p>
-                        <p>• Tổng tiền thực nhận = Tổng tiền khách trả - Các khoản phí *</p>
+                        <p>• Tổng tiền sau giảm = Tổng tiền sản phẩm × (100 - Giảm giá%) / 100</p>
+                        <p>• Mỗi khoản phí/bonus có thể có tỷ giá riêng để tính VND chính xác</p>
+                        <p>• Lợi nhuận = Thực nhận + Bonus - Ship - Hoàn tiền - Phí khác</p>
+                        <p>• Profit sẽ được tính TỰ ĐỘNG bởi database trigger</p>
                     </div>
                 </div>
             </div>

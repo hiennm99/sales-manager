@@ -1,29 +1,35 @@
 // src/features/orders/components/sections/ShippingInfoSection.tsx
+/**
+ * ShippingInfoSection - Thông tin vận chuyển
+ * Simplified to match CustomerInfoSection pattern
+ */
 
 import React from 'react';
-import { SectionCard } from '../shared/SectionCard';
-import { FormField, TextAreaField } from '../';
+import { Truck, Hash, Calendar, DollarSign, FileText, RefreshCw } from 'lucide-react';
+import { SectionCard } from '../../../../components/common';
+import { TextBox, OptionBox, type Option } from '../../../../components/common';
 import { CARRIER_UNITS } from '../../constants/orderDefaults';
-
-interface ShippingFormData {
-    carrierUnit: string;
-    internalTrackingNumber: string;
-    trackingNumber: string;
-    actualShipDate: string;
-    shippingFeeUsd: number;
-    carrierNotes: string;
-}
+import type { OrderFormData } from '../../../../types/order';
+import { formatUSD, formatVND } from '../../../../lib/utils';
 
 interface ShippingInfoSectionProps {
-    isEditing: boolean;
-    formData: ShippingFormData;
-    exchangeRate: number;
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
-    onFeeChange: (value: number) => void;
-    onEdit: () => void;
-    onSave: () => void;
-    onCancel: () => void;
-    isLoading?: boolean;
+    mode: 'view' | 'edit';
+    formData: OrderFormData;
+    errors?: Record<string, string>;
+    editableFields?: {
+        carrierUnit?: boolean;
+        internalTrackingNumber?: boolean;
+        trackingNumber?: boolean;
+        actualShipDate?: boolean;
+        shippingFeeUsd?: boolean;
+        shippingExchangeRate?: boolean;
+        carrierNotes?: boolean;
+    };
+    // For edit mode
+    onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+    // For view mode inline editing
+    onFieldChange?: (fieldName: string, value: string | number | React.ReactNode | undefined) => void;
+    onFieldSave?: (fieldName: string) => Promise<void>;
 }
 
 const ShippingIcon = (
@@ -33,169 +39,268 @@ const ShippingIcon = (
 );
 
 export const ShippingInfoSection: React.FC<ShippingInfoSectionProps> = ({
-                                                                            isEditing,
-                                                                            formData,
-                                                                            exchangeRate,
-                                                                            onChange,
-                                                                            onFeeChange,
-                                                                            onEdit,
-                                                                            onSave,
-                                                                            onCancel,
-                                                                            isLoading = false
-                                                                        }) => {
-    const editButton = !isEditing ? (
-        <button
-            onClick={onEdit}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200 font-medium"
-        >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            Chỉnh sửa
-        </button>
-    ) : null;
+    mode,
+    formData,
+    errors = {},
+    editableFields = {},
+    onChange,
+    onFieldChange,
+    onFieldSave
+}) => {
+    // Convert CARRIER_UNITS to Option format
+    const carrierOptions: Option[] = [
+        { value: '', label: '-- Chọn đơn vị vận chuyển --' },
+        ...CARRIER_UNITS.map(carrier => ({
+            value: carrier.value,
+            label: carrier.label
+        }))
+    ];
 
+    // Handler for standard form input change (edit mode)
+    const handleStandardChange = (name: string, value: string | number | React.ReactNode | undefined) => {
+        if (onChange) {
+            const fakeEvent = {
+                target: { name, value }
+            } as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>;
+            onChange(fakeEvent);
+        }
+    };
+
+    // Handler for inline edit change (view mode)
+    const handleInlineChange = (name: string, value: string | number | React.ReactNode | undefined) => {
+        if (onFieldChange) {
+            onFieldChange(name, value);
+        }
+    };
+
+    // Handler for inline edit save (view mode)
+    const handleInlineSave = async (name: string) => {
+        if (onFieldSave) {
+            await onFieldSave(name);
+        }
+    };
+
+    // Calculate shipping fee in VND
+    const shippingFeeVnd = (formData?.shippingFeeUsd || 0) * (formData?.shippingExchangeRate || formData?.exchangeRate || 25000);
+
+    if (mode === 'view') {
+        return (
+            <SectionCard
+                title="Thông tin vận chuyển"
+                icon={ShippingIcon}
+                iconGradient="from-orange-500 to-amber-600"
+            >
+                <div className="space-y-6">
+                    <OptionBox
+                        label="Đơn vị vận chuyển"
+                        name="carrierUnit"
+                        value={formData?.carrierUnit || ''}
+                        options={carrierOptions}
+                        editable={editableFields.carrierUnit}
+                        onChange={handleInlineChange}
+                        onBlur={() => editableFields.carrierUnit && handleInlineSave('carrierUnit')}
+                        icon={<Truck className="w-5 h-5" />}
+                    />
+
+                    <TextBox
+                        label="Mã vận đơn nội bộ"
+                        name="internalTrackingNumber"
+                        value={formData.internalTrackingNumber}
+                        editable={editableFields.internalTrackingNumber}
+                        placeholder="INT-2024-001"
+                        onChange={handleInlineChange}
+                        onBlur={() => editableFields.internalTrackingNumber && handleInlineSave('internalTrackingNumber')}
+                        icon={<Hash className="w-5 h-5" />}
+                    />
+
+                    <TextBox
+                        label="Mã vận đơn"
+                        name="trackingNumber"
+                        value={formData.trackingNumber}
+                        editable={editableFields.trackingNumber}
+                        onChange={handleInlineChange}
+                        onBlur={() => editableFields.trackingNumber && handleInlineSave('trackingNumber')}
+                        icon={<Hash className="w-5 h-5" />}
+                    />
+
+                    <TextBox
+                        label="Ngày giao thực tế"
+                        name="actualShipDate"
+                        type="date"
+                        value={formData.actualShipDate}
+                        editable={editableFields.actualShipDate}
+                        onChange={handleInlineChange}
+                        onBlur={() => editableFields.actualShipDate && handleInlineSave('actualShipDate')}
+                        icon={<Calendar className="w-5 h-5" />}
+                    />
+
+                    {/* Shipping Fee Section */}
+                    <div className="space-y-3 pt-4 border-t-2 border-orange-200">
+                        <TextBox
+                            label="Phí ship (USD)"
+                            name="shippingFeeUsd"
+                            type="number"
+                            value={formData.shippingFeeUsd || 0}
+                            displayValue={formatUSD(formData.shippingFeeUsd)}
+                            editable={editableFields.shippingFeeUsd}
+                            onChange={handleInlineChange}
+                            onBlur={() => editableFields.shippingFeeUsd && handleInlineSave('shippingFeeUsd')}
+                            icon={<DollarSign className="w-5 h-5" />}
+                        />
+
+                        {(formData?.shippingFeeUsd || 0) > 0 && (
+                            <div className="ml-7 space-y-2">
+                                <TextBox
+                                    label="Tỷ giá phí ship"
+                                    name="shippingExchangeRate"
+                                    type="number"
+                                    value={formData?.shippingExchangeRate || formData?.exchangeRate || 25000}
+                                    displayValue={formatVND(formData?.shippingExchangeRate || 25000)}
+                                    editable={editableFields.shippingExchangeRate}
+                                    onChange={handleInlineChange}
+                                    onBlur={() => editableFields.shippingExchangeRate && handleInlineSave('shippingExchangeRate')}
+                                    icon={<RefreshCw className="w-4 h-4" />}
+                                />
+                                <div className="p-3 bg-orange-50 rounded-lg border border-orange-200">
+                                    <p className="text-xs text-gray-600">Phí ship VND:</p>
+                                    <p className="text-sm font-bold text-orange-700">{formatVND(shippingFeeVnd)}</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <TextBox
+                        label="Ghi chú vận chuyển"
+                        name="carrierNotes"
+                        type="textarea"
+                        value={formData.carrierNotes || ''}
+                        editable={editableFields.carrierNotes}
+                        placeholder="Ghi chú về vận chuyển, đóng gói..."
+                        onChange={handleInlineChange}
+                        onBlur={() => editableFields.carrierNotes && handleInlineSave('carrierNotes')}
+                        icon={<FileText className="w-5 h-5" />}
+                    />
+                </div>
+                
+                {Object.values(editableFields).some(v => v) && (
+                    <div className="mt-4 text-xs text-gray-500 flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Click vào các trường để chỉnh sửa (Enter để lưu, Esc để hủy)
+                    </div>
+                )}
+            </SectionCard>
+        );
+    }
+
+    // Edit mode
     return (
         <SectionCard
             title="Thông tin vận chuyển"
             icon={ShippingIcon}
             iconGradient="from-orange-500 to-amber-600"
-            actions={editButton}
         >
-            {isEditing ? (
-                <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Đơn vị vận chuyển
-                            </label>
-                            <select
-                                name="carrierUnit"
-                                value={formData.carrierUnit}
-                                onChange={onChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            >
-                                <option value="">-- Chọn đơn vị vận chuyển --</option>
-                                {CARRIER_UNITS.map(carrier => (
-                                    <option key={carrier.value} value={carrier.value}>
-                                        {carrier.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+            <div className="space-y-4">
+                <OptionBox
+                    label="Đơn vị vận chuyển"
+                    name="carrierUnit"
+                    value={formData?.carrierUnit || ''}
+                    options={carrierOptions}
+                    editable={true}
+                    error={errors.carrierUnit}
+                    onChange={handleStandardChange}
+                    icon={<Truck className="w-5 h-5" />}
+                />
 
-                        <FormField
-                            label="Mã vận đơn nội bộ"
-                            name="internalTrackingNumber"
-                            value={formData.internalTrackingNumber}
-                            onChange={onChange}
-                            placeholder="INT-2024-001"
-                        />
+                <TextBox
+                    label="Mã vận đơn nội bộ"
+                    name="internalTrackingNumber"
+                    value={formData.internalTrackingNumber}
+                    editable={true}
+                    placeholder="INT-2024-001"
+                    error={errors.internalTrackingNumber}
+                    onChange={handleStandardChange}
+                    icon={<Hash className="w-5 h-5" />}
+                />
 
-                        <FormField
-                            label="Mã vận đơn"
-                            name="trackingNumber"
-                            value={formData.trackingNumber}
-                            onChange={onChange}
-                            placeholder="VTP123456789"
-                        />
+                <TextBox
+                    label="Mã vận đơn"
+                    name="trackingNumber"
+                    value={formData.trackingNumber}
+                    editable={true}
+                    placeholder="VTP123456789"
+                    error={errors.trackingNumber}
+                    onChange={handleStandardChange}
+                    icon={<Hash className="w-5 h-5" />}
+                />
 
-                        <FormField
-                            label="Ngày giao thực tế"
-                            name="actualShipDate"
-                            type="date"
-                            value={formData.actualShipDate}
-                            onChange={onChange}
-                        />
+                <TextBox
+                    label="Ngày giao thực tế"
+                    name="actualShipDate"
+                    type="date"
+                    value={formData.actualShipDate}
+                    editable={true}
+                    error={errors.actualShipDate}
+                    onChange={handleStandardChange}
+                    icon={<Calendar className="w-5 h-5" />}
+                />
 
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Phí ship (USD)
-                            </label>
-                            <input
-                                type="number"
-                                name="shippingFeeUsd"
-                                value={formData.shippingFeeUsd}
-                                onChange={(e) => onFeeChange(parseFloat(e.target.value) || 0)}
-                                step="0.01"
-                                min="0"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                        </div>
-                    </div>
+                {/* Shipping Fee Section */}
+                <div className="space-y-3 pt-4 border-t-2 border-orange-200">
+                    <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                        <DollarSign className="w-4 h-4" />
+                        Phí vận chuyển
+                    </h3>
 
-                    <TextAreaField
-                        label="Ghi chú vận chuyển"
-                        name="carrierNotes"
-                        value={formData.carrierNotes}
-                        onChange={onChange}
-                        placeholder="Ghi chú về vận chuyển, đóng gói..."
-                        rows={3}
+                    <TextBox
+                        label="Phí ship (USD)"
+                        name="shippingFeeUsd"
+                        type="number"
+                        value={formData.shippingFeeUsd || 0}
+                        displayValue={formatUSD(formData.shippingFeeUsd)}
+                        editable={true}
+                        error={errors.shippingFeeUsd}
+                        onChange={handleStandardChange}
+                        icon={<DollarSign className="w-5 h-5" />}
                     />
 
-                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-                        <button
-                            onClick={onCancel}
-                            className="px-5 py-2.5 text-gray-700 bg-white border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium"
-                        >
-                            Hủy
-                        </button>
-                        <button
-                            onClick={onSave}
-                            disabled={isLoading}
-                            className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-200 font-medium"
-                        >
-                            {isLoading ? 'Đang lưu...' : 'Lưu thay đổi'}
-                        </button>
-                    </div>
-                </div>
-            ) : (
-                <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
-                            <p className="text-sm text-gray-600 mb-1 font-medium">Đơn vị vận chuyển</p>
-                            <p className="text-lg font-semibold text-gray-900">
-                                {formData.carrierUnit
-                                    ? CARRIER_UNITS.find(c => c.value === formData.carrierUnit)?.label || formData.carrierUnit
-                                    : 'Chưa cập nhật'}
-                            </p>
-                        </div>
-                        <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-200">
-                            <p className="text-sm text-gray-600 mb-1 font-medium">Mã vận đơn nội bộ</p>
-                            <p className="text-lg font-semibold text-gray-900">{formData.internalTrackingNumber || 'Chưa có'}</p>
-                        </div>
-                        <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200">
-                            <p className="text-sm text-gray-600 mb-1 font-medium">Mã vận đơn</p>
-                            <p className="text-lg font-semibold text-gray-900">{formData.trackingNumber || 'Chưa có'}</p>
-                        </div>
-                        <div className="p-4 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border border-amber-200">
-                            <p className="text-sm text-gray-600 mb-1 font-medium">Ngày giao thực tế</p>
-                            <p className="text-lg font-semibold text-gray-900">
-                                {formData.actualShipDate
-                                    ? new Date(formData.actualShipDate).toLocaleDateString('vi-VN')
-                                    : 'Chưa giao'}
-                            </p>
-                        </div>
-                        <div className="md:col-span-2 p-4 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl border border-indigo-200">
-                            <p className="text-sm text-gray-600 mb-1 font-medium">Phí ship</p>
-                            <p className="text-xl font-bold text-gray-900">
-                                ${formData.shippingFeeUsd?.toFixed(2) || '0.00'}
-                                <span className="text-sm font-normal text-gray-600 ml-2">
-                                    ({(formData.shippingFeeUsd * exchangeRate).toLocaleString('vi-VN') || '0'} ₫)
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-                    {formData.carrierNotes && (
-                        <div>
-                            <p className="text-sm text-gray-600 mb-2 font-medium">Ghi chú vận chuyển</p>
-                            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
-                                <p className="text-gray-900 whitespace-pre-wrap leading-relaxed">{formData.carrierNotes}</p>
+                    {(formData?.shippingFeeUsd || 0) > 0 && (
+                        <div className="ml-7 space-y-2">
+                            <TextBox
+                                label="Tỷ giá phí ship"
+                                name="shippingExchangeRate"
+                                type="number"
+                                value={formData?.shippingExchangeRate || formData?.exchangeRate || 25000}
+                                editable={true}
+                                error={errors.shippingExchangeRate}
+                                onChange={handleStandardChange}
+                                icon={<RefreshCw className="w-4 h-4" />}
+                            />
+                            <div className="p-3 bg-orange-50 rounded-lg border border-orange-200">
+                                <p className="text-xs text-gray-600">Phí ship VND:</p>
+                                <p className="text-sm font-bold text-orange-700">{formatVND(shippingFeeVnd)}</p>
                             </div>
                         </div>
                     )}
+
+                    <p className="text-xs text-gray-500 italic">
+                        💡 Tỷ giá mặc định lấy từ "Tỷ giá hối đoái" ở tab Tài chính
+                    </p>
                 </div>
-            )}
+
+                <TextBox
+                    label="Ghi chú vận chuyển"
+                    name="carrierNotes"
+                    type="textarea"
+                    value={formData.carrierNotes || ''}
+                    editable={true}
+                    placeholder="Ghi chú về vận chuyển, đóng gói..."
+                    error={errors.carrierNotes}
+                    onChange={handleStandardChange}
+                    icon={<FileText className="w-5 h-5" />}
+                />
+            </div>
         </SectionCard>
     );
 };

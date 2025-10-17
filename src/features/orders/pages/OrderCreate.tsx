@@ -13,13 +13,13 @@ import {
     OrderInfoSection,
     OrderStatusSection,
     CustomerInfoSection,
-    ProductsListSection,
+    OrderItemsSection,
     FinancialInputSection,
     FinancialSummaryCard,
-    ActionButtons,
     TabNavigation,
     type Tab
 } from '../components';
+import { ActionButtons } from '../../../components/common';
 
 export const OrderCreate: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
@@ -46,6 +46,23 @@ export const OrderCreate: React.FC = () => {
         customer_phone: '',
         customer_notes: '',
         artist_code: '',
+        actualShipDate: "",
+        carrierNotes: "",
+        carrierUnit: "",
+        internalTrackingNumber: "",
+        otherFeeExchangeRate: undefined,
+        refundFeeExchangeRate: undefined,
+        shippingExchangeRate: undefined,
+        trackingNumber: "",
+        // Financial fields
+        itemTotalUsd: 0,
+        discountRate: 0,
+        buyerPaidUsd: 0,
+        orderEarningsUsd: 0,
+        exchangeRate: ORDER_DEFAULT_VALUES.EXCHANGE_RATE,
+        shippingFeeUsd: 0,
+        refundFeeUsd: 0,
+        otherFeeUsd: 0
     });
 
     const [items, setItems] = useState<OrderItemFormData[]>([{
@@ -53,25 +70,36 @@ export const OrderCreate: React.FC = () => {
         size: '',
         type: '',
         quantity: ORDER_DEFAULT_VALUES.ITEM_QUANTITY,
+        unit_price_usd: 0,
     }]);
 
     const [selectedProducts, setSelectedProducts] = useState<(Product | null)[]>([null]);
-    const [itemTotal, setItemTotal] = useState<number>(0);
-    const [discountRate, setDiscountRate] = useState<number>(0);
-    const [buyerPaidUSD, setBuyerPaidUSD] = useState<number>(0);
-    const [orderEarnings, setOrderEarnings] = useState<number>(0);
-    const [exchangeRate, setExchangeRate] = useState<number>(ORDER_DEFAULT_VALUES.EXCHANGE_RATE);
+
+    // Auto-calculate itemTotalUsd from items
+    useEffect(() => {
+        const total = items.reduce((sum, item) => {
+            return sum + (item.quantity * (item.unit_price_usd || 0));
+        }, 0);
+        setFormData(prev => ({ ...prev, itemTotalUsd: total }));
+    }, [items]);
 
     // Status states
-    const [generalStatusId, setGeneralStatusId] = useState<number>(ORDER_DEFAULT_VALUES.GENERAL_STATUS_ID);
-    const [customerStatusId, setCustomerStatusId] = useState<number>(ORDER_DEFAULT_VALUES.CUSTOMER_STATUS_ID);
-    const [factoryStatusId, setFactoryStatusId] = useState<number>(ORDER_DEFAULT_VALUES.FACTORY_STATUS_ID);
-    const [deliveryStatusId, setDeliveryStatusId] = useState<number>(ORDER_DEFAULT_VALUES.DELIVERY_STATUS_ID);
+    const [statusValues, setStatusValues] = useState<{
+        general: number;
+        customer: number;
+        factory: number;
+        delivery: number;
+    }>({
+        general: ORDER_DEFAULT_VALUES.GENERAL_STATUS_ID,
+        customer: ORDER_DEFAULT_VALUES.CUSTOMER_STATUS_ID,
+        factory: ORDER_DEFAULT_VALUES.FACTORY_STATUS_ID,
+        delivery: ORDER_DEFAULT_VALUES.DELIVERY_STATUS_ID
+    });
 
     // Calculate VND values
-    const itemTotalVND = itemTotal * exchangeRate;
-    const buyerPaidVND = buyerPaidUSD * exchangeRate;
-    const orderEarningsVND = orderEarnings * exchangeRate;
+    const itemTotalVND = (formData.itemTotalUsd || 0) * (formData.exchangeRate || ORDER_DEFAULT_VALUES.EXCHANGE_RATE);
+    const buyerPaidVND = (formData.buyerPaidUsd || 0) * (formData.exchangeRate || ORDER_DEFAULT_VALUES.EXCHANGE_RATE);
+    const orderEarningsVND = (formData.orderEarningsUsd || 0) * (formData.exchangeRate || ORDER_DEFAULT_VALUES.EXCHANGE_RATE);
 
     // Define tabs
     const tabs: Tab[] = [
@@ -117,9 +145,6 @@ export const OrderCreate: React.FC = () => {
         fetchAllStatuses();
     }, [fetchAllStatuses]);
 
-    // Don't auto-update itemTotal from items anymore
-    // Let user input manually in financial section
-
     useEffect(() => {
         if (selectedShop) {
             setFormData(prev => ({ ...prev, shop_code: selectedShop.code }));
@@ -140,16 +165,29 @@ export const OrderCreate: React.FC = () => {
                     customer_phone: order.customer_phone || '',
                     customer_notes: order.customer_notes || '',
                     artist_code: order.artist_code || '',
+                    actualShipDate: "",
+                    carrierNotes: "",
+                    carrierUnit: "",
+                    internalTrackingNumber: "",
+                    otherFeeExchangeRate: undefined,
+                    refundFeeExchangeRate: undefined,
+                    shippingExchangeRate: undefined,
+                    trackingNumber: "",
+                    itemTotalUsd: order.item_total_usd,
+                    discountRate: order.commission_rate,
+                    buyerPaidUsd: order.buyer_paid_usd,
+                    orderEarningsUsd: order.order_earnings_usd,
+                    exchangeRate: order.exchange_rate,
+                    shippingFeeUsd: order.shipping_fee_usd || 0,
+                    refundFeeUsd: order.refund_fee_usd || 0,
+                    otherFeeUsd: order.other_fee_usd || 0
                 });
-                setItemTotal(order.item_total_usd);
-                setDiscountRate(order.commission_rate);
-                setBuyerPaidUSD(order.buyer_paid_usd);
-                setOrderEarnings(order.order_earnings_usd);
-                setExchangeRate(order.exchange_rate);
-                setGeneralStatusId(order.general_status_id || ORDER_DEFAULT_VALUES.GENERAL_STATUS_ID);
-                setCustomerStatusId(order.customer_status_id || ORDER_DEFAULT_VALUES.CUSTOMER_STATUS_ID);
-                setFactoryStatusId(order.factory_status_id || ORDER_DEFAULT_VALUES.FACTORY_STATUS_ID);
-                setDeliveryStatusId(order.delivery_status_id || ORDER_DEFAULT_VALUES.DELIVERY_STATUS_ID);
+                setStatusValues({
+                    general: order.general_status_id || ORDER_DEFAULT_VALUES.GENERAL_STATUS_ID,
+                    customer: order.customer_status_id || ORDER_DEFAULT_VALUES.CUSTOMER_STATUS_ID,
+                    factory: order.factory_status_id || ORDER_DEFAULT_VALUES.FACTORY_STATUS_ID,
+                    delivery: order.delivery_status_id || ORDER_DEFAULT_VALUES.DELIVERY_STATUS_ID
+                });
 
                 getOrderItems(order.id).then(orderItems => {
                     if (orderItems.length > 0) {
@@ -158,6 +196,7 @@ export const OrderCreate: React.FC = () => {
                             size: item.size,
                             type: item.type,
                             quantity: item.quantity,
+                            unit_price_usd: item.unit_price_usd || 0,
                         })));
                         setSelectedProducts(orderItems.map(() => null));
                     }
@@ -185,20 +224,32 @@ export const OrderCreate: React.FC = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-    ) => {
+    // Handler for form data changes (used by sections)
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
+        
+        // All fields (including financial) go into formData
         setFormData((prev) => ({
             ...prev,
-            [name]: value,
+            [name]: typeof value === 'string' && ['itemTotalUsd', 'discountRate', 'buyerPaidUsd', 'orderEarningsUsd', 'exchangeRate', 'shippingFeeUsd', 'refundFeeUsd', 'otherFeeUsd'].includes(name)
+                ? Number(value)
+                : value,
         }));
+        
+        // Clear error when user types
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: '' }));
+        }
+    };
+
+    // Handler for status changes
+    const handleStatusChange = (type: 'general' | 'customer' | 'factory' | 'delivery', value: number) => {
+        setStatusValues(prev => ({ ...prev, [type]: value }));
     };
 
     const handleItemChange = (index: number, field: keyof OrderItemFormData, value: string | number) => {
         const newItems = [...items];
         newItems[index] = { ...newItems[index], [field]: value };
-
         setItems(newItems);
 
         if (errors[`item_${field}_${index}`]) {
@@ -218,6 +269,7 @@ export const OrderCreate: React.FC = () => {
             size: '',
             type: '',
             quantity: ORDER_DEFAULT_VALUES.ITEM_QUANTITY,
+            unit_price_usd: 0,
         }]);
         setSelectedProducts([...selectedProducts, null]);
     };
@@ -229,87 +281,64 @@ export const OrderCreate: React.FC = () => {
         }
     };
 
-    const handleExchangeRateChange = (newRate: number) => {
-        setExchangeRate(newRate);
-    };
-
-    const handleStatusChange = (type: 'general' | 'customer' | 'factory' | 'delivery', value: number) => {
-        switch (type) {
-            case 'general':
-                setGeneralStatusId(value);
-                break;
-            case 'customer':
-                setCustomerStatusId(value);
-                break;
-            case 'factory':
-                setFactoryStatusId(value);
-                break;
-            case 'delivery':
-                setDeliveryStatusId(value);
-                break;
-        }
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('🎯 handleSubmit called!');
-        console.log('📋 Form data:', formData);
-        console.log('📦 Items:', items);
 
         if (!validateForm()) {
-            console.log('❌ Form validation failed:', errors);
             return;
         }
-        
-        console.log('✅ Form validation passed');
 
         try {
             const financialData: Partial<Order> = {
-                item_total_usd: itemTotal,
-                discount_rate: discountRate,
-                buyer_paid_usd: buyerPaidUSD,
-                order_earnings_usd: orderEarnings,
-                exchange_rate: exchangeRate,
+                item_total_usd: formData.itemTotalUsd || 0,
+                discount_rate: formData.discountRate || 0,
+                buyer_paid_usd: formData.buyerPaidUsd || 0,
+                order_earnings_usd: formData.orderEarningsUsd || 0,
+                exchange_rate: formData.exchangeRate || ORDER_DEFAULT_VALUES.EXCHANGE_RATE,
                 item_total_vnd: itemTotalVND,
                 buyer_paid_vnd: buyerPaidVND,
                 order_earnings_vnd: orderEarningsVND,
-                shipping_fee_usd: 0,
-                shipping_exchange_rate: exchangeRate,
-                shipping_fee_vnd: 0,
-                refund_fee_usd: 0,
-                refund_fee_exchange_rate: exchangeRate,
-                refund_fee_vnd: 0,
-                other_fee_usd: 0,
-                other_fee_exchange_rate: exchangeRate,
-                other_fee_vnd: 0,
-                profit_usd: orderEarnings,
-                profit_vnd: orderEarningsVND,
-                general_status_id: generalStatusId,
-                customer_status_id: customerStatusId,
-                factory_status_id: factoryStatusId,
-                delivery_status_id: deliveryStatusId,
+                shipping_fee_usd: formData.shippingFeeUsd || 0,
+                shipping_exchange_rate: formData.exchangeRate || ORDER_DEFAULT_VALUES.EXCHANGE_RATE,
+                shipping_fee_vnd: (formData.shippingFeeUsd || 0) * (formData.exchangeRate || ORDER_DEFAULT_VALUES.EXCHANGE_RATE),
+                refund_fee_usd: formData.refundFeeUsd || 0,
+                refund_fee_exchange_rate: formData.exchangeRate || ORDER_DEFAULT_VALUES.EXCHANGE_RATE,
+                refund_fee_vnd: (formData.refundFeeUsd || 0) * (formData.exchangeRate || ORDER_DEFAULT_VALUES.EXCHANGE_RATE),
+                other_fee_usd: formData.otherFeeUsd || 0,
+                other_fee_exchange_rate: formData.exchangeRate || ORDER_DEFAULT_VALUES.EXCHANGE_RATE,
+                other_fee_vnd: (formData.otherFeeUsd || 0) * (formData.exchangeRate || ORDER_DEFAULT_VALUES.EXCHANGE_RATE),
+                profit_usd: (formData.orderEarningsUsd || 0) - (formData.shippingFeeUsd || 0) - (formData.refundFeeUsd || 0) - (formData.otherFeeUsd || 0),
+                profit_vnd: orderEarningsVND - (formData.shippingFeeUsd || 0) * (formData.exchangeRate || ORDER_DEFAULT_VALUES.EXCHANGE_RATE) - (formData.refundFeeUsd || 0) * (formData.exchangeRate || ORDER_DEFAULT_VALUES.EXCHANGE_RATE) - (formData.otherFeeUsd || 0) * (formData.exchangeRate || ORDER_DEFAULT_VALUES.EXCHANGE_RATE),
+                general_status_id: statusValues.general,
+                customer_status_id: statusValues.customer,
+                factory_status_id: statusValues.factory,
+                delivery_status_id: statusValues.delivery,
             };
 
             if (orderId) {
-                console.log('🔄 Updating existing order:', orderId);
                 await updateOrder(orderId, formData, financialData);
                 await updateOrderItems(parseInt(orderId, 10), items);
-                console.log('✅ Order updated, navigating...');
                 navigate(`/orders/${orderId}`);
             } else {
-                console.log('➕ Creating new order...');
                 const newOrder = await createOrder(formData, items, financialData);
-                console.log('✅ Order created:', newOrder.id);
                 navigate(`/orders/${newOrder.id}`);
             }
         } catch (error) {
-            console.error('❌ Failed to save order:', error);
+            console.error('Failed to save order:', error);
             alert('Có lỗi xảy ra. Vui lòng thử lại!');
         }
     };
 
     const handleReset = () => {
         setFormData({
+            actualShipDate: "",
+            carrierNotes: "",
+            carrierUnit: "",
+            internalTrackingNumber: "",
+            otherFeeExchangeRate: undefined,
+            refundFeeExchangeRate: undefined,
+            shippingExchangeRate: undefined,
+            trackingNumber: "",
             shop_code: selectedShop?.code || '',
             order_id: '',
             order_date: new Date().toISOString().split('T')[0],
@@ -319,23 +348,29 @@ export const OrderCreate: React.FC = () => {
             customer_phone: '',
             customer_notes: '',
             artist_code: '',
+            itemTotalUsd: 0,
+            discountRate: 0,
+            buyerPaidUsd: 0,
+            orderEarningsUsd: 0,
+            exchangeRate: ORDER_DEFAULT_VALUES.EXCHANGE_RATE,
+            shippingFeeUsd: 0,
+            refundFeeUsd: 0,
+            otherFeeUsd: 0
         });
         setItems([{
             sku: '',
             size: '',
             type: '',
             quantity: ORDER_DEFAULT_VALUES.ITEM_QUANTITY,
+            unit_price_usd: 0,
         }]);
         setSelectedProducts([null]);
-        setItemTotal(0);
-        setDiscountRate(0);
-        setBuyerPaidUSD(0);
-        setOrderEarnings(0);
-        setExchangeRate(ORDER_DEFAULT_VALUES.EXCHANGE_RATE);
-        setGeneralStatusId(ORDER_DEFAULT_VALUES.GENERAL_STATUS_ID);
-        setCustomerStatusId(ORDER_DEFAULT_VALUES.CUSTOMER_STATUS_ID);
-        setFactoryStatusId(ORDER_DEFAULT_VALUES.FACTORY_STATUS_ID);
-        setDeliveryStatusId(ORDER_DEFAULT_VALUES.DELIVERY_STATUS_ID);
+        setStatusValues({
+            general: ORDER_DEFAULT_VALUES.GENERAL_STATUS_ID,
+            customer: ORDER_DEFAULT_VALUES.CUSTOMER_STATUS_ID,
+            factory: ORDER_DEFAULT_VALUES.FACTORY_STATUS_ID,
+            delivery: ORDER_DEFAULT_VALUES.DELIVERY_STATUS_ID
+        });
         setErrors({});
     };
 
@@ -378,12 +413,7 @@ export const OrderCreate: React.FC = () => {
                                     />
                                     <OrderStatusSection
                                         mode="edit"
-                                        statusValues={{
-                                            general: generalStatusId,
-                                            customer: customerStatusId,
-                                            factory: factoryStatusId,
-                                            delivery: deliveryStatusId
-                                        }}
+                                        statusValues={statusValues}
                                         statusOptions={{
                                             general: generalStatuses,
                                             customer: customerStatuses,
@@ -405,7 +435,7 @@ export const OrderCreate: React.FC = () => {
                             )}
 
                             {activeTab === 'products' && (
-                                <ProductsListSection
+                                <OrderItemsSection
                                     mode="edit"
                                     items={items}
                                     selectedProducts={selectedProducts}
@@ -419,30 +449,24 @@ export const OrderCreate: React.FC = () => {
 
                             {activeTab === 'financial' && (
                                 <FinancialInputSection
-                                    itemTotal={itemTotal}
-                                    discountRate={discountRate}
-                                    buyerPaidUSD={buyerPaidUSD}
-                                    orderEarnings={orderEarnings}
-                                    exchangeRate={exchangeRate}
-                                    onItemTotalChange={setItemTotal}
-                                    onDiscountRateChange={setDiscountRate}
-                                    onbuyerPaidUSDChange={setBuyerPaidUSD}
-                                    onOrderEarningsChange={setOrderEarnings}
-                                    onExchangeRateChange={handleExchangeRateChange}
+                                    mode="edit"
+                                    formData={formData}
+                                    errors={errors}
+                                    onChange={handleChange}
                                 />
                             )}
                         </div>
 
                         <div className="lg:col-span-1">
                             <FinancialSummaryCard
-                                itemTotal={itemTotal}
+                                itemTotal={formData.itemTotalUsd || 0}
                                 itemTotalVND={itemTotalVND}
-                                discountRate={discountRate}
-                                buyerPaidUSD={buyerPaidUSD}
+                                discountRate={formData.discountRate || 0}
+                                buyerPaidUSD={formData.buyerPaidUsd || 0}
                                 buyerPaidVND={buyerPaidVND}
-                                orderEarnings={orderEarnings}
+                                orderEarnings={formData.orderEarningsUsd || 0}
                                 orderEarningsVND={orderEarningsVND}
-                                exchangeRate={exchangeRate}
+                                exchangeRate={formData.exchangeRate || ORDER_DEFAULT_VALUES.EXCHANGE_RATE}
                             />
                         </div>
                     </div>

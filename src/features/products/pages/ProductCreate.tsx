@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import type { ProductFormData } from '../../../types/product';
 import { useProductStore } from '../store/useProductStore';
 import { useShopStore } from "../../shops/store/useShopStore.ts";
+import { TextBox } from '../../../components/common/TextBox';
 
 export const ProductCreate: React.FC = () => {
     const { productId } = useParams<{ productId: string }>();
@@ -281,23 +282,17 @@ export const ProductCreate: React.FC = () => {
 
                             {/* Title */}
                             <div className="mb-4">
-                                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Tên sản phẩm <span className="text-red-500">*</span>
-                                </label>
-                                <textarea
-                                    id="title"
+                                <TextBox
+                                    label="Tên sản phẩm"
                                     name="title"
+                                    type="textarea"
                                     value={formData.title}
-                                    onChange={handleChange}
-                                    rows={3}
+                                    onChange={(name, value) => handleChange({ target: { name, value } } as any)}
                                     placeholder="Classic Black T-Shirt - Premium Cotton"
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${
-                                        errors.title ? 'border-red-500' : 'border-gray-300'
-                                    }`}
+                                    required
+                                    editable
+                                    error={errors.title}
                                 />
-                                {errors.title && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.title}</p>
-                                )}
                                 <p className="mt-1 text-sm text-gray-500">
                                     {formData.title.length} ký tự
                                 </p>
@@ -305,23 +300,17 @@ export const ProductCreate: React.FC = () => {
 
                             {/* Etsy URL */}
                             <div>
-                                <label htmlFor="etsy_url" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Link Etsy <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="url"
-                                    id="etsy_url"
+                                <TextBox
+                                    label="Link Etsy"
                                     name="etsy_url"
+                                    type="text"
                                     value={formData.etsy_url}
-                                    onChange={handleChange}
+                                    onChange={(name, value) => handleChange({ target: { name, value } } as any)}
                                     placeholder="https://www.etsy.com/listing/..."
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                                        errors.etsy_url ? 'border-red-500' : 'border-gray-300'
-                                    }`}
+                                    required
+                                    editable
+                                    error={errors.etsy_url}
                                 />
-                                {errors.etsy_url && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.etsy_url}</p>
-                                )}
                             </div>
                         </div>
 

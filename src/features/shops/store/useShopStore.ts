@@ -16,14 +16,14 @@ interface ShopStore {
 
     // Actions
     fetchShops: () => Promise<void>;
-    fetchShopById: (id: string) => Shop | undefined;
+    fetchShopById: (id: number) => Shop | undefined;
     createShop: (data: ShopFormData) => Promise<Shop>;
-    updateShop: (id: string, data: Partial<ShopFormData>) => Promise<Shop>;
-    deleteShop: (id: string) => Promise<void>;
-    toggleShopStatus: (id: string) => Promise<void>;
+    updateShop: (id: number, data: Partial<ShopFormData>) => Promise<Shop>;
+    deleteShop: (id: number) => Promise<void>;
+    toggleShopStatus: (id: number) => Promise<void>;
     searchShops: (query: string) => Promise<void>;
-    bulkDeleteShops: (ids: string[]) => Promise<void>;
-    bulkUpdateStatus: (ids: string[], is_active: boolean) => Promise<void>;
+    bulkDeleteShops: (ids: number[]) => Promise<void>;
+    bulkUpdateStatus: (ids: number[], is_active: boolean) => Promise<void>;
     clearError: () => void;
 }
 
@@ -49,7 +49,7 @@ export const useShopStore = create<ShopStore>()(
                 }
             },
 
-            fetchShopById: (id: string) => {
+            fetchShopById: (id: number) => {
                 return get().shops.find(s => s.id === id);
             },
 
@@ -72,7 +72,7 @@ export const useShopStore = create<ShopStore>()(
                 }
             },
 
-            updateShop: async (id: string, data: Partial<ShopFormData>) => {
+            updateShop: async (id: number, data: Partial<ShopFormData>) => {
                 set({ isLoading: true, error: null });
                 try {
                     const updatedShop = await shopServiceApi.update(id, data);
@@ -99,7 +99,7 @@ export const useShopStore = create<ShopStore>()(
                 }
             },
 
-            deleteShop: async (id: string) => {
+            deleteShop: async (id: number) => {
                 set({ isLoading: true, error: null });
                 try {
                     const success = await shopServiceApi.delete(id);
@@ -118,7 +118,7 @@ export const useShopStore = create<ShopStore>()(
                 }
             },
 
-            toggleShopStatus: async (id: string) => {
+            toggleShopStatus: async (id: number) => {
                 set({ isLoading: true, error: null });
                 try {
                     const toggledShop = await shopServiceApi.toggleStatus(id);
@@ -159,7 +159,7 @@ export const useShopStore = create<ShopStore>()(
                 }
             },
 
-            bulkDeleteShops: async (ids: string[]) => {
+            bulkDeleteShops: async (ids: number[]) => {
                 set({ isLoading: true, error: null });
                 try {
                     await shopServiceApi.bulkDelete(ids);
@@ -176,7 +176,7 @@ export const useShopStore = create<ShopStore>()(
                 }
             },
 
-            bulkUpdateStatus: async (ids: string[], is_active: boolean) => {
+            bulkUpdateStatus: async (ids: number[], is_active: boolean) => {
                 set({ isLoading: true, error: null });
                 try {
                     await shopServiceApi.bulkUpdateStatus(ids, is_active);

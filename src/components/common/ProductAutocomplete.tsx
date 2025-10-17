@@ -181,7 +181,7 @@ export const ProductAutocomplete: React.FC<ProductAutocompleteProps> = ({
                                         Active
                                     </span>
                                 </div>
-                                <p className="text-sm text-gray-600 truncate">
+                                <p className="text-sm text-gray-600 break-words">
                                     {product.title}
                                 </p>
                             </div>

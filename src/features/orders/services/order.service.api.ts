@@ -5,6 +5,45 @@ import type { Order, OrderFormData, OrderItem, OrderItemFormData } from '../../.
 import type { Database } from '../../../types/supabase.ts';
 
 /**
+ * Helper function to convert camelCase to snake_case for database fields
+ */
+const convertToSnakeCase = (data: Record<string, unknown>): Record<string, unknown> => {
+    const camelToSnakeMap: Record<string, string> = {
+        'itemTotalUsd': 'item_total_usd',
+        'discountRate': 'discount_rate',
+        'buyerPaidUsd': 'buyer_paid_usd',
+        'orderEarningsUsd': 'order_earnings_usd',
+        'exchangeRate': 'exchange_rate',
+        'itemTotalVnd': 'item_total_vnd',
+        'buyerPaidVnd': 'buyer_paid_vnd',
+        'orderEarningsVnd': 'order_earnings_vnd',
+        'shippingFeeUsd': 'shipping_fee_usd',
+        'shippingExchangeRate': 'shipping_exchange_rate',
+        'shippingFeeVnd': 'shipping_fee_vnd',
+        'refundFeeUsd': 'refund_fee_usd',
+        'refundFeeExchangeRate': 'refund_fee_exchange_rate',
+        'refundFeeVnd': 'refund_fee_vnd',
+        'refundFeeNotes': 'refund_fee_notes',
+        'otherFeeUsd': 'other_fee_usd',
+        'otherFeeExchangeRate': 'other_fee_exchange_rate',
+        'otherFeeVnd': 'other_fee_vnd',
+        'otherFeeNotes': 'other_fee_notes',
+        'profitUsd': 'profit_usd',
+        'profitVnd': 'profit_vnd',
+        'commissionRate': 'commission_rate',
+    };
+
+    const snakeCaseData: Record<string, unknown> = {};
+    
+    Object.entries(data).forEach(([key, value]) => {
+        const snakeKey = camelToSnakeMap[key] || key;
+        snakeCaseData[snakeKey] = value;
+    });
+    
+    return snakeCaseData;
+};
+
+/**
  * Helper function to map database row to Order type
  */
 const mapToOrderRow = (data: Database['public']['Tables']['orders']['Row']): Order => {
@@ -56,7 +95,7 @@ const mapToOrderRow = (data: Database['public']['Tables']['orders']['Row']): Ord
 };
 
 /**
- * Helper function to map database row to OrderItem type
+ * Helper function to map database row to OrderItemInput type
  */
 const mapToOrderItemRow = (data: Database['public']['Tables']['order_items']['Row']): OrderItem => {
     return {
@@ -66,8 +105,6 @@ const mapToOrderItemRow = (data: Database['public']['Tables']['order_items']['Ro
         size: data.size,
         type: data.type,
         quantity: data.quantity,
-        unit_price_usd: data.unit_price_usd,
-        unit_price_vnd: data.unit_price_vnd,
         created_at: new Date(data.created_at),
         updated_at: new Date(data.updated_at),
     };
@@ -150,6 +187,9 @@ export const orderServiceApi = {
     ): Promise<Order> {
         console.log('🚀 Creating order with data:', { formData, items, financialData });
         
+        // Convert financial data to snake_case
+        const snakeCaseFinancialData = convertToSnakeCase(financialData as Record<string, unknown>);
+        
         // Insert order
         const rawInsertData = {
             shop_code: formData.shop_code,
@@ -161,7 +201,7 @@ export const orderServiceApi = {
             customer_phone: formData.customer_phone,
             customer_notes: formData.customer_notes,
             artist_code: formData.artist_code,
-            ...financialData,
+            ...snakeCaseFinancialData,
         };
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -235,10 +275,13 @@ export const orderServiceApi = {
         if (formData.customer_notes !== undefined) updateData.customer_notes = formData.customer_notes;
         if (formData.artist_code !== undefined) updateData.artist_code = formData.artist_code;
 
-        // Update financial data
+        // Update financial data - convert camelCase to snake_case
         if (financialData) {
-            Object.assign(updateData, financialData);
+            const snakeCaseFinancialData = convertToSnakeCase(financialData as Record<string, unknown>);
+            Object.assign(updateData, snakeCaseFinancialData);
         }
+
+        console.log('📝 Update data:', updateData);
 
         const { data, error } = await supabase
             .from('orders')
@@ -306,6 +349,18 @@ export const orderServiceApi = {
     async deleteOrder(id: string): Promise<void> {
         const numericId = parseInt(id, 10);
 
+        // Delete order items first
+        const { error: itemsError } = await supabase
+            .from('order_items')
+            .delete()
+            .eq('order_id', numericId);
+
+        if (itemsError) {
+            console.error('Error deleting order items:', itemsError);
+            throw new Error(handleSupabaseError(itemsError));
+        }
+
+        // Then delete the order
         const { error } = await supabase
             .from('orders')
             .delete()
@@ -410,7 +465,7 @@ export const orderServiceApi = {
         const { data, error } = await supabase
             .from('orders')
             .select('*')
-            .or(`order_id.ilike.%${query}%,customer_name.ilike.%${query}%,tracking_number.ilike.%${query}%`)
+            .or(`order_id.like.%${query}%,customer_name.like.%${query}%,tracking_number.like.%${query}%`)
             .order('order_date', { ascending: false });
 
         if (error) {
@@ -490,6 +545,18 @@ export const orderServiceApi = {
     async bulkDeleteOrders(ids: number[]): Promise<void> {
         if (!ids || ids.length === 0) return;
 
+        // Delete order items first
+        const { error: itemsError } = await supabase
+            .from('order_items')
+            .delete()
+            .in('order_id', ids);
+
+        if (itemsError) {
+            console.error('Error bulk deleting order items:', itemsError);
+            throw new Error(handleSupabaseError(itemsError));
+        }
+
+        // Then delete the orders
         const { error } = await supabase
             .from('orders')
             .delete()
