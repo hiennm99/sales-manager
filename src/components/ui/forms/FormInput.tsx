@@ -5,6 +5,7 @@
  */
 
 import React, { forwardRef, useEffect, useRef, useState } from "react";
+import { PenLine, Search, AlertCircle } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { theme } from "../../../styles/theme";
 
@@ -166,19 +167,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             className="w-full text-left text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-200 group flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span className="flex-1">{finalDisplayValue}</span>
-            <svg
-              className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-              />
-            </svg>
+            <PenLine className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         </div>
       );
@@ -207,19 +196,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
           {(icon || mode === "search") && (
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
               {mode === "search" ? (
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
+                <Search className="w-5 h-5" />
               ) : (
                 icon
               )}
@@ -268,13 +245,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             )}
           >
             {error && (
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <AlertCircle className="w-4 h-4" />
             )}
             {error || helperText}
           </p>
