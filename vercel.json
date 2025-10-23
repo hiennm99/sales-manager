@@ -2,8 +2,8 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "env": {
-    "DISCORD_BOT_TOKEN": "@discord_bot_token",
-    "DISCORD_CHANNEL_ID": "@discord_channel_id"
+    "VITE_DISCORD_BOT_TOKEN": "@VITE_DISCORD_BOT_TOKEN",
+    "VITE_DISCORD_CHANNEL_ID": "@VITE_DISCORD_CHANNEL_ID"
   },
   "functions": {
     "api/**/*.ts": {
