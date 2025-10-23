@@ -2,19 +2,18 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
-import { visualizer } from "rollup-plugin-visualizer"
 import Inspect from "vite-plugin-inspect"
 
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      jsxRuntime: "classic", // ép dùng runtime cũ để giữ forwardRef
+      babel: {
+        plugins: ["@babel/plugin-transform-react-jsx"],
+      },
+    }),
     tailwindcss(),
-    Inspect(),
-    visualizer({
-      open: false,
-      filename: "bundle-stats.html",
-      template: "treemap", // or sunburst
-    })
+    Inspect()
   ],
   resolve: {
     alias: {
@@ -32,6 +31,12 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['discord.js', 'dotenv'],
+    include: [
+      "react",
+      "react-dom",
+      "recharts",
+      "lucide-react"
+    ]
   },
   build: {
     assetsInlineLimit: 4096,
@@ -47,6 +52,10 @@ export default defineConfig({
           'ui': ['lucide-react', 'react-icons', 'clsx', 'tailwind-merge'],
           'utils': ['date-fns', 'zustand', 'gsap'],
         },
+        globals: {
+          react: "React",
+          "react-dom": "ReactDOM",
+        }
       },
     },
   },
