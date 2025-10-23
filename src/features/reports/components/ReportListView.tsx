@@ -1,8 +1,10 @@
 // src/features/reports/components/ReportListView.tsx
 
 import type { FinancialReportPeriod } from "@/types/financialReport";
-import { formatCurrency, getMonthName } from "@/types/financialReport";
+import { getMonthName } from "@/types/financialReport";
+import { formatUSD } from "@/lib/utils";
 import { FiCalendar, FiCheckCircle, FiClock, FiDownload, FiEye, FiLock, FiFileText, FiTrash2 } from "react-icons/fi";
+import { FaArrowCircleDown, FaArrowCircleUp } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
 import {
   expensesServiceApi,
@@ -156,15 +158,14 @@ export const ReportListView: React.FC<ReportListViewProps> = ({
               {/* Total Received */}
               <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg p-4 border border-emerald-200">
                 <div className="flex items-center gap-2 mb-2">
-                  <ArrowDownCircle className="w-4 h-4 text-emerald-600" />
+                  <FaArrowCircleDown className="w-4 h-4 text-emerald-600" />
                   <p className="text-xs font-medium text-emerald-900">
                     Tổng Tiền Đã Về
                   </p>
                 </div>
                 <p className="text-lg font-bold text-emerald-900">
-                  {formatCurrency(
+                  {formatUSD(
                     reportTotals[report.id]?.received || 0,
-                    "USD",
                   )}
                 </p>
               </div>
@@ -178,9 +179,8 @@ export const ReportListView: React.FC<ReportListViewProps> = ({
                   </p>
                 </div>
                 <p className="text-lg font-bold text-rose-900">
-                  {formatCurrency(
+                  {formatUSD(
                     reportTotals[report.id]?.expenses || 0,
-                    "USD",
                   )}
                 </p>
               </div>
@@ -188,15 +188,14 @@ export const ReportListView: React.FC<ReportListViewProps> = ({
               {/* Total Transferred */}
               <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
                 <div className="flex items-center gap-2 mb-2">
-                  <ArrowUpCircle className="w-4 h-4 text-orange-600" />
+                  <FaArrowCircleUp className="w-4 h-4 text-orange-600" />
                   <p className="text-xs font-medium text-orange-900">
                     Tổng Tiền Đã CK
                   </p>
                 </div>
                 <p className="text-lg font-bold text-orange-900">
-                  {formatCurrency(
+                  {formatUSD(
                     reportTotals[report.id]?.transferred || 0,
-                    "USD",
                   )}
                 </p>
               </div>
