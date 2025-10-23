@@ -1,6 +1,6 @@
 // components/ui/Selector.tsx
 
-import React from "react";
+import React, { forwardRef } from "react";
 import { cn } from "../../lib/utils";
 import type { SelectOption } from "../../types/common";
 
@@ -14,7 +14,7 @@ interface SelectorProps
   onChange?: (value: string) => void;
 }
 
-export const Selector = React.forwardRef<HTMLSelectElement, SelectorProps>(
+export const Selector = forwardRef<HTMLSelectElement, SelectorProps>(
   (
     {
       label,

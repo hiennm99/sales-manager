@@ -4,7 +4,7 @@
  * Supports multiple modes: view, edit, search, and inline editing
  */
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 import { cn } from "../../../lib/utils";
 import { theme } from "../../../styles/theme";
 
@@ -40,7 +40,7 @@ interface FormInputProps
  * - 'search': Search input with icon
  * - 'inline': Click to edit, displays as text until clicked
  */
-export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
+export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
   (
     {
       label,

@@ -1,6 +1,6 @@
 // components/ui/Input.tsx
 
-import React from "react";
+import React, { forwardRef } from "react";
 import { cn } from "../../lib/utils";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -11,7 +11,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   rightIcon?: React.ReactNode;
 }
 
-export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     { label, error, helperText, leftIcon, rightIcon, className, ...props },
     ref,
