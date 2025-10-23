@@ -2,15 +2,7 @@
 
 import { imageService } from "@/services/image.service";
 import { storageService } from "@/services/storage.service";
-import {
-  AlertCircle,
-  CheckCircle,
-  Eye,
-  Image as ImageIcon,
-  Trash2,
-  Upload,
-  X,
-} from "lucide-react";
+import { FiAlertCircle, FiCheckCircle, FiEye, FiTrash2, FiUpload, FiX } from "react-icons/fi";
 import React, { useRef, useState } from "react";
 
 interface ImageUploadProps {
@@ -195,7 +187,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               className="p-2 bg-white rounded-lg shadow-lg hover:bg-gray-100 transition-colors"
               title="Xem"
             >
-              <Eye className="w-4 h-4 text-gray-700" />
+              <FiEye className="w-4 h-4 text-gray-700" />
             </button>
             {onDelete && !disabled && (
               <button
@@ -203,7 +195,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                 className="p-2 bg-white rounded-lg shadow-lg hover:bg-red-50 transition-colors"
                 title="Xóa"
               >
-                <Trash2 className="w-4 h-4 text-red-600" />
+                <FiTrash2 className="w-4 h-4 text-red-600" />
               </button>
             )}
           </div>
@@ -252,7 +244,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             ) : (
               <>
                 <div className="p-3 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full">
-                  <Upload className="w-6 h-6 text-indigo-600" />
+                  <FiUpload className="w-6 h-6 text-indigo-600" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900">
@@ -275,7 +267,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       {/* Error Message */}
       {error && (
         <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+          <FiAlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="text-xs font-medium text-red-900">Lỗi</p>
             <p className="text-xs text-red-700 mt-0.5">{error}</p>
@@ -284,7 +276,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             onClick={() => setError(null)}
             className="text-red-600 hover:text-red-800"
           >
-            <X className="w-3 h-3" />
+            <FiX className="w-3 h-3" />
           </button>
         </div>
       )}
@@ -292,7 +284,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       {/* Success Message */}
       {success && (
         <div className="flex items-start gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-          <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+          <FiCheckCircle className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="text-xs font-medium text-green-900">Thành công</p>
             <p className="text-xs text-green-700 mt-0.5">{success}</p>
@@ -301,7 +293,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             onClick={() => setSuccess(null)}
             className="text-green-600 hover:text-green-800"
           >
-            <X className="w-3 h-3" />
+            <FiX className="w-3 h-3" />
           </button>
         </div>
       )}
@@ -317,7 +309,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               onClick={() => setShowPreviewModal(false)}
               className="absolute -top-10 right-0 text-white hover:text-gray-300"
             >
-              <X className="w-8 h-8" />
+              <FiX className="w-8 h-8" />
             </button>
             {preview.endsWith(".pdf") || currentImageUrl?.endsWith(".pdf") ? (
               <iframe

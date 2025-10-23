@@ -4,7 +4,7 @@
  * Modern form interface for managing shops
  */
 
-import { Save, Store, X } from "lucide-react";
+import { FiSave, FiShoppingBag, FiX } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { TextBox } from "../../../components/common";
@@ -102,7 +102,7 @@ export const ShopCreate: React.FC = () => {
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
-              <Store className="w-8 h-8 text-white" />
+              <FiShoppingBag className="w-8 h-8 text-white" />
             </div>
             <div>
               <h1 className="text-4xl font-bold text-gray-900">
@@ -130,7 +130,7 @@ export const ShopCreate: React.FC = () => {
                 required
                 error={errors.name}
                 onChange={handleChange}
-                icon={<Store className="w-5 h-5" />}
+                icon={<FiShoppingBag className="w-5 h-5" />}
               />
 
               <TextBox
@@ -164,7 +164,7 @@ export const ShopCreate: React.FC = () => {
                 onClick={() => navigate("/shops")}
                 className="inline-flex items-center gap-2 px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-medium"
               >
-                <X size={18} />
+                <FiX size={18} />
                 Hủy
               </button>
               <button
@@ -172,7 +172,7 @@ export const ShopCreate: React.FC = () => {
                 disabled={isSubmitting}
                 className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:shadow-lg transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Save size={18} />
+                <FiSave size={18} />
                 {isSubmitting
                   ? "Đang lưu..."
                   : isEditMode

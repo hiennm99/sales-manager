@@ -1,7 +1,7 @@
 // components/DocumentsTab.tsx
 
 import type { FinancialReportPeriod } from "@/types/financialReport";
-import { FileText } from "lucide-react";
+import { FiFileText } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
 import { CsvFileUpload } from "./CsvFileUpload";
 
@@ -57,7 +57,7 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({ report }) => {
       <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2 bg-green-100 rounded-lg">
-            <FileText className="w-5 h-5 text-green-600" />
+            <FiFileText className="w-5 h-5 text-green-600" />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-900">

@@ -1,6 +1,7 @@
 // features/auth/components/SignUpForm.tsx
 
-import { AlertCircle, Loader2, Mail, Lock, User } from "lucide-react";
+import { FiAlertCircle, FiMail, FiLock, FiUser } from "react-icons/fi";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
@@ -35,7 +36,7 @@ export const SignUpForm = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <User className="w-8 h-8 text-white" />
+            <FiUser className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Create Account
@@ -48,7 +49,7 @@ export const SignUpForm = () => {
         {/* Error Message */}
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <FiAlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-red-800">{error}</p>
           </div>
         )}
@@ -64,7 +65,7 @@ export const SignUpForm = () => {
               Full Name
             </label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 id="name"
                 type="text"
@@ -86,7 +87,7 @@ export const SignUpForm = () => {
               Email Address
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 id="email"
                 type="email"
@@ -108,7 +109,7 @@ export const SignUpForm = () => {
               Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 id="password"
                 type="password"
@@ -131,12 +132,12 @@ export const SignUpForm = () => {
           >
             {loading ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <AiOutlineLoading3Quarters className="w-5 h-5 animate-spin" />
                 <span>Creating Account...</span>
               </>
             ) : (
               <>
-                <User className="w-5 h-5" />
+                <FiUser className="w-5 h-5" />
                 <span>Sign Up</span>
               </>
             )}

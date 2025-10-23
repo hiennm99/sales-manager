@@ -1,6 +1,6 @@
 // src/features/orders/components/PreviewPictureGallery.tsx
 
-import { ChevronLeft, ChevronRight, Download, Trash2, X } from "lucide-react";
+import { FiChevronLeft, FiChevronRight, FiDownload, FiTrash2, FiX } from "react-icons/fi";
 import React, { useState } from "react";
 import type { OrderPreviewPicture } from "../../../types/orderPreview";
 import { orderPreviewServiceApi } from "../services/orderPreview.service.api";
@@ -97,8 +97,8 @@ export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
               className="w-full h-32 object-cover group-hover:opacity-75 transition-opacity"
             />
             <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-              <Download className="w-5 h-5 text-white" />
-              <Trash2 className="w-5 h-5 text-white" />
+              <FiDownload className="w-5 h-5 text-white" />
+              <FiTrash2 className="w-5 h-5 text-white" />
             </div>
             <div className="absolute top-1 right-1 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
               {index + 1}/{pictures.length}
@@ -131,7 +131,7 @@ export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
                 onClick={() => setSelectedIndex(null)}
                 className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <X className="w-6 h-6 text-gray-600" />
+                <FiX className="w-6 h-6 text-gray-600" />
               </button>
             </div>
 
@@ -157,7 +157,7 @@ export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
                   disabled={selectedIndex === 0}
                   className="p-2 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <ChevronLeft className="w-5 h-5" />
+                  <FiChevronLeft className="w-5 h-5" />
                 </button>
 
                 <button
@@ -165,7 +165,7 @@ export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
                   disabled={selectedIndex === pictures.length - 1}
                   className="p-2 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <ChevronRight className="w-5 h-5" />
+                  <FiChevronRight className="w-5 h-5" />
                 </button>
 
                 <div className="w-px h-6 bg-gray-300" />
@@ -174,7 +174,7 @@ export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
                   onClick={() => handleDownload(selectedPicture)}
                   className="p-2 hover:bg-gray-200 rounded-lg transition-colors flex items-center gap-2 text-sm"
                 >
-                  <Download className="w-4 h-4" />
+                  <FiDownload className="w-4 h-4" />
                   Download
                 </button>
 
@@ -185,7 +185,7 @@ export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
                   disabled={isDeleting}
                   className="p-2 hover:bg-red-100 rounded-lg transition-colors flex items-center gap-2 text-sm text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <FiTrash2 className="w-4 h-4" />
                   Delete
                 </button>
               </div>

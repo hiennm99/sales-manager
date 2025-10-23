@@ -5,7 +5,7 @@
  */
 
 import React, { forwardRef, useEffect, useRef, useState } from "react";
-import { PenLine, Search, AlertCircle } from "lucide-react";
+import { FiEdit2, FiSearch, FiAlertCircle } from "react-icons/fi";
 import { cn } from "../../../lib/utils";
 import { theme } from "../../../styles/theme";
 
@@ -167,7 +167,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             className="w-full text-left text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors duration-200 group flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span className="flex-1">{finalDisplayValue}</span>
-            <PenLine className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <FiEdit2 className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         </div>
       );
@@ -196,7 +196,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
           {(icon || mode === "search") && (
             <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
               {mode === "search" ? (
-                <Search className="w-5 h-5" />
+                <FiSearch className="w-5 h-5" />
               ) : (
                 icon
               )}
@@ -245,7 +245,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             )}
           >
             {error && (
-              <AlertCircle className="w-4 h-4" />
+              <FiAlertCircle className="w-4 h-4" />
             )}
             {error || helperText}
           </p>

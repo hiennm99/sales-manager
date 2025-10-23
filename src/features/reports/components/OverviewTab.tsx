@@ -2,14 +2,7 @@
 
 import type { FinancialReportPeriod } from "@/types/financialReport";
 import { formatCurrency } from "@/types/financialReport";
-import {
-  ArrowDownCircle,
-  ArrowUpCircle,
-  Image as ImageIcon,
-  Receipt,
-  TrendingDown,
-  TrendingUp,
-} from "lucide-react";
+import { FiFileText, FiTrendingDown, FiTrendingUp } from "react-icons/fi";
 import React from "react";
 import { ImageUpload } from "./ImageUpload";
 
@@ -42,7 +35,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
             <div className="p-3 bg-emerald-600 rounded-lg">
               <ArrowDownCircle className="w-6 h-6 text-white" />
             </div>
-            <TrendingUp className="w-5 h-5 text-emerald-600" />
+            <FiTrendingUp className="w-5 h-5 text-emerald-600" />
           </div>
           <h3 className="text-sm font-medium text-emerald-900 mb-1">
             Tổng Tiền Đã Về
@@ -57,9 +50,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-xl p-6 border border-rose-200">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-rose-600 rounded-lg">
-              <Receipt className="w-6 h-6 text-white" />
+              <FiFileText className="w-6 h-6 text-white" />
             </div>
-            <TrendingDown className="w-5 h-5 text-rose-600" />
+            <FiTrendingDown className="w-5 h-5 text-rose-600" />
           </div>
           <h3 className="text-sm font-medium text-rose-900 mb-1">
             Tổng Chi Phí
@@ -76,7 +69,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
             <div className="p-3 bg-orange-600 rounded-lg">
               <ArrowUpCircle className="w-6 h-6 text-white" />
             </div>
-            <TrendingDown className="w-5 h-5 text-orange-600" />
+            <FiTrendingDown className="w-5 h-5 text-orange-600" />
           </div>
           <h3 className="text-sm font-medium text-orange-900 mb-1">
             Tổng Tiền Đã Chuyển Khoản

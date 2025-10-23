@@ -4,7 +4,7 @@ import { DatePicker } from "@/components/ui/DatePicker";
 import { Select } from "@/components/ui/Select";
 import { CURRENCY_OPTIONS_SIMPLE, EXPENSE_CATEGORY_OPTIONS } from "@/constants";
 import type { Expense } from "@/types/financialReport";
-import { Image as ImageIcon, Plus, Receipt, X } from "lucide-react";
+import { FiPlus, FiFileText, FiX } from "react-icons/fi";
 import React, { useState } from "react";
 import { ImageUpload } from "./ImageUpload";
 
@@ -69,21 +69,21 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           onClick={() => setShowForm(true)}
           className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
         >
-          <Plus className="w-4 h-4" />
+          <FiPlus className="w-4 h-4" />
           <span>Thêm Chi Phí</span>
         </button>
       ) : (
         <div className="bg-white border-2 border-red-200 rounded-xl p-6 space-y-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <Receipt className="w-5 h-5 text-red-600" />
+              <FiFileText className="w-5 h-5 text-red-600" />
               Thêm Chi Phí
             </h3>
             <button
               onClick={() => setShowForm(false)}
               className="text-gray-500 hover:text-gray-700"
             >
-              <X className="w-5 h-5" />
+              <FiX className="w-5 h-5" />
             </button>
           </div>
 

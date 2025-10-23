@@ -3,7 +3,7 @@
 import { EmployeeList } from "@/features/employees";
 import { ShopListAdmin } from "@/features/shops";
 import { StatusList } from "@/features/statuses";
-import { Settings, Store, Tag, Users } from "lucide-react";
+import { FiSettings, FiShoppingBag, FiTag, FiUsers } from "react-icons/fi";
 import React, { useState } from "react";
 
 type SettingsTab = "shops" | "employees" | "statuses";
@@ -24,7 +24,7 @@ export const SettingsPage: React.FC = () => {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg">
-              <Settings className="w-6 h-6 text-white" />
+              <FiSettings className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Cài Đặt</h1>

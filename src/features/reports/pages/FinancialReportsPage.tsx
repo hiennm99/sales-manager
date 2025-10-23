@@ -18,17 +18,7 @@ import type {
   FinancialReportPeriod,
 } from "@/types/financialReport";
 import { formatCurrency } from "@/types/financialReport";
-import {
-  Calendar,
-  CheckCircle,
-  Download,
-  FileText,
-  Image,
-  List,
-  Plus,
-  Upload,
-  XCircle,
-} from "lucide-react";
+import { FiCalendar, FiCheckCircle, FiDownload, FiFileText, FiImage, FiList, FiPlus, FiUpload, FiXCircle } from "react-icons/fi";
 import React, { useCallback, useEffect, useState } from "react";
 import { DataTableTab } from "../components/DataTableTab";
 import { DocumentsTab } from "../components/DocumentsTab";
@@ -347,7 +337,7 @@ export const FinancialReportsPage: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
-                <FileText className="w-6 h-6 text-white" />
+                <FiFileText className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
@@ -386,7 +376,7 @@ export const FinancialReportsPage: React.FC = () => {
                 onClick={() => setShowCreateModal(true)}
                 className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg"
               >
-                <Plus className="w-5 h-5" />
+                <FiPlus className="w-5 h-5" />
                 Tạo Báo Cáo Mới
               </button>
             </div>
@@ -418,7 +408,7 @@ export const FinancialReportsPage: React.FC = () => {
               onClick={handleBackToList}
               className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <List className="w-4 h-4" />
+              <FiList className="w-4 h-4" />
               Quay Lại Danh Sách
             </button>
 

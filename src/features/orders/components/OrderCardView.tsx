@@ -1,6 +1,6 @@
 // src/features/orders/components/OrderCardView.tsx
 
-import { Calendar, Eye, Phone, PenLine, Trash2 } from "lucide-react";
+import { FiCalendar, FiEye, FiPhone, FiEdit2, FiTrash2 } from "react-icons/fi";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { formatUSD, formatVND } from "../../../lib/utils";
@@ -122,21 +122,21 @@ export const OrderCardView: React.FC<OrderCardViewProps> = ({
                     title="Xem chi tiết"
                     className="p-3 bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 rounded-xl transition-all duration-300 transform hover:scale-110 hover:rotate-12 shadow-lg"
                   >
-                    <Eye size={18} />
+                    <FiEye size={18} />
                   </button>
                   <button
                     onClick={() => navigate(`/orders/${order.id}/edit`)}
                     title="Chỉnh sửa"
                     className="p-3 bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 rounded-xl transition-all duration-300 transform hover:scale-110 hover:-rotate-12 shadow-lg"
                   >
-                    <PenLine size={18} />
+                    <FiEdit2 size={18} />
                   </button>
                   <button
                     onClick={() => onDeleteOrder(order.id.toString())}
                     title="Xóa"
                     className="p-3 bg-white/20 backdrop-blur-sm text-white hover:bg-red-500 rounded-xl transition-all duration-300 transform hover:scale-110 hover:rotate-12 shadow-lg"
                   >
-                    <Trash2 size={18} />
+                    <FiTrash2 size={18} />
                   </button>
                 </div>
               </div>
@@ -159,7 +159,7 @@ export const OrderCardView: React.FC<OrderCardViewProps> = ({
                     {order.customer_name}
                   </p>
                   <div className="flex items-center gap-2 text-lg text-gray-600 hover:text-blue-600 transition-colors">
-                    <Phone className="w-5 h-5 text-green-500 animate-pulse" />
+                    <FiPhone className="w-5 h-5 text-green-500 animate-pulse" />
                     <span className="font-bold">
                       {order.customer_phone || "📞 Chưa có SĐT"}
                     </span>
@@ -170,7 +170,7 @@ export const OrderCardView: React.FC<OrderCardViewProps> = ({
               {/* Dates */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-2xl border-2 border-blue-200 transform hover:scale-105 transition-transform">
-                  <Calendar className="w-8 h-8 text-blue-600 animate-bounce" />
+                  <FiCalendar className="w-8 h-8 text-blue-600 animate-bounce" />
                   <div>
                     <p className="text-blue-600 font-bold text-sm">
                       📅 Ngày đặt
@@ -181,7 +181,7 @@ export const OrderCardView: React.FC<OrderCardViewProps> = ({
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-orange-100 to-red-100 rounded-2xl border-2 border-orange-200 transform hover:scale-105 transition-transform">
-                  <Calendar className="w-8 h-8 text-orange-600 animate-bounce" />
+                  <FiCalendar className="w-8 h-8 text-orange-600 animate-bounce" />
                   <div>
                     <p className="text-orange-600 font-bold text-sm">
                       🚚 Ngày gửi

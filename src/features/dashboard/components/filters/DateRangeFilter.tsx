@@ -1,6 +1,6 @@
 // src/features/dashboard/components/filters/DateRangeFilter.tsx
 
-import { Calendar, ChevronDown } from "lucide-react";
+import { FiCalendar, FiChevronDown } from "react-icons/fi";
 import React, { useState } from "react";
 import type { QuickDateRange, TimePeriod } from "../../../../types/dashboard";
 
@@ -58,11 +58,11 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
       >
-        <Calendar className="w-4 h-4 text-gray-500" />
+        <FiCalendar className="w-4 h-4 text-gray-500" />
         <span className="text-sm font-medium text-gray-700">
           {selectedRangeLabel}
         </span>
-        <ChevronDown
+        <FiChevronDown
           className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? "rotate-180" : ""}`}
         />
       </button>

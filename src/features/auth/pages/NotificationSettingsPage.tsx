@@ -1,6 +1,8 @@
 // features/auth/pages/NotificationSettingsPage.tsx
 
-import { AlertCircle, ArrowLeft, Bell, Copy, Loader2, Save } from "lucide-react";
+import { FiAlertCircle, FiBell, FiCopy, FiSave } from "react-icons/fi";
+import { IoArrowBack } from "react-icons/io5";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
@@ -73,7 +75,7 @@ export const NotificationSettingsPage = () => {
   if (!initialized) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center pt-20">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <AiOutlineLoading3Quarters className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -87,11 +89,11 @@ export const NotificationSettingsPage = () => {
             onClick={() => navigate("/dashboard")}
             className="p-2 hover:bg-white rounded-lg transition-colors"
           >
-            <ArrowLeft className="w-6 h-6 text-gray-600" />
+            <IoArrowBack className="w-6 h-6 text-gray-600" />
           </button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-              <Bell className="w-8 h-8" />
+              <FiBell className="w-8 h-8" />
               Cài đặt thông báo
             </h1>
             <p className="text-gray-600 mt-1">
@@ -103,7 +105,7 @@ export const NotificationSettingsPage = () => {
         {/* Messages */}
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <FiAlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-red-800">{error}</p>
           </div>
         )}
@@ -151,7 +153,7 @@ export const NotificationSettingsPage = () => {
                     onClick={() => handleCopy(config.discord_webhook_url!, "discord")}
                     className="px-3 py-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 transition-colors"
                   >
-                    <Copy className="w-4 h-4" />
+                    <FiCopy className="w-4 h-4" />
                   </button>
                 )}
               </div>
@@ -197,7 +199,7 @@ export const NotificationSettingsPage = () => {
                     onClick={() => handleCopy(config.telegram_token!, "token")}
                     className="px-3 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
                   >
-                    <Copy className="w-4 h-4" />
+                    <FiCopy className="w-4 h-4" />
                   </button>
                 )}
               </div>
@@ -225,7 +227,7 @@ export const NotificationSettingsPage = () => {
                     onClick={() => handleCopy(config.telegram_chat_id!, "chat_id")}
                     className="px-3 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
                   >
-                    <Copy className="w-4 h-4" />
+                    <FiCopy className="w-4 h-4" />
                   </button>
                 )}
               </div>
@@ -262,12 +264,12 @@ export const NotificationSettingsPage = () => {
           >
             {saving ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <AiOutlineLoading3Quarters className="w-5 h-5 animate-spin" />
                 Đang lưu...
               </>
             ) : (
               <>
-                <Save className="w-5 h-5" />
+                <FiSave className="w-5 h-5" />
                 {copied ? "Đã sao chép!" : "Lưu cài đặt"}
               </>
             )}

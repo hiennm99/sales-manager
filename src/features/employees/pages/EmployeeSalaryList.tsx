@@ -1,17 +1,6 @@
 // src/features/employees/pages/EmployeeSalaryList.tsx
 
-import {
-  Calculator,
-  Calendar,
-  CheckCircle,
-  ChevronDown,
-  ChevronUp,
-  Clock,
-  DollarSign,
-  Edit,
-  Filter,
-  XCircle,
-} from "lucide-react";
+import { FiCalendar, FiCheckCircle, FiChevronDown, FiClock, FiDollarSign, FiFilter, FiXCircle } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
 import type { EmployeeSalary } from "../../../types/employee";
 import { SalaryEditModal } from "../components/SalaryEditModal";
@@ -176,21 +165,21 @@ export const EmployeeSalaryList = () => {
       case "draft":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-            <Clock className="w-3 h-3" />
+            <FiClock className="w-3 h-3" />
             Nháp
           </span>
         );
       case "approved":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-            <CheckCircle className="w-3 h-3" />
+            <FiCheckCircle className="w-3 h-3" />
             Đã duyệt
           </span>
         );
       case "paid":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-            <DollarSign className="w-3 h-3" />
+            <FiDollarSign className="w-3 h-3" />
             Đã thanh toán
           </span>
         );
@@ -244,7 +233,7 @@ export const EmployeeSalaryList = () => {
       {/* Filters */}
       <div className="bg-white rounded-lg shadow-md p-4">
         <div className="flex items-center gap-2 mb-4">
-          <Filter className="w-5 h-5 text-gray-600" />
+          <FiFilter className="w-5 h-5 text-gray-600" />
           <h2 className="text-lg font-semibold text-gray-900">Bộ lọc</h2>
         </div>
 
@@ -339,7 +328,7 @@ export const EmployeeSalaryList = () => {
       {/* Error */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-2 text-red-700">
-          <XCircle className="w-5 h-5" />
+          <FiXCircle className="w-5 h-5" />
           <span>{error}</span>
         </div>
       )}
@@ -395,7 +384,7 @@ export const EmployeeSalaryList = () => {
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
                         <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
+                          <FiCalendar className="w-4 h-4" />
                           {salary.salary_period_month}/
                           {salary.salary_period_year}
                         </div>
@@ -465,7 +454,7 @@ export const EmployeeSalaryList = () => {
                           {expandedRows.has(salary.id) ? (
                             <ChevronUp className="w-5 h-5" />
                           ) : (
-                            <ChevronDown className="w-5 h-5" />
+                            <FiChevronDown className="w-5 h-5" />
                           )}
                         </button>
                       </td>
@@ -571,7 +560,7 @@ export const EmployeeSalaryList = () => {
       {/* Empty State */}
       {!isLoading && salaries.length === 0 && (
         <div className="bg-white rounded-lg shadow-md p-12 text-center">
-          <DollarSign className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <FiDollarSign className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Chưa có dữ liệu lương
           </h3>

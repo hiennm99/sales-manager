@@ -4,14 +4,7 @@
  * Simple section component for shipping information
  */
 
-import {
-  Calendar,
-  DollarSign,
-  FileText,
-  Hash,
-  RefreshCw,
-  Truck,
-} from "lucide-react";
+import { FiCalendar, FiDollarSign, FiFileText, FiRefreshCw, FiTruck } from "react-icons/fi";
 import React from "react";
 import {
   OptionBox,
@@ -137,7 +130,7 @@ export const ShippingInfoSection: React.FC<ShippingInfoSectionProps> = ({
           editable={true}
           error={errors.carrierUnit}
           onChange={handleChange}
-          icon={<Truck className="w-5 h-5" />}
+          icon={<FiTruck className="w-5 h-5" />}
         />
 
         <TextBox
@@ -170,7 +163,7 @@ export const ShippingInfoSection: React.FC<ShippingInfoSectionProps> = ({
           editable={true}
           error={errors.actualShipDate}
           onChange={handleChange}
-          icon={<Calendar className="w-5 h-5" />}
+          icon={<FiCalendar className="w-5 h-5" />}
         />
         <p className="text-xs text-blue-600 italic ml-7">
           💡 Chọn đơn vị sẽ tự động set ngày giao thực tế = hôm nay
@@ -179,7 +172,7 @@ export const ShippingInfoSection: React.FC<ShippingInfoSectionProps> = ({
         {/* Shipping Fee Section */}
         <div className="space-y-3 pt-4 border-t-2 border-orange-200">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-            <DollarSign className="w-4 h-4" />
+            <FiDollarSign className="w-4 h-4" />
             Phí vận chuyển
           </h3>
 
@@ -192,7 +185,7 @@ export const ShippingInfoSection: React.FC<ShippingInfoSectionProps> = ({
             editable={true}
             error={errors.shippingFeeUsd}
             onChange={handleChange}
-            icon={<DollarSign className="w-5 h-5" />}
+            icon={<FiDollarSign className="w-5 h-5" />}
           />
 
           {(formData?.shippingFeeUsd || 0) > 0 && (
@@ -205,7 +198,7 @@ export const ShippingInfoSection: React.FC<ShippingInfoSectionProps> = ({
                 editable={true}
                 error={errors.shippingExchangeRate}
                 onChange={handleChange}
-                icon={<RefreshCw className="w-4 h-4" />}
+                icon={<FiRefreshCw className="w-4 h-4" />}
               />
               <div className="p-3 bg-orange-50 rounded-lg border border-orange-200">
                 <p className="text-xs text-gray-600">Phí ship VND:</p>
@@ -230,7 +223,7 @@ export const ShippingInfoSection: React.FC<ShippingInfoSectionProps> = ({
           placeholder="Ghi chú về vận chuyển, đóng gói..."
           error={errors.carrierNotes}
           onChange={handleChange}
-          icon={<FileText className="w-5 h-5" />}
+          icon={<FiFileText className="w-5 h-5" />}
         />
       </div>
     </SectionCard>

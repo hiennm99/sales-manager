@@ -1,6 +1,7 @@
 // features/auth/components/LoginForm.tsx
 
-import { LogIn, Mail, Lock, AlertCircle, Loader2 } from "lucide-react";
+import { FiMail, FiLock, FiAlertCircle } from "react-icons/fi";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
@@ -43,7 +44,7 @@ export const LoginForm = () => {
         {/* Error Message */}
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <FiAlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-red-800">{error}</p>
           </div>
         )}
@@ -59,7 +60,7 @@ export const LoginForm = () => {
               Email Address
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 id="email"
                 type="email"
@@ -81,7 +82,7 @@ export const LoginForm = () => {
               Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 id="password"
                 type="password"
@@ -103,7 +104,7 @@ export const LoginForm = () => {
           >
             {loading ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <AiOutlineLoading3Quarters className="w-5 h-5 animate-spin" />
                 <span>Signing In...</span>
               </>
             ) : (

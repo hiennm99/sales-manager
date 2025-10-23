@@ -2,15 +2,8 @@
 
 import { Select } from "@/components/ui/Select";
 import { YEAR_OPTIONS } from "@/constants";
-import {
-  ArrowLeft,
-  Calendar,
-  ChevronDown,
-  ChevronUp,
-  DollarSign,
-  TrendingDown,
-  TrendingUp,
-} from "lucide-react";
+import { IoArrowBack } from "react-icons/io5";
+import { FiCalendar, FiChevronDown, FiDollarSign, FiTrendingDown, FiTrendingUp } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { EmployeeSalaryPeriod } from "../../../types/employee";
@@ -137,7 +130,7 @@ export const EmployeeSalaryDetailPage: React.FC = () => {
             onClick={() => navigate("/employee-salary")}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <IoArrowBack className="w-5 h-5" />
             Quay lại
           </button>
 
@@ -193,7 +186,7 @@ export const EmployeeSalaryDetailPage: React.FC = () => {
               <span className="text-sm font-medium text-gray-600">
                 Tổng Lương Năm
               </span>
-              <DollarSign className="w-5 h-5 text-green-600" />
+              <FiDollarSign className="w-5 h-5 text-green-600" />
             </div>
             <p className="text-xs text-gray-500 mt-1">
               TB: {(getTotalOrders() / 12).toFixed(1)} đơn/tháng
@@ -205,7 +198,7 @@ export const EmployeeSalaryDetailPage: React.FC = () => {
               <span className="text-sm font-medium text-gray-600">
                 Lương Cơ Bản
               </span>
-              <Calendar className="w-5 h-5 text-orange-600" />
+              <FiCalendar className="w-5 h-5 text-orange-600" />
             </div>
             <p className="text-2xl font-bold text-gray-900">
               {formatCurrency(employee.base_salary)}
@@ -218,7 +211,7 @@ export const EmployeeSalaryDetailPage: React.FC = () => {
               <span className="text-sm font-medium text-gray-600">
                 Tổng Lợi Nhuận
               </span>
-              <TrendingDown className="w-5 h-5 text-emerald-600" />
+              <FiTrendingDown className="w-5 h-5 text-emerald-600" />
             </div>
             <p className="text-2xl font-bold text-gray-900">
               {formatCurrency(getTotalProfit())}
@@ -235,7 +228,7 @@ export const EmployeeSalaryDetailPage: React.FC = () => {
               <span className="text-sm font-medium text-gray-600">
                 LN Bán Hàng
               </span>
-              <TrendingUp className="w-5 h-5 text-purple-600" />
+              <FiTrendingUp className="w-5 h-5 text-purple-600" />
             </div>
             <p className="text-2xl font-bold text-purple-700">
               {formatCurrency(getTotalSellerProfit())}
@@ -252,7 +245,7 @@ export const EmployeeSalaryDetailPage: React.FC = () => {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-600">LN Vẽ</span>
-              <TrendingUp className="w-5 h-5 text-indigo-600" />
+              <FiTrendingUp className="w-5 h-5 text-indigo-600" />
             </div>
             <p className="text-2xl font-bold text-indigo-700">
               {formatCurrency(getTotalArtistProfit())}
@@ -335,7 +328,7 @@ export const EmployeeSalaryDetailPage: React.FC = () => {
                             {expandedRows.has(index) ? (
                               <ChevronUp className="w-5 h-5" />
                             ) : (
-                              <ChevronDown className="w-5 h-5" />
+                              <FiChevronDown className="w-5 h-5" />
                             )}
                           </button>
                         </td>

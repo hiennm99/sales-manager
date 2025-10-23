@@ -1,13 +1,6 @@
 // src/features/orders/components/OrderForm.tsx
 
-import {
-  DollarSign,
-  FileText,
-  Package,
-  Trash2,
-  Truck,
-  User,
-} from "lucide-react";
+import { FiDollarSign, FiFileText, FiPackage, FiTrash2, FiTruck, FiUser } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ActionButtons } from "../../../components/common";
@@ -144,49 +137,49 @@ export const OrderForm: React.FC<OrderFormProps> = ({
           {
             id: "order-info",
             label: "Thông tin đơn",
-            icon: <FileText className="w-5 h-5" />,
+            icon: <FiFileText className="w-5 h-5" />,
           },
           {
             id: "customer",
             label: "Khách hàng",
-            icon: <User className="w-5 h-5" />,
+            icon: <FiUser className="w-5 h-5" />,
           },
           {
             id: "products",
             label: "Sản phẩm",
-            icon: <Package className="w-5 h-5" />,
+            icon: <FiPackage className="w-5 h-5" />,
           },
           {
             id: "financial",
             label: "Tài chính",
-            icon: <DollarSign className="w-5 h-5" />,
+            icon: <FiDollarSign className="w-5 h-5" />,
           },
         ]
       : [
           {
             id: "order-info",
             label: "Thông tin đơn",
-            icon: <FileText className="w-5 h-5" />,
+            icon: <FiFileText className="w-5 h-5" />,
           },
           {
             id: "customer",
             label: "Khách hàng",
-            icon: <User className="w-5 h-5" />,
+            icon: <FiUser className="w-5 h-5" />,
           },
           {
             id: "shipping",
             label: "Vận chuyển",
-            icon: <Truck className="w-5 h-5" />,
+            icon: <FiTruck className="w-5 h-5" />,
           },
           {
             id: "products",
             label: "Sản phẩm",
-            icon: <Package className="w-5 h-5" />,
+            icon: <FiPackage className="w-5 h-5" />,
           },
           {
             id: "financial",
             label: "Tài chính",
-            icon: <DollarSign className="w-5 h-5" />,
+            icon: <FiDollarSign className="w-5 h-5" />,
           },
         ];
 
@@ -528,7 +521,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
               onClick={handleDeleteClick}
               className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl hover:from-red-700 hover:to-rose-700 shadow-lg hover:shadow-xl transition-all duration-200 font-medium"
             >
-              <Trash2 className="w-5 h-5" />
+              <FiTrash2 className="w-5 h-5" />
               Xóa đơn hàng
             </button>
           )}

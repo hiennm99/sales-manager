@@ -1,6 +1,6 @@
 // components/layout/Navbar.tsx
 
-import { Bell, Menu, Search } from "lucide-react";
+import { FiBell, FiMenu, FiSearch } from "react-icons/fi";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../features/auth/store/useAuthStore";
@@ -40,7 +40,7 @@ export const Navbar: React.FC = () => {
             variant="ghost"
             size="sm"
             onClick={toggleSidebar}
-            leftIcon={<Menu size={20} />}
+            leftIcon={<FiMenu size={20} />}
           >
             {!isSidebarCollapsed && "Menu"}
           </Button>
@@ -53,7 +53,7 @@ export const Navbar: React.FC = () => {
                 placeholder="Tìm kiếm..."
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
               />
-              <Search
+              <FiSearch
                 size={20}
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
               />
@@ -64,7 +64,7 @@ export const Navbar: React.FC = () => {
         {/* Right side */}
         <div className="flex items-center gap-4">
           {/* Notifications */}
-          <Button variant="ghost" size="sm" leftIcon={<Bell size={20} />} />
+          <Button variant="ghost" size="sm" leftIcon={<FiBell size={20} />} />
 
           {/* User menu */}
           <div className="relative">

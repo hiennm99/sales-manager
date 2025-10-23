@@ -1,6 +1,8 @@
 // features/auth/pages/ProfilePage.tsx
 
-import { ArrowLeft, Edit2, Loader2 } from "lucide-react";
+import { IoArrowBack } from "react-icons/io5";
+import { FiEdit2 } from "react-icons/fi";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
@@ -23,7 +25,7 @@ export const ProfilePage = () => {
   if (!initialized || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <AiOutlineLoading3Quarters className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -58,7 +60,7 @@ export const ProfilePage = () => {
             onClick={() => navigate("/dashboard")}
             className="p-2 hover:bg-white rounded-lg transition-colors"
           >
-            <ArrowLeft className="w-6 h-6 text-gray-600" />
+            <IoArrowBack className="w-6 h-6 text-gray-600" />
           </button>
           <h1 className="text-3xl font-bold text-gray-900">Hồ sơ cá nhân</h1>
         </div>
@@ -129,7 +131,7 @@ export const ProfilePage = () => {
                   onClick={() => setIsEditing(true)}
                   className="self-start md:self-center px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
                 >
-                  <Edit2 className="w-4 h-4" />
+                  <FiEdit2 className="w-4 h-4" />
                   Chỉnh sửa
                 </button>
               </div>

@@ -4,7 +4,7 @@
  * Simple section component for customer information
  */
 
-import { Mail, MapPin, MessageSquare, Phone, User } from "lucide-react";
+import { FiMail, FiMapPin, FiMessageSquare, FiPhone, FiUser } from "react-icons/fi";
 import React from "react";
 import { SectionCard, TextBox } from "../../../../components/common";
 import type { OrderFormData } from "../../../../types/order";
@@ -67,7 +67,7 @@ export const CustomerInfoSection: React.FC<CustomerInfoSectionProps> = ({
           required
           error={errors.customerName}
           onChange={handleChange}
-          icon={<User className="w-5 h-5" />}
+          icon={<FiUser className="w-5 h-5" />}
         />
 
         <div className="md:col-span-2">
@@ -81,7 +81,7 @@ export const CustomerInfoSection: React.FC<CustomerInfoSectionProps> = ({
             required
             error={errors.customerAddress}
             onChange={handleChange}
-            icon={<MapPin className="w-5 h-5" />}
+            icon={<FiMapPin className="w-5 h-5" />}
           />
         </div>
 
@@ -92,7 +92,7 @@ export const CustomerInfoSection: React.FC<CustomerInfoSectionProps> = ({
           editable={true}
           placeholder=""
           onChange={handleChange}
-          icon={<Phone className="w-5 h-5" />}
+          icon={<FiPhone className="w-5 h-5" />}
         />
 
         <TextBox
@@ -102,7 +102,7 @@ export const CustomerInfoSection: React.FC<CustomerInfoSectionProps> = ({
           editable={true}
           placeholder=""
           onChange={handleChange}
-          icon={<Mail className="w-5 h-5" />}
+          icon={<FiMail className="w-5 h-5" />}
         />
 
         <div className="md:col-span-2">
@@ -114,7 +114,7 @@ export const CustomerInfoSection: React.FC<CustomerInfoSectionProps> = ({
             editable={true}
             placeholder="Ghi chú về khách hàng..."
             onChange={handleChange}
-            icon={<MessageSquare className="w-5 h-5" />}
+            icon={<FiMessageSquare className="w-5 h-5" />}
           />
         </div>
       </div>

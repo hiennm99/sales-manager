@@ -1,6 +1,6 @@
 // src/features/orders/components/OrderDetailTabs.tsx
 
-import { History, Image } from "lucide-react";
+import { FiClock, FiImage } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
 import type { OrderHistory } from "../../../types/orderHistory";
 import type { OrderPreviewPicture } from "../../../types/orderPreview";
@@ -106,7 +106,7 @@ export const OrderDetailTabs: React.FC<OrderDetailTabsProps> = ({
               : "text-gray-600 hover:text-gray-900"
           }`}
         >
-          <Image className="w-4 h-4" />
+          <FiImage className="w-4 h-4" />
           Preview Pictures ({pictures.length})
         </button>
         <button
@@ -117,7 +117,7 @@ export const OrderDetailTabs: React.FC<OrderDetailTabsProps> = ({
               : "text-gray-600 hover:text-gray-900"
           }`}
         >
-          <History className="w-4 h-4" />
+          <FiClock className="w-4 h-4" />
           History ({history.length})
         </button>
       </div>

@@ -1,6 +1,7 @@
 // features/auth/components/SignUpWithEmployee.tsx
 
-import { AlertCircle, Loader2, Mail, Lock, Users } from "lucide-react";
+import { FiAlertCircle, FiMail, FiLock, FiUsers } from "react-icons/fi";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { employeeServiceApi } from "../../employees/services/employee.service.api";
@@ -68,7 +69,7 @@ export const SignUpWithEmployee = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <Users className="w-8 h-8 text-white" />
+            <FiUsers className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Create Account
@@ -79,7 +80,7 @@ export const SignUpWithEmployee = () => {
         {/* Error Message */}
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+            <FiAlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-red-800">{error}</p>
           </div>
         )}
@@ -95,7 +96,7 @@ export const SignUpWithEmployee = () => {
               Email Address
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 id="email"
                 type="email"
@@ -117,7 +118,7 @@ export const SignUpWithEmployee = () => {
               Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 id="password"
                 type="password"
@@ -140,7 +141,7 @@ export const SignUpWithEmployee = () => {
               Select Employee Profile
             </label>
             <div className="relative">
-              <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+              <FiUsers className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
               <select
                 id="employee"
                 value={selectedEmployeeId || ""}
@@ -174,12 +175,12 @@ export const SignUpWithEmployee = () => {
           >
             {loading ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <AiOutlineLoading3Quarters className="w-5 h-5 animate-spin" />
                 <span>Creating Account...</span>
               </>
             ) : (
               <>
-                <Users className="w-5 h-5" />
+                <FiUsers className="w-5 h-5" />
                 <span>Sign Up & Link Employee</span>
               </>
             )}

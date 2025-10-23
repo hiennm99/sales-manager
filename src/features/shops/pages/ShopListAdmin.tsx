@@ -4,7 +4,7 @@
  * Modern admin interface for managing shops
  */
 
-import { Edit2, Plus, Search, Trash2 } from "lucide-react";
+import { FiEdit2, FiPlus, FiSearch, FiTrash2 } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useShopStore } from "../store/useShopStore";
@@ -60,7 +60,7 @@ export const ShopListAdmin: React.FC = () => {
               onClick={() => navigate("/shops/create")}
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:shadow-lg transition-all duration-200 font-semibold"
             >
-              <Plus size={20} />
+              <FiPlus size={20} />
               Thêm cửa hàng
             </button>
           </div>
@@ -116,7 +116,7 @@ export const ShopListAdmin: React.FC = () => {
         {/* Filters */}
         <div className="mb-6 flex gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+            <FiSearch className="absolute left-3 top-3 text-gray-400" size={20} />
             <input
               type="text"
               placeholder="Tìm kiếm theo tên hoặc mã..."
@@ -192,7 +192,7 @@ export const ShopListAdmin: React.FC = () => {
                           className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
                           title="Chỉnh sửa"
                         >
-                          <Edit2 size={18} />
+                          <FiEdit2 size={18} />
                         </button>
                         <button
                           onClick={() => {
@@ -208,7 +208,7 @@ export const ShopListAdmin: React.FC = () => {
                           className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
                           title="Xóa"
                         >
-                          <Trash2 size={18} />
+                          <FiTrash2 size={18} />
                         </button>
                       </div>
                     </td>

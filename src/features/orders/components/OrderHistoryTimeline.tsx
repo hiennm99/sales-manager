@@ -1,14 +1,6 @@
 // src/features/orders/components/OrderHistoryTimeline.tsx
 
-import {
-  AlertCircle,
-  CheckCircle,
-  Edit3,
-  FileText,
-  Image,
-  Plus,
-  Truck,
-} from "lucide-react";
+import { FiAlertCircle, FiCheckCircle, FiFileText, FiImage, FiPlus, FiTruck } from "react-icons/fi";
 import React from "react";
 import type { OrderHistory } from "../../../types/orderHistory";
 
@@ -20,19 +12,19 @@ interface OrderHistoryTimelineProps {
 const getActionIcon = (actionType: string) => {
   switch (actionType) {
     case "created":
-      return <Plus className="w-4 h-4" />;
+      return <FiPlus className="w-4 h-4" />;
     case "picture_added":
-      return <Image className="w-4 h-4" />;
+      return <FiImage className="w-4 h-4" />;
     case "shipped":
-      return <Truck className="w-4 h-4" />;
+      return <FiTruck className="w-4 h-4" />;
     case "delivered":
-      return <CheckCircle className="w-4 h-4" />;
+      return <FiCheckCircle className="w-4 h-4" />;
     case "status_changed":
-      return <AlertCircle className="w-4 h-4" />;
+      return <FiAlertCircle className="w-4 h-4" />;
     case "updated":
       return <Edit3 className="w-4 h-4" />;
     default:
-      return <FileText className="w-4 h-4" />;
+      return <FiFileText className="w-4 h-4" />;
   }
 };
 

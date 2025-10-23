@@ -1,6 +1,7 @@
 // src/features/orders/components/PreviewPictureUpload.tsx
 
-import { Loader, Upload, X } from "lucide-react";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { FiUpload, FiX } from "react-icons/fi";
 import React, { useRef, useState } from "react";
 import type { OrderPreviewPicture } from "../../../types/orderPreview";
 import { orderPreviewServiceApi } from "../services/orderPreview.service.api";
@@ -118,12 +119,12 @@ export const PreviewPictureUpload: React.FC<PreviewPictureUploadProps> = ({
         >
           {isUploading ? (
             <>
-              <Loader className="w-8 h-8 text-blue-500 animate-spin" />
+              <AiOutlineLoading3Quarters className="w-8 h-8 text-blue-500 animate-spin" />
               <p className="text-sm text-gray-600">Uploading...</p>
             </>
           ) : (
             <>
-              <Upload className="w-8 h-8 text-gray-400" />
+              <FiUpload className="w-8 h-8 text-gray-400" />
               <div className="text-center">
                 <p className="text-sm font-medium text-gray-700">
                   Drag and drop your preview picture here
@@ -155,7 +156,7 @@ export const PreviewPictureUpload: React.FC<PreviewPictureUploadProps> = ({
       {/* Error message */}
       {error && (
         <div className="mt-3 flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <X className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+          <FiX className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
           <p className="text-sm text-red-700">{error}</p>
         </div>
       )}

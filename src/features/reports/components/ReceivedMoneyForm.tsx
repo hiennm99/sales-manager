@@ -4,7 +4,7 @@ import { DatePicker } from "@/components/ui/DatePicker";
 import { Select } from "@/components/ui/Select";
 import { CURRENCY_OPTIONS_SIMPLE } from "@/constants";
 import type { ReceivedMoney } from "@/types/financialReport";
-import { CheckCircle, Image as ImageIcon, Plus, X } from "lucide-react";
+import { FiCheckCircle, FiPlus, FiX } from "react-icons/fi";
 import React, { useState } from "react";
 import { ImageUpload } from "./ImageUpload";
 
@@ -71,21 +71,21 @@ export const ReceivedMoneyForm: React.FC<ReceivedMoneyFormProps> = ({
           onClick={() => setShowForm(true)}
           className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
         >
-          <Plus className="w-4 h-4" />
+          <FiPlus className="w-4 h-4" />
           <span>Thêm Tiền Đã Về</span>
         </button>
       ) : (
         <div className="bg-white border-2 border-green-200 rounded-xl p-6 space-y-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-600" />
+              <FiCheckCircle className="w-5 h-5 text-green-600" />
               Thêm Tiền Đã Về
             </h3>
             <button
               onClick={() => setShowForm(false)}
               className="text-gray-500 hover:text-gray-700"
             >
-              <X className="w-5 h-5" />
+              <FiX className="w-5 h-5" />
             </button>
           </div>
 

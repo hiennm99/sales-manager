@@ -1,6 +1,6 @@
 // src/features/dashboard/components/widgets/SummaryCard.tsx
 
-import { type LucideIcon, Minus, TrendingDown, TrendingUp } from "lucide-react";
+import { FiTrendingDown, FiTrendingUp } from "react-icons/fi";
 import React from "react";
 
 interface SummaryCardProps {
@@ -56,9 +56,9 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
 
     switch (trend.type) {
       case "up":
-        return <TrendingUp className="w-4 h-4 text-green-500" />;
+        return <FiTrendingUp className="w-4 h-4 text-green-500" />;
       case "down":
-        return <TrendingDown className="w-4 h-4 text-red-500" />;
+        return <FiTrendingDown className="w-4 h-4 text-red-500" />;
       default:
         return <Minus className="w-4 h-4 text-gray-500" />;
     }

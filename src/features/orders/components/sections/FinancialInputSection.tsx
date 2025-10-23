@@ -4,16 +4,7 @@
  * Simple section component for financial information
  */
 
-import {
-  AlertCircle,
-  CreditCard,
-  DollarSign,
-  Gift,
-  RefreshCw,
-  TrendingDown,
-  Wallet,
-  XCircle,
-} from "lucide-react";
+import { FiAlertCircle, FiCreditCard, FiDollarSign, FiRefreshCw, FiTrendingDown, FiXCircle } from "react-icons/fi";
 import React from "react";
 import { SectionCard, TextBox } from "../../../../components/common";
 import { DEFAULTS } from "../../../../constants/app-constants";
@@ -113,7 +104,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
             required
             error={errors.exchangeRate}
             onChange={handleChange}
-            icon={<RefreshCw className="w-5 h-5" />}
+            icon={<FiRefreshCw className="w-5 h-5" />}
           />
           <p className="text-xs text-purple-700 mt-2 ml-7">
             * Tỷ giá cho các giao dịch chính (sản phẩm, khách trả, thực nhận)
@@ -125,7 +116,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
           {/* Item Total - Auto-calculated from items */}
           <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
             <div className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-              <DollarSign className="w-4 h-4 text-blue-600" />
+              <FiDollarSign className="w-4 h-4 text-blue-600" />
               Tổng tiền sản phẩm (USD)
             </div>
             <div className="text-lg font-bold text-gray-900">
@@ -151,13 +142,13 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
             editable={true}
             error={errors.discountRate}
             onChange={handleChange}
-            icon={<TrendingDown className="w-5 h-5" />}
+            icon={<FiTrendingDown className="w-5 h-5" />}
           />
 
           {/* Subtotal - Calculated, always read-only */}
           <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
             <div className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-              <DollarSign className="w-4 h-4 text-gray-500" />
+              <FiDollarSign className="w-4 h-4 text-gray-500" />
               Tổng tiền sau giảm
             </div>
             <div className="text-lg font-bold text-gray-900">
@@ -178,7 +169,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
             required
             error={errors.buyerPaidUsd}
             onChange={handleChange}
-            icon={<CreditCard className="w-5 h-5" />}
+            icon={<FiCreditCard className="w-5 h-5" />}
           />
 
           <TextBox
@@ -198,7 +189,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
         {/* Fees Section */}
         <div className="space-y-4 pt-4 border-t-2 border-gray-200">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-            <AlertCircle className="w-4 h-4" />
+            <FiAlertCircle className="w-4 h-4" />
             Các khoản phí khấu trừ
           </h3>
 
@@ -213,7 +204,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
               editable={true}
               error={errors.refundFeeUsd}
               onChange={handleChange}
-              icon={<XCircle className="w-5 h-5" />}
+              icon={<FiXCircle className="w-5 h-5" />}
             />
 
             {(formData?.refundFeeUsd || 0) > 0 && (
@@ -228,7 +219,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
                   )}
                   editable={true}
                   onChange={handleChange}
-                  icon={<RefreshCw className="w-4 h-4" />}
+                  icon={<FiRefreshCw className="w-4 h-4" />}
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   ={" "}
@@ -255,7 +246,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
               editable={true}
               error={errors.otherFeeUsd}
               onChange={handleChange}
-              icon={<AlertCircle className="w-5 h-5" />}
+              icon={<FiAlertCircle className="w-5 h-5" />}
             />
 
             {(formData?.otherFeeUsd || 0) > 0 && (
@@ -270,7 +261,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
                   )}
                   editable={true}
                   onChange={handleChange}
-                  icon={<RefreshCw className="w-4 h-4" />}
+                  icon={<FiRefreshCw className="w-4 h-4" />}
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   ={" "}
@@ -324,7 +315,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
                   )}
                   editable={true}
                   onChange={handleChange}
-                  icon={<RefreshCw className="w-4 h-4" />}
+                  icon={<FiRefreshCw className="w-4 h-4" />}
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   ={" "}

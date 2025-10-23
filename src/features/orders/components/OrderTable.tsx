@@ -5,13 +5,13 @@
  */
 
 import {
-  AlertTriangle,
-  Clock,
-  Package,
-  PenLine,
-  Trash2,
-  Zap,
-} from "lucide-react";
+  FiAlertTriangle,
+  FiClock,
+  FiPackage,
+  FiEdit2,
+  FiTrash2,
+  FiZap,
+} from "react-icons/fi";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { formatUSD, formatVND } from "../../../lib/utils";
@@ -87,7 +87,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
       <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-50 via-white to-purple-50 border border-gray-200/50 shadow-sm">
         <div className="p-12 text-center">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 mb-6">
-            <Package className="w-10 h-10 text-blue-600" strokeWidth={1.5} />
+            <FiPackage className="w-10 h-10 text-blue-600" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
             Chưa có đơn hàng
@@ -172,7 +172,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                   <div className="flex items-center gap-2 flex-wrap">
                     {isOrderDelayed(order) ? (
                       <>
-                        <AlertTriangle
+                        <FiAlertTriangle
                           size={16}
                           className="text-red-500 animate-pulse flex-shrink-0"
                         />
@@ -180,13 +180,13 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                           {order.scheduled_ship_date}
                         </span>
                         <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full border border-red-300 whitespace-nowrap">
-                          <Clock size={12} />
+                          <FiClock size={12} />
                           Trễ {getDelayDays(order)} ngày
                         </span>
                       </>
                     ) : !order.actual_ship_date && isWithin3Days(order) ? (
                       <>
-                        <Zap
+                        <FiZap
                           size={16}
                           className="text-amber-500 animate-pulse flex-shrink-0"
                         />
@@ -194,7 +194,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                           {order.scheduled_ship_date}
                         </span>
                         <span className="inline-flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full border border-amber-300 whitespace-nowrap animate-pulse">
-                          <Clock size={12} />
+                          <FiClock size={12} />
                           Còn {getDaysRemaining(order)} ngày
                         </span>
                       </>
@@ -254,10 +254,9 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                       title="Chỉnh sửa"
                       className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded-lg transition-all duration-200 group/btn"
                     >
-                      <PenLine
+                      <FiEdit2
                         size={18}
                         className="group-hover/btn:scale-110 transition-transform"
-                        strokeWidth={2}
                       />
                     </button>
                     <button
@@ -265,10 +264,9 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                       title="Xóa"
                       className="p-2 text-red-600 hover:text-red-700 hover:bg-red-100 rounded-lg transition-all duration-200 group/btn"
                     >
-                      <Trash2
+                      <FiTrash2
                         size={18}
                         className="group-hover/btn:scale-110 transition-transform"
-                        strokeWidth={2}
                       />
                     </button>
                   </div>

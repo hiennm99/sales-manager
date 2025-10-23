@@ -1,6 +1,6 @@
 // src/features/employees/components/SalaryEditModal.tsx
 
-import { Save, X } from "lucide-react";
+import { FiSave, FiX } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import type { EmployeeSalary } from "../../../types/employee";
 
@@ -88,7 +88,7 @@ export const SalaryEditModal = ({
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
-            <X className="w-6 h-6" />
+            <FiX className="w-6 h-6" />
           </button>
         </div>
 
@@ -246,7 +246,7 @@ export const SalaryEditModal = ({
               disabled={isSaving}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
             >
-              <Save className="w-4 h-4" />
+              <FiSave className="w-4 h-4" />
               {isSaving ? "Đang lưu..." : "Lưu thay đổi"}
             </button>
           </div>

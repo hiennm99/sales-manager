@@ -6,12 +6,7 @@ import Inspect from "vite-plugin-inspect"
 
 export default defineConfig({
   plugins: [
-    react({
-      jsxRuntime: "classic", // ép dùng runtime cũ để giữ forwardRef
-      babel: {
-        plugins: ["@babel/plugin-transform-react-jsx"],
-      },
-    }),
+    react(),
     tailwindcss(),
     Inspect()
   ],
@@ -35,7 +30,7 @@ export default defineConfig({
       "react",
       "react-dom",
       "recharts",
-      "lucide-react"
+      "react-icons"
     ]
   },
   build: {
@@ -49,7 +44,7 @@ export default defineConfig({
           'recharts': ['recharts'],
           'supabase': ['@supabase/supabase-js'],
           'vendor': ['react', 'react-dom', 'react-router', 'react-router-dom'],
-          'ui': ['lucide-react', 'react-icons', 'clsx', 'tailwind-merge'],
+          'ui': ['react-icons', 'clsx', 'tailwind-merge'],
           'utils': ['date-fns', 'zustand', 'gsap'],
         },
         globals: {

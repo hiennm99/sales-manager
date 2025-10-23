@@ -4,7 +4,7 @@
  * Consistent action buttons for forms (Submit, Cancel, Delete)
  */
 
-import { Check, Trash2, X } from "lucide-react";
+import { FiCheck, FiTrash2, FiX } from "react-icons/fi";
 import React from "react";
 
 export interface FormActionsProps {
@@ -67,7 +67,7 @@ export const FormActions: React.FC<FormActionsProps> = ({
           transition-colors font-medium flex items-center justify-center gap-2
         `}
       >
-        <Check className="w-4 h-4" />
+        <FiCheck className="w-4 h-4" />
         {isLoading ? "Đang xử lý..." : submitText}
       </button>
 
@@ -84,7 +84,7 @@ export const FormActions: React.FC<FormActionsProps> = ({
             transition-colors font-medium flex items-center justify-center gap-2
           `}
         >
-          <X className="w-4 h-4" />
+          <FiX className="w-4 h-4" />
           {cancelText}
         </button>
       )}
@@ -102,7 +102,7 @@ export const FormActions: React.FC<FormActionsProps> = ({
             transition-colors font-medium flex items-center justify-center gap-2
           `}
         >
-          <Trash2 className="w-4 h-4" />
+          <FiTrash2 className="w-4 h-4" />
           {deleteText}
         </button>
       )}

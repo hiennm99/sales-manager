@@ -1,7 +1,7 @@
 // components/DataTableTab.tsx
 
 import { formatCurrency } from "@/types/financialReport";
-import { FileText, Trash2, TrendingUp } from "lucide-react";
+import { FiFileText, FiTrash2, FiTrendingUp } from "react-icons/fi";
 import React from "react";
 
 interface DataRow {
@@ -64,12 +64,12 @@ export const DataTableTab: React.FC<DataTableTabProps> = ({
             </p>
           </div>
           <div className="p-3 bg-indigo-600 rounded-lg">
-            <TrendingUp className="w-6 h-6 text-white" />
+            <FiTrendingUp className="w-6 h-6 text-white" />
           </div>
         </div>
         <div className="mt-4 flex items-center gap-4 text-sm text-indigo-700">
           <div className="flex items-center gap-1">
-            <FileText className="w-4 h-4" />
+            <FiFileText className="w-4 h-4" />
             <span>{data.length} giao dịch</span>
           </div>
         </div>
@@ -81,7 +81,7 @@ export const DataTableTab: React.FC<DataTableTabProps> = ({
           {data.length === 0 ? (
             <div className="text-center py-12">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-                <FileText className="w-8 h-8 text-gray-400" />
+                <FiFileText className="w-8 h-8 text-gray-400" />
               </div>
               <p className="text-gray-600">{emptyMessage}</p>
             </div>
@@ -127,7 +127,7 @@ export const DataTableTab: React.FC<DataTableTabProps> = ({
                           disabled={deleting === row.id}
                           className="inline-flex items-center gap-1 px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <FiTrash2 className="w-4 h-4" />
                           <span className="text-xs font-medium">
                             {deleting === row.id ? "Đang xóa..." : "Xóa"}
                           </span>

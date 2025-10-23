@@ -9,7 +9,7 @@ import {
 } from "@/constants";
 import type { FinancialReportFilters } from "@/types/financialReport";
 import type { Shop } from "@/types/shop";
-import { Filter, X } from "lucide-react";
+import { FiFilter, FiX } from "react-icons/fi";
 import React from "react";
 
 interface ReportFiltersProps {
@@ -36,7 +36,7 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Filter className="w-5 h-5 text-indigo-600" />
+          <FiFilter className="w-5 h-5 text-indigo-600" />
           <h3 className="text-lg font-semibold text-gray-900">Bộ Lọc</h3>
         </div>
         {hasActiveFilters && (
@@ -44,7 +44,7 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({
             onClick={handleClearFilters}
             className="flex items-center gap-1 px-3 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <X className="w-4 h-4" />
+            <FiX className="w-4 h-4" />
             Xóa Lọc
           </button>
         )}

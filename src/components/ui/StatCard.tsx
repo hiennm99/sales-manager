@@ -1,6 +1,6 @@
 // src/components/ui/StatCard.tsx
 
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { FiTrendingDown, FiTrendingUp } from "react-icons/fi";
 import React from "react";
 
 // Định nghĩa props cho component
@@ -109,9 +109,9 @@ export const StatCard: React.FC<StatCardProps> = ({
                   }`}
                 >
                   {trend.isPositive ? (
-                    <TrendingUp size={12} strokeWidth={3} />
+                    <FiTrendingUp size={12} strokeWidth={3} />
                   ) : (
-                    <TrendingDown size={12} strokeWidth={3} />
+                    <FiTrendingDown size={12} strokeWidth={3} />
                   )}
                   {Math.abs(trend.value)}%
                 </span>

@@ -2,19 +2,7 @@
 
 import type { FinancialReportPeriod } from "@/types/financialReport";
 import { formatCurrency, getMonthName } from "@/types/financialReport";
-import {
-  ArrowDownCircle,
-  ArrowUpCircle,
-  Calendar,
-  CheckCircle,
-  Clock,
-  Download,
-  Eye,
-  FileText,
-  Lock,
-  Receipt,
-  Trash2,
-} from "lucide-react";
+import { FiCalendar, FiCheckCircle, FiClock, FiDownload, FiEye, FiLock, FiFileText, FiTrash2 } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
 import {
   expensesServiceApi,
@@ -91,21 +79,21 @@ export const ReportListView: React.FC<ReportListViewProps> = ({
       case "draft":
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-            <Clock className="w-3 h-3" />
+            <FiClock className="w-3 h-3" />
             Nháp
           </span>
         );
       case "approved":
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-            <CheckCircle className="w-3 h-3" />
+            <FiCheckCircle className="w-3 h-3" />
             Đã Duyệt
           </span>
         );
       case "finalized":
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-            <Lock className="w-3 h-3" />
+            <FiLock className="w-3 h-3" />
             Hoàn Tất
           </span>
         );
@@ -117,7 +105,7 @@ export const ReportListView: React.FC<ReportListViewProps> = ({
   if (reports.length === 0) {
     return (
       <div className="text-center py-12">
-        <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+        <FiFileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
           Chưa có báo cáo
         </h3>
@@ -145,14 +133,14 @@ export const ReportListView: React.FC<ReportListViewProps> = ({
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg">
-                  <FileText className="w-6 h-6 text-white" />
+                  <FiFileText className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-gray-900">
                     {getMonthName(report.month)} {report.year}
                   </h3>
                   <p className="text-sm text-gray-600 flex items-center gap-2 mt-1">
-                    <Calendar className="w-4 h-4" />
+                    <FiCalendar className="w-4 h-4" />
                     {new Date(report.period_start).toLocaleDateString(
                       "vi-VN",
                     )}{" "}
@@ -184,7 +172,7 @@ export const ReportListView: React.FC<ReportListViewProps> = ({
               {/* Total Expenses */}
               <div className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-lg p-4 border border-rose-200">
                 <div className="flex items-center gap-2 mb-2">
-                  <Receipt className="w-4 h-4 text-rose-600" />
+                  <FiFileText className="w-4 h-4 text-rose-600" />
                   <p className="text-xs font-medium text-rose-900">
                     Tổng Chi Phí
                   </p>
@@ -223,7 +211,7 @@ export const ReportListView: React.FC<ReportListViewProps> = ({
                 }}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
               >
-                <Eye className="w-4 h-4" />
+                <FiEye className="w-4 h-4" />
                 Xem Chi Tiết
               </button>
 
@@ -236,7 +224,7 @@ export const ReportListView: React.FC<ReportListViewProps> = ({
                     }}
                     className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                   >
-                    <CheckCircle className="w-4 h-4" />
+                    <FiCheckCircle className="w-4 h-4" />
                     Duyệt
                   </button>
                   <button
@@ -248,7 +236,7 @@ export const ReportListView: React.FC<ReportListViewProps> = ({
                     }}
                     className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <FiTrash2 className="w-4 h-4" />
                     Xóa
                   </button>
                 </>
@@ -262,7 +250,7 @@ export const ReportListView: React.FC<ReportListViewProps> = ({
                   }}
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                 >
-                  <Lock className="w-4 h-4" />
+                  <FiLock className="w-4 h-4" />
                   Hoàn Tất
                 </button>
               )}
@@ -274,7 +262,7 @@ export const ReportListView: React.FC<ReportListViewProps> = ({
                 }}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg transition-colors ml-auto"
               >
-                <Download className="w-4 h-4" />
+                <FiDownload className="w-4 h-4" />
                 Xuất Excel
               </button>
             </div>

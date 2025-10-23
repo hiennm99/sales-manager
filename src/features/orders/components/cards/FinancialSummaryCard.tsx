@@ -1,6 +1,6 @@
 // src/features/orders/components/cards/FinancialSummaryCard.tsx
 
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { FiTrendingDown, FiTrendingUp } from "react-icons/fi";
 import React from "react";
 import { DEFAULTS } from "../../../../constants/app-constants";
 import { formatUSD, formatVND } from "../../../../lib/utils";
@@ -175,7 +175,7 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
       {otherBonusUsd > 0 && (
         <div className="space-y-2 pb-3 border-b-2 border-gray-200">
           <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="w-4 h-4 text-green-500" />
+            <FiTrendingUp className="w-4 h-4 text-green-500" />
             <h3 className="text-sm font-bold text-gray-900">Tiền thưởng</h3>
           </div>
 
@@ -195,7 +195,7 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
       {totalFeesUsd > 0 && (
         <div className="space-y-2 pb-3 border-b-2 border-gray-200">
           <div className="flex items-center gap-2 mb-3">
-            <TrendingDown className="w-4 h-4 text-red-500" />
+            <FiTrendingDown className="w-4 h-4 text-red-500" />
             <h3 className="text-sm font-bold text-gray-900">Các khoản phí</h3>
           </div>
 
@@ -259,9 +259,9 @@ export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
         <div className="grid grid-cols-3 gap-3 items-center mb-2">
           <div className="text-base font-bold text-gray-900 flex items-center gap-2">
             {profitUsd >= 0 ? (
-              <TrendingUp className="w-5 h-5 text-emerald-600" />
+              <FiTrendingUp className="w-5 h-5 text-emerald-600" />
             ) : (
-              <TrendingDown className="w-5 h-5 text-red-600" />
+              <FiTrendingDown className="w-5 h-5 text-red-600" />
             )}
             LỢI NHUẬN
           </div>

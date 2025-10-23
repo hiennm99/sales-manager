@@ -4,7 +4,7 @@
  * Provides consistent date input styling across the application
  */
 
-import { Calendar } from "lucide-react";
+import { FiCalendar } from "react-icons/fi";
 import React from "react";
 
 export interface DatePickerProps
@@ -60,7 +60,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         `}
         {...props}
       />
-      <Calendar className="absolute left-3 top-2.5 w-5 h-5 text-gray-400 pointer-events-none" />
+      <FiCalendar className="absolute left-3 top-2.5 w-5 h-5 text-gray-400 pointer-events-none" />
     </div>
   );
 };

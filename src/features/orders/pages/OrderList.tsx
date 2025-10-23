@@ -4,7 +4,7 @@
  * Optimized to reduce unnecessary re-renders
  */
 
-import { Banknote, DollarSign, Package } from "lucide-react";
+import { FiDollarSign, FiPackage } from "react-icons/fi";
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ConfirmModal } from "../../../components/modals";
@@ -292,18 +292,18 @@ export const OrderList: React.FC = () => {
         <StatCard
           title="Tổng đơn hàng"
           value={totals.orders}
-          icon={<Package />}
+          icon={<FiPackage />}
         />
         <StatCard
           title="Tổng thu nhập (USD)"
           value={formatUSD(totals.earnings_usd)}
-          icon={<DollarSign />}
+          icon={<FiDollarSign />}
           className="text-green-600"
         />
         <StatCard
           title="Tổng thu nhập (VND)"
           value={formatVND(totals.earnings_vnd)}
-          icon={<Banknote />}
+          icon={<FiDollarSign />}
           className="text-green-600 text-2xl"
         />
       </StatGrid>

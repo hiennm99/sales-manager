@@ -1,13 +1,7 @@
 // components/ExcelUpload.tsx
 
 import type { ExcelUploadData } from "@/types/financialReport";
-import {
-  AlertCircle,
-  CheckCircle,
-  FileSpreadsheet,
-  Upload,
-  X,
-} from "lucide-react";
+import { FiAlertCircle, FiCheckCircle, FiUpload, FiX } from "react-icons/fi";
 import React, { useRef, useState } from "react";
 import { excelParserService } from "../services/financialReport.service.api";
 
@@ -147,7 +141,7 @@ export const ExcelUpload: React.FC<ExcelUploadProps> = ({
           ) : (
             <>
               <div className="p-4 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full">
-                <Upload className="w-8 h-8 text-indigo-600" />
+                <FiUpload className="w-8 h-8 text-indigo-600" />
               </div>
               <div>
                 <p className="text-lg font-semibold text-gray-900">
@@ -169,7 +163,7 @@ export const ExcelUpload: React.FC<ExcelUploadProps> = ({
       {/* Error Message */}
       {error && (
         <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <FiAlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="text-sm font-medium text-red-900">Lỗi</p>
             <p className="text-sm text-red-700 mt-1">{error}</p>
@@ -178,7 +172,7 @@ export const ExcelUpload: React.FC<ExcelUploadProps> = ({
             onClick={() => setError(null)}
             className="text-red-600 hover:text-red-800"
           >
-            <X className="w-4 h-4" />
+            <FiX className="w-4 h-4" />
           </button>
         </div>
       )}
@@ -186,7 +180,7 @@ export const ExcelUpload: React.FC<ExcelUploadProps> = ({
       {/* Success Message */}
       {success && (
         <div className="flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+          <FiCheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="text-sm font-medium text-green-900">Thành công</p>
             <p className="text-sm text-green-700 mt-1">{success}</p>
@@ -195,7 +189,7 @@ export const ExcelUpload: React.FC<ExcelUploadProps> = ({
             onClick={() => setSuccess(null)}
             className="text-green-600 hover:text-green-800"
           >
-            <X className="w-4 h-4" />
+            <FiX className="w-4 h-4" />
           </button>
         </div>
       )}

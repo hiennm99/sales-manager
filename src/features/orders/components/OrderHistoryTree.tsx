@@ -1,23 +1,6 @@
 // src/features/orders/components/OrderHistoryTree.tsx
 
-import {
-  AlertCircle,
-  Calendar,
-  CheckCircle,
-  ChevronDown,
-  ChevronRight,
-  DollarSign,
-  Edit3,
-  FileText,
-  Image,
-  MapPin,
-  Package,
-  Plus,
-  Trash2,
-  Truck,
-  Upload,
-  User,
-} from "lucide-react";
+import { FiAlertCircle, FiCalendar, FiCheckCircle, FiChevronDown, FiChevronRight, FiDollarSign, FiFileText, FiImage, FiMapPin, FiPackage, FiPlus, FiTrash2, FiTruck, FiUpload, FiUser } from "react-icons/fi";
 import React, { useState } from "react";
 import type { OrderHistory } from "../../../types/orderHistory";
 
@@ -46,16 +29,16 @@ const getActionIcon = (actionType: string, fieldName?: string) => {
       fieldName.toLowerCase().includes("image")
     ) {
       return actionType === "updated" && fieldName.includes("deleted") ? (
-        <Trash2 className="w-4 h-4" />
+        <FiTrash2 className="w-4 h-4" />
       ) : (
-        <Upload className="w-4 h-4" />
+        <FiUpload className="w-4 h-4" />
       );
     }
     if (
       fieldName.toLowerCase().includes("employee") ||
       fieldName.toLowerCase().includes("user")
     ) {
-      return <User className="w-4 h-4" />;
+      return <FiUser className="w-4 h-4" />;
     }
     if (
       fieldName.toLowerCase().includes("total") ||
@@ -63,45 +46,45 @@ const getActionIcon = (actionType: string, fieldName?: string) => {
       fieldName.toLowerCase().includes("fee") ||
       fieldName.toLowerCase().includes("profit")
     ) {
-      return <DollarSign className="w-4 h-4" />;
+      return <FiDollarSign className="w-4 h-4" />;
     }
     if (
       fieldName.toLowerCase().includes("item") ||
       fieldName.toLowerCase().includes("sku")
     ) {
-      return <Package className="w-4 h-4" />;
+      return <FiPackage className="w-4 h-4" />;
     }
     if (
       fieldName.toLowerCase().includes("date") ||
       fieldName.toLowerCase().includes("schedule")
     ) {
-      return <Calendar className="w-4 h-4" />;
+      return <FiCalendar className="w-4 h-4" />;
     }
     if (
       fieldName.toLowerCase().includes("address") ||
       fieldName.toLowerCase().includes("carrier") ||
       fieldName.toLowerCase().includes("tracking")
     ) {
-      return <MapPin className="w-4 h-4" />;
+      return <FiMapPin className="w-4 h-4" />;
     }
   }
 
   // Default icons by action type
   switch (actionType) {
     case "created":
-      return <Plus className="w-4 h-4" />;
+      return <FiPlus className="w-4 h-4" />;
     case "picture_added":
-      return <Image className="w-4 h-4" />;
+      return <FiImage className="w-4 h-4" />;
     case "shipped":
-      return <Truck className="w-4 h-4" />;
+      return <FiTruck className="w-4 h-4" />;
     case "delivered":
-      return <CheckCircle className="w-4 h-4" />;
+      return <FiCheckCircle className="w-4 h-4" />;
     case "status_changed":
-      return <AlertCircle className="w-4 h-4" />;
+      return <FiAlertCircle className="w-4 h-4" />;
     case "updated":
       return <Edit3 className="w-4 h-4" />;
     default:
-      return <FileText className="w-4 h-4" />;
+      return <FiFileText className="w-4 h-4" />;
   }
 };
 
@@ -219,13 +202,13 @@ const groupHistoryRecords = (
         title: `${groupType} Updates`,
         icon:
           groupType === "Financial" ? (
-            <DollarSign className="w-4 h-4" />
+            <FiDollarSign className="w-4 h-4" />
           ) : groupType === "Customer Info" ? (
-            <User className="w-4 h-4" />
+            <FiUser className="w-4 h-4" />
           ) : groupType === "Shipping" ? (
-            <Truck className="w-4 h-4" />
+            <FiTruck className="w-4 h-4" />
           ) : groupType === "Status" ? (
-            <AlertCircle className="w-4 h-4" />
+            <FiAlertCircle className="w-4 h-4" />
           ) : (
             <Edit3 className="w-4 h-4" />
           ),
@@ -305,9 +288,9 @@ const TreeNode: React.FC<{
               className="w-6 h-6 rounded-full bg-white border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
             >
               {isExpanded ? (
-                <ChevronDown className="w-3 h-3 text-gray-600" />
+                <FiChevronDown className="w-3 h-3 text-gray-600" />
               ) : (
-                <ChevronRight className="w-3 h-3 text-gray-600" />
+                <FiChevronRight className="w-3 h-3 text-gray-600" />
               )}
             </button>
           ) : (
@@ -419,7 +402,7 @@ export const OrderHistoryTree: React.FC<OrderHistoryTreeProps> = ({
     return (
       <div className="text-center py-8 text-gray-500">
         <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-          <FileText className="w-8 h-8 text-gray-400" />
+          <FiFileText className="w-8 h-8 text-gray-400" />
         </div>
         <p className="text-sm">No history records yet</p>
         <p className="text-xs text-gray-400 mt-1">
@@ -434,7 +417,7 @@ export const OrderHistoryTree: React.FC<OrderHistoryTreeProps> = ({
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-        <FileText className="w-4 h-4" />
+        <FiFileText className="w-4 h-4" />
         <span>{history.length} total changes</span>
         <span className="text-gray-400">•</span>
         <span>{groups.length} events</span>

@@ -1,14 +1,7 @@
 // src/features/reports/components/CsvFileUpload.tsx
 
 import { supabase } from "@/lib/supabase";
-import {
-  CheckCircle,
-  Download,
-  FileText,
-  Trash2,
-  Upload,
-  X,
-} from "lucide-react";
+import { FiCheckCircle, FiDownload, FiFileText, FiTrash2, FiUpload, FiX } from "react-icons/fi";
 import React, { useRef, useState } from "react";
 
 interface CsvFile {
@@ -164,7 +157,7 @@ export const CsvFileUpload: React.FC<CsvFileUploadProps> = ({
         {isUploading ? (
           <div className="space-y-4">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full">
-              <Upload className="w-8 h-8 text-indigo-600 animate-pulse" />
+              <FiUpload className="w-8 h-8 text-indigo-600 animate-pulse" />
             </div>
             <div>
               <p className="text-lg font-semibold text-gray-900">
@@ -182,7 +175,7 @@ export const CsvFileUpload: React.FC<CsvFileUploadProps> = ({
         ) : (
           <>
             <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4">
-              <Upload className="w-8 h-8 text-indigo-600" />
+              <FiUpload className="w-8 h-8 text-indigo-600" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               Tải lên file CSV
@@ -206,7 +199,7 @@ export const CsvFileUpload: React.FC<CsvFileUploadProps> = ({
       {/* Error Message */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-          <X className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <FiX className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <h4 className="text-sm font-semibold text-red-900">Lỗi tải file</h4>
             <p className="text-sm text-red-700 mt-1">{error}</p>
@@ -215,7 +208,7 @@ export const CsvFileUpload: React.FC<CsvFileUploadProps> = ({
             onClick={() => setError(null)}
             className="text-red-600 hover:text-red-800"
           >
-            <X className="w-4 h-4" />
+            <FiX className="w-4 h-4" />
           </button>
         </div>
       )}
@@ -224,7 +217,7 @@ export const CsvFileUpload: React.FC<CsvFileUploadProps> = ({
       {files.length > 0 && (
         <div className="space-y-3">
           <h4 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 text-green-600" />
+            <FiCheckCircle className="w-4 h-4 text-green-600" />
             File đã tải lên ({files.length})
           </h4>
 
@@ -236,7 +229,7 @@ export const CsvFileUpload: React.FC<CsvFileUploadProps> = ({
               >
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-green-100 rounded-lg">
-                    <FileText className="w-5 h-5 text-green-600" />
+                    <FiFileText className="w-5 h-5 text-green-600" />
                   </div>
 
                   <div className="flex-1 min-w-0">
@@ -255,14 +248,14 @@ export const CsvFileUpload: React.FC<CsvFileUploadProps> = ({
                       className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
                       title="Tải xuống"
                     >
-                      <Download className="w-4 h-4" />
+                      <FiDownload className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(file)}
                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       title="Xóa"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <FiTrash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -275,7 +268,7 @@ export const CsvFileUpload: React.FC<CsvFileUploadProps> = ({
       {/* Empty State */}
       {files.length === 0 && !isUploading && (
         <div className="text-center py-8">
-          <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <FiFileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-sm text-gray-600">
             Chưa có file CSV nào được tải lên
           </p>

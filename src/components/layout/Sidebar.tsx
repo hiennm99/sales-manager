@@ -1,13 +1,6 @@
 // components/layout/Sidebar.tsx
 
-import {
-  ClipboardList,
-  DollarSign,
-  FileText,
-  LayoutDashboard,
-  Package,
-  Settings,
-} from "lucide-react";
+import { FiDollarSign, FiFileText, FiPackage, FiSettings } from "react-icons/fi";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "../../lib/utils";
@@ -28,7 +21,7 @@ const menuItems: MenuItem[] = [
     path: "/dashboard",
   },
   {
-    icon: <Package size={20} />,
+    icon: <FiPackage size={20} />,
     label: "Sản phẩm",
     path: "/products",
   },
@@ -38,17 +31,17 @@ const menuItems: MenuItem[] = [
     path: "/orders",
   },
   {
-    icon: <DollarSign size={20} />,
+    icon: <FiDollarSign size={20} />,
     label: "Lương",
     path: "/salaries",
   },
   {
-    icon: <FileText size={20} />,
+    icon: <FiFileText size={20} />,
     label: "Báo cáo",
     path: "/financial-reports",
   },
   {
-    icon: <Settings size={20} />,
+    icon: <FiSettings size={20} />,
     label: "Cài đặt",
     path: "/settings",
   },

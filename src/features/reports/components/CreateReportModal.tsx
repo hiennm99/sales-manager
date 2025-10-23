@@ -3,7 +3,7 @@
 import { Select } from "@/components/ui/Select";
 import { MONTH_OPTIONS, objectsToOptions, YEAR_OPTIONS } from "@/constants";
 import type { Shop } from "@/types/shop";
-import { X } from "lucide-react";
+import { FiX } from "react-icons/fi";
 import React, { useState } from "react";
 
 interface CreateReportModalProps {
@@ -47,7 +47,7 @@ export const CreateReportModal: React.FC<CreateReportModalProps> = ({
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <FiX className="w-5 h-5 text-gray-500" />
           </button>
         </div>
 

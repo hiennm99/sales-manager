@@ -4,7 +4,7 @@
  * Provides consistent form field styling and error handling
  */
 
-import { AlertCircle } from "lucide-react";
+import { FiAlertCircle } from "react-icons/fi";
 import React, { type ReactNode } from "react";
 
 export interface FormFieldProps {
@@ -55,7 +55,7 @@ export const FormField: React.FC<FormFieldProps> = ({
       {/* Error Message */}
       {error && (
         <div className="flex items-center gap-2 text-red-600 text-sm">
-          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+          <FiAlertCircle className="w-4 h-4 flex-shrink-0" />
           <span>{error}</span>
         </div>
       )}

@@ -1,7 +1,7 @@
 // components/ui/Button.tsx
 
 import React from "react";
-import { Loader } from "lucide-react";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { cn } from "../../lib/utils";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -48,7 +48,7 @@ export const Button: React.FC<ButtonProps> = ({
       {...props}
     >
       {isLoading ? (
-        <Loader size={16} className="animate-spin" />
+        <AiOutlineLoading3Quarters size={16} className="animate-spin" />
       ) : (
         leftIcon
       )}

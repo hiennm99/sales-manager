@@ -1,6 +1,6 @@
 // src/features/employees/pages/EmployeeSalaryPage.tsx
 
-import { Calendar, DollarSign, Eye, TrendingUp, Users } from "lucide-react";
+import { FiCalendar, FiDollarSign, FiEye, FiTrendingUp, FiUsers } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { EmployeeSalaryPeriod } from "../../../types/employee";
@@ -87,7 +87,7 @@ export const EmployeeSalaryPage: React.FC = () => {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
-              <DollarSign className="w-6 h-6 text-white" />
+              <FiDollarSign className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
@@ -199,7 +199,7 @@ export const EmployeeSalaryPage: React.FC = () => {
               <span className="text-sm font-medium text-gray-600">
                 Tổng Lương
               </span>
-              <DollarSign className="w-5 h-5 text-green-600" />
+              <FiDollarSign className="w-5 h-5 text-green-600" />
             </div>
             <p className="text-2xl font-bold text-gray-900">
               {formatCurrency(getTotalSalary())}
@@ -211,7 +211,7 @@ export const EmployeeSalaryPage: React.FC = () => {
               <span className="text-sm font-medium text-gray-600">
                 HH Họa Sĩ
               </span>
-              <TrendingUp className="w-5 h-5 text-blue-600" />
+              <FiTrendingUp className="w-5 h-5 text-blue-600" />
             </div>
             <p className="text-2xl font-bold text-gray-900">
               {formatCurrency(getTotalArtistCommission())}
@@ -224,7 +224,7 @@ export const EmployeeSalaryPage: React.FC = () => {
               <span className="text-sm font-medium text-gray-600">
                 HH Bán Hàng
               </span>
-              <TrendingUp className="w-5 h-5 text-purple-600" />
+              <FiTrendingUp className="w-5 h-5 text-purple-600" />
             </div>
             <p className="text-2xl font-bold text-gray-900">
               {formatCurrency(getTotalSalesCommission())}
@@ -237,7 +237,7 @@ export const EmployeeSalaryPage: React.FC = () => {
               <span className="text-sm font-medium text-gray-600">
                 Số Đơn Hàng
               </span>
-              <Calendar className="w-5 h-5 text-orange-600" />
+              <FiCalendar className="w-5 h-5 text-orange-600" />
             </div>
             <p className="text-2xl font-bold text-gray-900">
               {getTotalOrders()}
@@ -249,7 +249,7 @@ export const EmployeeSalaryPage: React.FC = () => {
               <span className="text-sm font-medium text-gray-600">
                 Số Nhân Viên
               </span>
-              <Users className="w-5 h-5 text-indigo-600" />
+              <FiUsers className="w-5 h-5 text-indigo-600" />
             </div>
             <p className="text-2xl font-bold text-gray-900">
               {salaryData.length}
@@ -399,7 +399,7 @@ export const EmployeeSalaryPage: React.FC = () => {
                           }
                           className="inline-flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                         >
-                          <Eye className="w-4 h-4" />
+                          <FiEye className="w-4 h-4" />
                           Xem
                         </button>
                       </td>

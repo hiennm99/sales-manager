@@ -7,7 +7,7 @@ import {
   INCOMING_MONEY_STATUS_OPTIONS,
 } from "@/constants";
 import type { IncomingMoney } from "@/types/financialReport";
-import { Image as ImageIcon, Package, Plus, X } from "lucide-react";
+import { FiPackage, FiPlus, FiX } from "react-icons/fi";
 import React, { useState } from "react";
 import { ImageUpload } from "./ImageUpload";
 
@@ -83,21 +83,21 @@ export const IncomingMoneyForm: React.FC<IncomingMoneyFormProps> = ({
           onClick={() => setShowForm(true)}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
-          <Plus className="w-4 h-4" />
+          <FiPlus className="w-4 h-4" />
           <span>Thêm Tiền Đang Về</span>
         </button>
       ) : (
         <div className="bg-white border-2 border-blue-200 rounded-xl p-6 space-y-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <Package className="w-5 h-5 text-blue-600" />
+              <FiPackage className="w-5 h-5 text-blue-600" />
               Thêm Tiền Đang Về
             </h3>
             <button
               onClick={() => setShowForm(false)}
               className="text-gray-500 hover:text-gray-700"
             >
-              <X className="w-5 h-5" />
+              <FiX className="w-5 h-5" />
             </button>
           </div>
 

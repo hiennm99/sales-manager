@@ -1,6 +1,7 @@
 // features/auth/components/EditProfileForm.tsx
 
-import { AlertCircle, Loader2, Save, X } from "lucide-react";
+import { FiAlertCircle, FiSave, FiX } from "react-icons/fi";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useState } from "react";
 import type { Employee } from "@/types/employee";
 import { useEmployeeStore } from "../store/useEmployeeStore";
@@ -84,7 +85,7 @@ export const EditProfileForm = ({
 
       {error && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <FiAlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
           <p className="text-sm text-red-800">{error}</p>
         </div>
       )}
@@ -212,7 +213,7 @@ export const EditProfileForm = ({
             disabled={loading || storeLoading}
             className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            <X className="w-4 h-4" />
+            <FiX className="w-4 h-4" />
             Hủy
           </button>
           <button
@@ -222,12 +223,12 @@ export const EditProfileForm = ({
           >
             {loading || storeLoading ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <AiOutlineLoading3Quarters className="w-4 h-4 animate-spin" />
                 Đang lưu...
               </>
             ) : (
               <>
-                <Save className="w-4 h-4" />
+                <FiSave className="w-4 h-4" />
                 Lưu thay đổi
               </>
             )}
