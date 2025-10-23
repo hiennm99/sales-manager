@@ -1,0 +1,124 @@
+// src/features/orders/pages/OrderDetail.tsx
+
+import React, { useEffect, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import type { Order, OrderItem } from "../../../types/order";
+import { OrderDetailTabs } from "../components";
+import { OrderForm } from "../components/OrderForm";
+import { useOrderStore } from "../store/useOrderStore";
+
+/**
+ * Component for viewing and editing an existing order
+ * Loads order data and initializes draft state for editing
+ */
+export const OrderDetail: React.FC = () => {
+  const { orderId } = useParams<{ orderId: string }>();
+  const navigate = useNavigate();
+  const initializeRef = useRef(false);
+
+  const {
+    orders,
+    isLoading,
+    initializeDraftForEdit,
+    updateOrder,
+    deleteOrder,
+  } = useOrderStore();
+
+  // Find order by ID with proper validation
+  const order = orderId
+    ? orders.find((o) => o.id === Number(orderId))
+    : undefined;
+
+  // Initialize draft state once when order is loaded
+  useEffect(() => {
+    if (order && !initializeRef.current) {
+      initializeDraftForEdit(order);
+      initializeRef.current = true;
+    }
+
+    // Reset ref when orderId changes (navigating to different order)
+    return () => {
+      if (orderId) {
+        initializeRef.current = false;
+      }
+    };
+  }, [order, orderId, initializeDraftForEdit]);
+
+  const handleSubmit = async (
+    updatedOrder: Partial<Order>,
+    updatedOrderItems: OrderItem[],
+  ) => {
+    if (!orderId) {
+      console.error("Order ID is missing");
+      return;
+    }
+
+    try {
+      await updateOrder(orderId, updatedOrder, updatedOrderItems);
+    } catch (error) {
+      console.error("Failed to update order:", error);
+      throw error; // Let OrderForm handle the error display
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!orderId) {
+      console.error("Order ID is missing");
+      return;
+    }
+
+    // Confirm deletion
+    const confirmed = window.confirm(
+      "Bạn có chắc chắn muốn xóa đơn hàng này? Hành động này không thể hoàn tác.",
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await deleteOrder(orderId);
+      navigate("/orders");
+    } catch (error) {
+      console.error("Failed to delete order:", error);
+      throw error; // Let OrderForm handle the error display
+    }
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang tải đơn hàng...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Order not found
+  if (!order) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 text-lg mb-4">Không tìm thấy đơn hàng</p>
+          <button
+            onClick={() => navigate("/orders")}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Quay lại danh sách đơn hàng
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <OrderForm mode="edit" onSubmit={handleSubmit} onDelete={handleDelete} />
+      <OrderDetailTabs
+        orderId={order.id}
+        employeeId={order.artist_employee_id || undefined}
+      />
+    </div>
+  );
+};

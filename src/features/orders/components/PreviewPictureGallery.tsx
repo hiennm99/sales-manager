@@ -1,0 +1,198 @@
+// src/features/orders/components/PreviewPictureGallery.tsx
+
+import { ChevronLeft, ChevronRight, Download, Trash2, X } from "lucide-react";
+import React, { useState } from "react";
+import type { OrderPreviewPicture } from "../../../types/orderPreview";
+import { orderPreviewServiceApi } from "../services/orderPreview.service.api";
+
+interface PreviewPictureGalleryProps {
+  pictures: OrderPreviewPicture[];
+  onDeleteSuccess?: (pictureId: number) => void;
+  onDeleteError?: (error: Error) => void;
+}
+
+export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
+  pictures,
+  onDeleteSuccess,
+  onDeleteError,
+}) => {
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  if (pictures.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        <p className="text-sm">No preview pictures yet</p>
+      </div>
+    );
+  }
+
+  const handleDownload = async (picture: OrderPreviewPicture) => {
+    try {
+      const blob = await orderPreviewServiceApi.downloadPreviewPicture(
+        picture.picture_url,
+      );
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = picture.picture_name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to download picture:", error);
+    }
+  };
+
+  const handleDelete = async (pictureId: number) => {
+    if (!window.confirm("Are you sure you want to delete this picture?")) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      await orderPreviewServiceApi.deletePreviewPicture(pictureId);
+      onDeleteSuccess?.(pictureId);
+      if (selectedIndex !== null) {
+        setSelectedIndex(null);
+      }
+    } catch (error) {
+      const err =
+        error instanceof Error ? error : new Error("Failed to delete picture");
+      onDeleteError?.(err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (selectedIndex !== null && selectedIndex > 0) {
+      setSelectedIndex(selectedIndex - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (selectedIndex !== null && selectedIndex < pictures.length - 1) {
+      setSelectedIndex(selectedIndex + 1);
+    }
+  };
+
+  const selectedPicture =
+    selectedIndex !== null ? pictures[selectedIndex] : null;
+
+  return (
+    <div className="w-full">
+      {/* Gallery grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        {pictures.map((picture, index) => (
+          <div
+            key={picture.id}
+            className="relative group cursor-pointer rounded-lg overflow-hidden bg-gray-100"
+            onClick={() => setSelectedIndex(index)}
+          >
+            <img
+              src={picture.picture_url}
+              alt={picture.picture_name}
+              className="w-full h-32 object-cover group-hover:opacity-75 transition-opacity"
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+              <Download className="w-5 h-5 text-white" />
+              <Trash2 className="w-5 h-5 text-white" />
+            </div>
+            <div className="absolute top-1 right-1 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+              {index + 1}/{pictures.length}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Lightbox modal */}
+      {selectedPicture && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <div>
+                <h3 className="font-medium text-gray-900">
+                  {selectedPicture.picture_name}
+                </h3>
+                {selectedPicture.description && (
+                  <p className="text-sm text-gray-600 mt-1">
+                    {selectedPicture.description}
+                  </p>
+                )}
+                <p className="text-xs text-gray-500 mt-1">
+                  Uploaded:{" "}
+                  {new Date(selectedPicture.created_at).toLocaleString()}
+                </p>
+              </div>
+              <button
+                onClick={() => setSelectedIndex(null)}
+                className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-600" />
+              </button>
+            </div>
+
+            {/* Image */}
+            <div className="flex-1 flex items-center justify-center overflow-auto bg-gray-50 p-4">
+              <img
+                src={selectedPicture.picture_url}
+                alt={selectedPicture.picture_name}
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
+
+            {/* Footer with controls */}
+            <div className="flex items-center justify-between p-4 border-t bg-gray-50">
+              <div className="text-sm text-gray-600">
+                {selectedIndex !== null &&
+                  `${selectedIndex + 1} / ${pictures.length}`}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handlePrevious}
+                  disabled={selectedIndex === 0}
+                  className="p-2 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+
+                <button
+                  onClick={handleNext}
+                  disabled={selectedIndex === pictures.length - 1}
+                  className="p-2 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+
+                <div className="w-px h-6 bg-gray-300" />
+
+                <button
+                  onClick={() => handleDownload(selectedPicture)}
+                  className="p-2 hover:bg-gray-200 rounded-lg transition-colors flex items-center gap-2 text-sm"
+                >
+                  <Download className="w-4 h-4" />
+                  Download
+                </button>
+
+                <button
+                  onClick={() =>
+                    selectedPicture.id && handleDelete(selectedPicture.id)
+                  }
+                  disabled={isDeleting}
+                  className="p-2 hover:bg-red-100 rounded-lg transition-colors flex items-center gap-2 text-sm text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
