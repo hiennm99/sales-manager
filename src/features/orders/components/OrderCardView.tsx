@@ -1,6 +1,6 @@
 // src/features/orders/components/OrderCardView.tsx
 
-import { Calendar, Eye, Phone, SquarePen, Trash2 } from "lucide-react";
+import { Calendar, Eye, Phone, PenLine, Trash2 } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { formatUSD, formatVND } from "../../../lib/utils";
@@ -129,7 +129,7 @@ export const OrderCardView: React.FC<OrderCardViewProps> = ({
                     title="Chỉnh sửa"
                     className="p-3 bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 rounded-xl transition-all duration-300 transform hover:scale-110 hover:-rotate-12 shadow-lg"
                   >
-                    <SquarePen size={18} />
+                    <PenLine size={18} />
                   </button>
                   <button
                     onClick={() => onDeleteOrder(order.id.toString())}
