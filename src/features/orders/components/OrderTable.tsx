@@ -8,7 +8,7 @@ import {
   AlertTriangle,
   Clock,
   Package,
-  SquarePen,
+  PenLine,
   Trash2,
   Zap,
 } from "lucide-react";
@@ -254,7 +254,7 @@ export const OrderTable: React.FC<OrderTableProps> = ({
                       title="Chỉnh sửa"
                       className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded-lg transition-all duration-200 group/btn"
                     >
-                      <SquarePen
+                      <PenLine
                         size={18}
                         className="group-hover/btn:scale-110 transition-transform"
                         strokeWidth={2}
