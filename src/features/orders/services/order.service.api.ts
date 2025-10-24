@@ -24,7 +24,10 @@ import {
 import {
   detectOrderChanges,
   formatChangesForNotification,
-} from "../../../utils/changeTracker";
+  type LookupData,
+} from "@/utils/changeTracker.ts";
+import { useEmployeeStore } from "@/features/employees";
+import { useStatusStore } from "@/features/statuses";
 
 /**
  * Helper function to convert camelCase to snake_case for database fields
@@ -490,7 +493,16 @@ export const orderServiceApi = {
 
     // Send notification with change details
     try {
-      const changes = orderServiceApi.getOrderChanges(oldOrder, updatedOrder);
+      // Get lookup data for proper display of status and employee names
+      const lookupData: LookupData = {
+        employees: useEmployeeStore.getState().employees,
+        generalStatuses: useStatusStore.getState().generalStatuses,
+        customerStatuses: useStatusStore.getState().customerStatuses,
+        factoryStatuses: useStatusStore.getState().factoryStatuses,
+        deliveryStatuses: useStatusStore.getState().deliveryStatuses,
+      };
+
+      const changes = orderServiceApi.getOrderChanges(oldOrder, updatedOrder, lookupData);
       if (changes.length > 0) {
         // Get current logged-in user info
         const currentUser = getCurrentUserForService();
@@ -914,8 +926,8 @@ export const orderServiceApi = {
    * Get detailed list of changes between old and new order
    * Uses the centralized change tracker utility
    */
-  getOrderChanges(oldOrder: Order, newOrder: Order): string[] {
-    const fieldChanges = detectOrderChanges(oldOrder, newOrder);
+  getOrderChanges(oldOrder: Order, newOrder: Order, lookupData?: LookupData): string[] {
+    const fieldChanges = detectOrderChanges(oldOrder, newOrder, lookupData);
     return formatChangesForNotification(fieldChanges);
   },
 };

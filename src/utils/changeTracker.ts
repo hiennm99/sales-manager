@@ -4,12 +4,27 @@
  */
 
 import type { Order, OrderItem, OrderFormData } from "@/types/order";
+import type { Employee } from "@/types/employee";
+import type {
+  GeneralStatus,
+  CustomerStatus,
+  FactoryStatus,
+  DeliveryStatus,
+} from "@/types/status";
 
 export interface FieldChange {
   field: string;
   label: string;
   oldValue: string | number | null;
   newValue: string | number | null;
+}
+
+export interface LookupData {
+  employees?: Employee[];
+  generalStatuses?: GeneralStatus[];
+  customerStatuses?: CustomerStatus[];
+  factoryStatuses?: FactoryStatus[];
+  deliveryStatuses?: DeliveryStatus[];
 }
 
 /**
@@ -96,9 +111,13 @@ const ORDER_ITEM_FIELD_LABELS: Record<string, string> = {
 };
 
 /**
- * Format value for display
+ * Format value for display with optional lookup data
  */
-function formatValue(value: unknown): string {
+function formatValue(
+  value: unknown,
+  field?: string,
+  lookupData?: LookupData,
+): string {
   if (value === null || value === undefined) {
     return "N/A";
   }
@@ -110,6 +129,31 @@ function formatValue(value: unknown): string {
     if (value > 1000000000) {
       return new Date(value).toLocaleDateString("vi-VN");
     }
+
+    // Handle employee ID lookups
+    if (field && (field === "artist_employee_id" || field === "seller_employee_id")) {
+      const employee = lookupData?.employees?.find((e) => e.id === value);
+      return employee ? `${employee.name} (${employee.code})` : `ID: ${value}`;
+    }
+
+    // Handle status ID lookups
+    if (field === "general_status_id") {
+      const status = lookupData?.generalStatuses?.find((s) => s.id === value);
+      return status ? `${status.name_vi} (${status.name})` : `ID: ${value}`;
+    }
+    if (field === "customer_status_id") {
+      const status = lookupData?.customerStatuses?.find((s) => s.id === value);
+      return status ? `${status.name_vi} (${status.name})` : `ID: ${value}`;
+    }
+    if (field === "factory_status_id") {
+      const status = lookupData?.factoryStatuses?.find((s) => s.id === value);
+      return status ? `${status.name_vi} (${status.name})` : `ID: ${value}`;
+    }
+    if (field === "delivery_status_id") {
+      const status = lookupData?.deliveryStatuses?.find((s) => s.id === value);
+      return status ? `${status.name_vi} (${status.name})` : `ID: ${value}`;
+    }
+
     return value.toLocaleString("vi-VN");
   }
   if (value instanceof Date) {
@@ -121,7 +165,11 @@ function formatValue(value: unknown): string {
 /**
  * Detect changes between two Order objects
  */
-export function detectOrderChanges(oldOrder: Order, newOrder: Order): FieldChange[] {
+export function detectOrderChanges(
+  oldOrder: Order,
+  newOrder: Order,
+  lookupData?: LookupData,
+): FieldChange[] {
   const changes: FieldChange[] = [];
 
   // Get all keys from both objects
@@ -144,8 +192,8 @@ export function detectOrderChanges(oldOrder: Order, newOrder: Order): FieldChang
       changes.push({
         field: key,
         label: ORDER_FIELD_LABELS[key] || key,
-        oldValue: formatValue(oldValue),
-        newValue: formatValue(newValue),
+        oldValue: formatValue(oldValue, key, lookupData),
+        newValue: formatValue(newValue, key, lookupData),
       });
     }
   }
@@ -205,6 +253,7 @@ export function formatChangesForNotification(changes: FieldChange[]): string[] {
 export function detectFormChanges(
   formData: OrderFormData,
   originalOrder: Order,
+  lookupData?: LookupData,
 ): FieldChange[] {
   const changes: FieldChange[] = [];
 
@@ -258,8 +307,8 @@ export function detectFormChanges(
       changes.push({
         field: orderKey,
         label: ORDER_FIELD_LABELS[orderKey] || orderKey,
-        oldValue: formatValue(normalizedOrderValue),
-        newValue: formatValue(normalizedFormValue),
+        oldValue: formatValue(normalizedOrderValue, orderKey, lookupData),
+        newValue: formatValue(normalizedFormValue, orderKey, lookupData),
       });
     }
   }
