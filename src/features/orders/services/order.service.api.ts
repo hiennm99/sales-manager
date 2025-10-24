@@ -19,6 +19,10 @@ import {
   trackOrderCreated,
   trackOrderItemsUpdate,
 } from "../utils/orderHistoryHelper";
+import {
+  detectOrderChanges,
+  formatChangesForNotification,
+} from "../../../utils/changeTracker";
 
 /**
  * Helper function to convert camelCase to snake_case for database fields
@@ -864,85 +868,10 @@ export const orderServiceApi = {
 
   /**
    * Get detailed list of changes between old and new order
+   * Uses the centralized change tracker utility
    */
   getOrderChanges(oldOrder: Order, newOrder: Order): string[] {
-    const changes: string[] = [];
-
-    // Field labels for display
-    const fieldLabels: Record<string, string> = {
-      customer_name: "👤 Khách hàng",
-      customer_phone: "📞 SĐT",
-      customer_email: "📧 Email",
-      customer_address: "📋 Địa chỉ",
-      customer_notes: "📝 Ghi chú khách",
-      order_date: "📅 Ngày đặt hàng",
-      scheduled_ship_date: "📅 Ngày giao dự kiến",
-      actual_ship_date: "🚚 Ngày giao thực tế",
-      item_total_vnd: "💰 Tổng tiền (VNĐ)",
-      item_total_usd: "💵 Tổng tiền (USD)",
-      buyer_paid_vnd: "💳 Khách trả (VNĐ)",
-      buyer_paid_usd: "💳 Khách trả (USD)",
-      order_earnings_vnd: "💸 Doanh thu (VNĐ)",
-      order_earnings_usd: "💸 Doanh thu (USD)",
-      tracking_number: "📦 Mã vận đơn",
-      internal_tracking_number: "🔖 Mã nội bộ",
-      carrier_unit: "🚛 Đơn vị vận chuyển",
-      carrier_notes: "📋 Ghi chú vận chuyển",
-      artist_employee_id: "🎫 Nhân viên thiết kế",
-      seller_employee_id: "💼 Nhân viên bán hàng",
-      artist_commission_rate: "📊 Tỷ lệ hoa hồng",
-      shipping_fee_vnd: "🚚 Phí ship (VNĐ)",
-      shipping_fee_usd: "🚚 Phí ship (USD)",
-      refund_fee_vnd: "↩️ Phí hoàn (VNĐ)",
-      refund_fee_usd: "↩️ Phí hoàn (USD)",
-      other_fee_vnd: "⚙️ Phí khác (VNĐ)",
-      other_fee_usd: "⚙️ Phí khác (USD)",
-      profit_vnd: "📈 Lợi nhuận (VNĐ)",
-      profit_usd: "📈 Lợi nhuận (USD)",
-    };
-
-    // Check all fields
-    const allFields = Object.keys(fieldLabels) as Array<keyof Order>;
-    
-    allFields.forEach((field) => {
-      const oldValue = oldOrder[field];
-      const newValue = newOrder[field];
-
-      if (oldValue !== newValue) {
-        const label = fieldLabels[field as string] || field;
-        const oldDisplay = this.formatFieldValue(field as string, oldValue);
-        const newDisplay = this.formatFieldValue(field as string, newValue);
-        changes.push(`${label}: ${oldDisplay} → ${newDisplay}`);
-      }
-    });
-
-    return changes;
-  },
-
-  /**
-   * Format field value for display
-   */
-  formatFieldValue(field: string, value: unknown): string {
-    if (value === null || value === undefined) {
-      return "Chưa có";
-    }
-
-    // Date fields
-    if (field.includes("date") && typeof value === "string") {
-      return new Date(value).toLocaleDateString("vi-VN");
-    }
-
-    // Money fields
-    if ((field.includes("vnd") || field.includes("usd") || field.includes("fee") || field.includes("profit")) && typeof value === "number") {
-      const suffix = field.includes("usd") ? " USD" : " VNĐ";
-      return value.toLocaleString("vi-VN") + suffix;
-    }
-
-    // Percentage fields
-    if (field.includes("rate") && typeof value === "number") {
-      return value + "%";
-    }
-
-    return String(value);
+    const fieldChanges = detectOrderChanges(oldOrder, newOrder);
+    return formatChangesForNotification(fieldChanges);
   },
 };

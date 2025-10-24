@@ -1,11 +1,12 @@
 // src/features/orders/pages/OrderDetail.tsx
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { Order, OrderItem } from "../../../types/order";
 import { OrderDetailTabs } from "../components";
 import { OrderForm } from "../components/OrderForm";
 import { useOrderStore } from "../store/useOrderStore";
+import { orderServiceApi } from "../services/order.service.api";
 
 /**
  * Component for viewing and editing an existing order
@@ -15,6 +16,9 @@ export const OrderDetail: React.FC = () => {
   const { orderId } = useParams<{ orderId: string }>();
   const navigate = useNavigate();
   const initializeRef = useRef(false);
+  const [dbOrder, setDbOrder] = useState<Order | null>(null);
+  const [dbLoading, setDbLoading] = useState(false);
+  const [dbError, setDbError] = useState<string | null>(null);
 
   const {
     orders,
@@ -25,9 +29,34 @@ export const OrderDetail: React.FC = () => {
   } = useOrderStore();
 
   // Find order by ID with proper validation
-  const order = orderId
+  let order = orderId
     ? orders.find((o) => o.id === Number(orderId))
     : undefined;
+
+  // If order not in store, try to fetch from database
+  useEffect(() => {
+    if (!order && orderId && !dbOrder && !dbLoading) {
+      const fetchOrder = async () => {
+        setDbLoading(true);
+        setDbError(null);
+        try {
+          const fetchedOrder = await orderServiceApi.getOrderById(Number(orderId));
+          setDbOrder(fetchedOrder);
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : "Failed to fetch order";
+          setDbError(errorMessage);
+        } finally {
+          setDbLoading(false);
+        }
+      };
+      fetchOrder();
+    }
+  }, [orderId, order, dbOrder, dbLoading]);
+
+  // Use database order if local store doesn't have it
+  if (!order && dbOrder) {
+    order = dbOrder;
+  }
 
   // Initialize draft state once when order is loaded
   useEffect(() => {
@@ -84,12 +113,29 @@ export const OrderDetail: React.FC = () => {
   };
 
   // Loading state
-  if (isLoading) {
+  if ((isLoading && !order) || (dbLoading && !order)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Đang tải đơn hàng...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (dbError && !order) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 text-lg mb-4">{dbError}</p>
+          <button
+            onClick={() => navigate("/orders")}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Quay lại danh sách đơn hàng
+          </button>
         </div>
       </div>
     );

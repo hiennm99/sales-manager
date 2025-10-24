@@ -25,28 +25,22 @@ class NotificationService {
     payload: NotificationPayload,
   ): Promise<void> {
     try {
-      const typeLabel = this.getTypeLabel(payload.type);
-      let message = `*${payload.title}*\n\n${payload.description}\n`;
-      message += `\n🆔 *Order ID:* ${payload.orderId || "N/A"}\n`;
-      message += `📦 *Order Code:* ${payload.orderCode || "N/A"}\n`;
-      message += `📋 *Loại:* ${typeLabel}\n`;
-
-      if (payload.data?.customer) {
-        message += `👤 *Khách hàng:* ${payload.data.customer}\n`;
-      }
-
-      if (payload.data?.amount) {
-        message += `💰 *Số tiền:* ${Number(payload.data.amount).toLocaleString("vi-VN")} VNĐ\n`;
-      }
-
+      const timestamp = new Date().toLocaleString("vi-VN");
+      
+      // Build message with cleaner format - only show changes
+      let message = `📦 <u><b>${payload.orderCode || "N/A"}</b></u> được cập nhật\n\n`;
+      
+      // Changes section - only if there are changes
       if (Array.isArray(payload.data?.changes) && payload.data.changes.length > 0) {
-        message += `\n🔄 *Thay đổi:*\n`;
+        message += `🔄 <b>Thay đổi:</b>\n`;
         (payload.data.changes as string[]).forEach((change) => {
-          message += `  • ${change}\n`;
+          message += `  - ${change}\n`;
         });
+      } else {
+        message += `${payload.description}\n`;
       }
-
-      message += `\n⏰ *Thời gian:* ${new Date().toLocaleString("vi-VN")}`;
+      
+      message += `\n<i>${timestamp}</i>`;
 
       // Create inline keyboard with buttons (only if HTTPS URL is available)
       const appUrl = import.meta.env.VITE_APP_URL;
@@ -78,7 +72,7 @@ class NotificationService {
           body: JSON.stringify({
             chat_id: chatId,
             text: message,
-            parse_mode: "Markdown",
+            parse_mode: "HTML",
             ...(keyboard && { reply_markup: keyboard }),
           }),
         }
@@ -128,19 +122,6 @@ class NotificationService {
     }
   }
 
-  /**
-   * Get human-readable label for notification type
-   */
-  private getTypeLabel(type: NotificationPayload["type"]): string {
-    switch (type) {
-      case "order_created":
-        return "Đơn hàng mới";
-      case "order_updated":
-        return "Đơn hàng được cập nhật";
-      case "order_status_changed":
-        return "Trạng thái thay đổi";
-    }
-  }
 }
 
 export const notificationService = new NotificationService();
