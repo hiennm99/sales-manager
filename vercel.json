@@ -1,14 +1,8 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "framework": "vite",
-  "env": {
-    "VITE_DISCORD_BOT_TOKEN": "MTQzMDgxMjQwNzIxMDU3Nzk5MA.GM5Umj.-1O50fUvNG4LVWZruqNbLGCfDF_hXhTk8u4KgA",
-    "VITE_DISCORD_CHANNEL_ID": "1430740187247415349"
-  },
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "@vercel/node@3.2.0"
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
-  }
+  ]
 }
