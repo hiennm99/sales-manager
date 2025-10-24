@@ -5,6 +5,7 @@
  */
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { useAuthStore } from "@/features/auth/store/useAuthStore";
 import { useEmployeeStore } from "@/features/auth/store/useEmployeeStore";
 
@@ -31,59 +32,73 @@ interface UserStoreState {
   isAuthenticated: () => boolean;
 }
 
-export const useUserStore = create<UserStoreState>((set, get) => ({
-  currentUser: null,
-  loading: false,
-  initialized: false,
+export const useUserStore = create<UserStoreState>()(
+  persist(
+    (set, get) => ({
+      currentUser: null,
+      loading: false,
+      initialized: false,
 
-  initialize: () => {
-    const updateCurrentUser = () => {
-      const authUser = useAuthStore.getState().user;
-      const employee = useEmployeeStore.getState().employee;
+      initialize: () => {
+        const updateCurrentUser = () => {
+          const authUser = useAuthStore.getState().user;
+          const employee = useEmployeeStore.getState().employee;
 
-      if (authUser) {
-        set({
-          currentUser: {
-            id: authUser.id,
-            email: authUser.email || "",
-            employeeId: employee?.id || null,
-            employeeName: employee?.name || null,
-            employeeCode: employee?.code || null,
-          },
-          initialized: true,
-        });
-      } else {
-        set({
-          currentUser: null,
-          initialized: true,
-        });
-      }
-    };
+          console.log("🔄 UserStore updateCurrentUser:", {
+            authUser: authUser?.id,
+            authEmail: authUser?.email,
+            employeeId: employee?.id,
+            employeeName: employee?.name,
+          });
 
-    // Subscribe to auth store changes
-    const unsubscribeAuth = useAuthStore.subscribe(updateCurrentUser);
+          if (authUser) {
+            set({
+              currentUser: {
+                id: authUser.id,
+                email: authUser.email || "",
+                employeeId: employee?.id || null,
+                employeeName: employee?.name || null,
+                employeeCode: employee?.code || null,
+              },
+              initialized: true,
+            });
+          } else {
+            set({
+              currentUser: null,
+              initialized: true,
+            });
+          }
+        };
 
-    // Subscribe to employee store changes
-    const unsubscribeEmployee = useEmployeeStore.subscribe(updateCurrentUser);
+        // Subscribe to auth store changes
+        const unsubscribeAuth = useAuthStore.subscribe(updateCurrentUser);
 
-    // Initial update
-    updateCurrentUser();
+        // Subscribe to employee store changes
+        const unsubscribeEmployee = useEmployeeStore.subscribe(updateCurrentUser);
 
-    // Cleanup function
-    return () => {
-      unsubscribeAuth();
-      unsubscribeEmployee();
-    };
-  },
+        // Initial update
+        updateCurrentUser();
 
-  getCurrentUser: () => {
-    return get().currentUser;
-  },
+        // Cleanup function
+        return () => {
+          unsubscribeAuth();
+          unsubscribeEmployee();
+        };
+      },
 
-  isAuthenticated: () => {
-    return get().currentUser !== null;
-  },
-}));
+      getCurrentUser: () => {
+        return get().currentUser;
+      },
+
+      isAuthenticated: () => {
+        return get().currentUser !== null;
+      },
+    }),
+    {
+      name: "user-store", // localStorage key
+    }
+  )
+);
 
 /**
  * Hook to get current user with automatic initialization

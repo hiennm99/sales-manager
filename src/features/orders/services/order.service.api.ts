@@ -7,7 +7,7 @@ import {
 } from "../../../lib/supabase";
 import { databaseService } from "../../../services";
 import { notificationService } from "../../../services/notification.service";
-import { employeeServiceApi } from "../../employees/services/employee.service.api";
+import { useUserStore } from "../../../store/useUserStore";
 import type {
   Order,
   OrderFormData,
@@ -19,6 +19,7 @@ import {
   trackOrderChanges,
   trackOrderCreated,
   trackOrderItemsUpdate,
+  trackStatusChange,
 } from "../utils/orderHistoryHelper";
 import {
   detectOrderChanges,
@@ -281,7 +282,8 @@ export const orderServiceApi = {
 
     // Track order creation in history
     try {
-      await trackOrderCreated(orderData.id, formData.employeeId);
+      const currentEmployeeId = useUserStore.getState().currentUser?.employeeId || undefined;
+      await trackOrderCreated(orderData.id, currentEmployeeId);
     } catch (error) {
       console.error("Failed to track order creation:", error);
       // Don't fail the order creation if history tracking fails
@@ -472,11 +474,12 @@ export const orderServiceApi = {
 
     // Track order changes in history
     try {
+      const currentEmployeeId = useUserStore.getState().currentUser?.employeeId || undefined;
       await trackOrderChanges(
         numericId,
         oldOrder,
         updatedOrder,
-        formData.employeeId,
+        currentEmployeeId,
       );
     } catch (error) {
       console.error("Failed to track order changes:", error);
@@ -487,16 +490,15 @@ export const orderServiceApi = {
     try {
       const changes = orderServiceApi.getOrderChanges(oldOrder, updatedOrder);
       if (changes.length > 0) {
-        // Get employee name if available
-        let employeeName: string | undefined;
-        if (formData.employeeId) {
-          try {
-            const employee = await employeeServiceApi.getById(formData.employeeId);
-            employeeName = employee?.name;
-          } catch (err) {
-            console.warn("Failed to fetch employee name:", err);
-          }
-        }
+        // Get current logged-in user info
+        const currentUser = useUserStore.getState().currentUser;
+        const employeeName = currentUser?.employeeName || undefined;
+        
+        console.log("📢 Notification - Current User:", {
+          currentUser,
+          employeeName,
+          fullState: useUserStore.getState(),
+        });
 
         const changeDescription = changes.join("\n");
         await notificationService.sendNotification({
@@ -527,7 +529,6 @@ export const orderServiceApi = {
   async updateOrderItems(
     orderId: number,
     items: OrderItemFormData[],
-    employeeId?: number,
   ): Promise<OrderItem[]> {
     console.log("🔄 Updating order items for order:", orderId, items);
 
@@ -571,7 +572,8 @@ export const orderServiceApi = {
 
       // Track order items changes in history
       try {
-        await trackOrderItemsUpdate(orderId, oldItems, newItems, employeeId);
+        const currentEmployeeId = useUserStore.getState().currentUser?.employeeId || undefined;
+        await trackOrderItemsUpdate(orderId, oldItems, newItems, currentEmployeeId);
       } catch (error) {
         console.error("Failed to track order items update:", error);
         // Don't fail the update if history tracking fails
@@ -582,7 +584,8 @@ export const orderServiceApi = {
 
     // Track empty items update
     try {
-      await trackOrderItemsUpdate(orderId, oldItems, [], employeeId);
+      const currentEmployeeId = useUserStore.getState().currentUser?.employeeId || undefined;
+      await trackOrderItemsUpdate(orderId, oldItems, [], currentEmployeeId);
     } catch (error) {
       console.error("Failed to track order items update:", error);
     }
@@ -625,21 +628,30 @@ export const orderServiceApi = {
   ): Promise<Order> {
     const numericId = parseInt(id, 10);
 
+    // Get old order for tracking
+    const oldOrder = await this.getOrderById(numericId);
+    if (!oldOrder) throw new Error("Order not found");
+
     const updateData: Record<string, unknown> = {
       updated_at: new Date().toISOString(),
     };
 
+    let oldStatusId: number | null = null;
     switch (statusType) {
       case "general":
+        oldStatusId = oldOrder.general_status_id;
         updateData.general_status_id = statusId;
         break;
       case "customer":
+        oldStatusId = oldOrder.customer_status_id;
         updateData.customer_status_id = statusId;
         break;
       case "factory":
+        oldStatusId = oldOrder.factory_status_id;
         updateData.factory_status_id = statusId;
         break;
       case "delivery":
+        oldStatusId = oldOrder.delivery_status_id;
         updateData.delivery_status_id = statusId;
         break;
     }
@@ -656,6 +668,21 @@ export const orderServiceApi = {
     }
 
     if (!data) throw new Error("Failed to update status");
+
+    // Track status change
+    try {
+      const currentEmployeeId = useUserStore.getState().currentUser?.employeeId || undefined;
+      await trackStatusChange(
+        numericId,
+        statusType,
+        oldStatusId,
+        statusId,
+        currentEmployeeId,
+      );
+    } catch (error) {
+      console.error("Failed to track status change:", error);
+      // Don't fail the status update if history tracking fails
+    }
 
     return mapToOrderRow(data);
   },
