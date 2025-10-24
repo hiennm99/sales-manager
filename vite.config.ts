@@ -29,9 +29,11 @@ export default defineConfig({
     include: [
       "react",
       "react-dom",
-      "recharts",
       "react-icons"
-    ]
+    ],
+    esbuildOptions: {
+      target: 'esnext'
+    }
   },
   build: {
     assetsInlineLimit: 4096,
@@ -41,15 +43,11 @@ export default defineConfig({
       output: {
         assetFileNames: "images/[name]-[hash].[ext]",
         manualChunks: {
-          'recharts': ['recharts'],
-          'supabase': ['@supabase/supabase-js'],
           'vendor': ['react', 'react-dom', 'react-router', 'react-router-dom'],
-          'ui': ['react-icons', 'clsx', 'tailwind-merge'],
-          'utils': ['date-fns', 'zustand', 'gsap'],
-        },
-        globals: {
-          react: "React",
-          "react-dom": "ReactDOM",
+          'supabase': ['@supabase/supabase-js'],
+          'ui': ['react-icons', 'clsx', 'tailwind-merge', 'lucide-react'],
+          'utils': ['date-fns', 'zustand', 'gsap', 'lodash'],
+          'charts': ['recharts'],
         }
       },
     },
