@@ -133,24 +133,29 @@ function formatValue(
     // Handle employee ID lookups
     if (field && (field === "artist_employee_id" || field === "seller_employee_id")) {
       const employee = lookupData?.employees?.find((e) => e.id === value);
+      console.log(`🔍 Employee lookup for ${field}:`, { value, employee, hasLookupData: !!lookupData?.employees });
       return employee ? `${employee.name} (${employee.code})` : `ID: ${value}`;
     }
 
     // Handle status ID lookups
     if (field === "general_status_id") {
       const status = lookupData?.generalStatuses?.find((s) => s.id === value);
+      console.log(`🔍 Status lookup for ${field}:`, { value, status, hasLookupData: !!lookupData?.generalStatuses });
       return status ? `${status.name_vi} (${status.name})` : `ID: ${value}`;
     }
     if (field === "customer_status_id") {
       const status = lookupData?.customerStatuses?.find((s) => s.id === value);
+      console.log(`🔍 Status lookup for ${field}:`, { value, status, hasLookupData: !!lookupData?.customerStatuses });
       return status ? `${status.name_vi} (${status.name})` : `ID: ${value}`;
     }
     if (field === "factory_status_id") {
       const status = lookupData?.factoryStatuses?.find((s) => s.id === value);
+      console.log(`🔍 Status lookup for ${field}:`, { value, status, hasLookupData: !!lookupData?.factoryStatuses });
       return status ? `${status.name_vi} (${status.name})` : `ID: ${value}`;
     }
     if (field === "delivery_status_id") {
       const status = lookupData?.deliveryStatuses?.find((s) => s.id === value);
+      console.log(`🔍 Status lookup for ${field}:`, { value, status, hasLookupData: !!lookupData?.deliveryStatuses });
       return status ? `${status.name_vi} (${status.name})` : `ID: ${value}`;
     }
 

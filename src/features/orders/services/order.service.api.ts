@@ -4,16 +4,16 @@ import {
   cleanInsertData,
   handleSupabaseError,
   supabase,
-} from "../../../lib/supabase";
-import { databaseService } from "../../../services";
-import { notificationService } from "../../../services/notification.service";
-import { getCurrentUserForService } from "../../../store/useUserStore";
+} from "@/lib/supabase";
+import { databaseService } from "@/services";
+import { notificationService } from "@/services/notification.service.ts";
+import { getCurrentUserForService } from "@/store/useUserStore.ts";
 import type {
   Order,
   OrderFormData,
   OrderItem,
   OrderItemFormData,
-} from "../../../types/order";
+} from "@/types/order.ts";
 import type { Database } from "../../../types/supabase.ts";
 import {
   trackOrderChanges,
@@ -26,8 +26,8 @@ import {
   formatChangesForNotification,
   type LookupData,
 } from "@/utils/changeTracker.ts";
-import { useEmployeeStore } from "@/features/employees";
-import { useStatusStore } from "@/features/statuses";
+import { employeeServiceApi } from "../../employees/services/employee.service.api";
+import { statusServiceApi } from "../../statuses/services/status.service.api";
 
 /**
  * Helper function to convert camelCase to snake_case for database fields
@@ -493,16 +493,34 @@ export const orderServiceApi = {
 
     // Send notification with change details
     try {
-      // Get lookup data for proper display of status and employee names
+      // Fetch lookup data for proper display of status and employee names
+      const [employees, generalStatuses, customerStatuses, factoryStatuses, deliveryStatuses] = 
+        await Promise.all([
+          employeeServiceApi.getAll(),
+          statusServiceApi.getGeneralStatuses(),
+          statusServiceApi.getCustomerStatuses(),
+          statusServiceApi.getFactoryStatuses(),
+          statusServiceApi.getDeliveryStatuses(),
+        ]);
+
       const lookupData: LookupData = {
-        employees: useEmployeeStore.getState().employees,
-        generalStatuses: useStatusStore.getState().generalStatuses,
-        customerStatuses: useStatusStore.getState().customerStatuses,
-        factoryStatuses: useStatusStore.getState().factoryStatuses,
-        deliveryStatuses: useStatusStore.getState().deliveryStatuses,
+        employees,
+        generalStatuses,
+        customerStatuses,
+        factoryStatuses,
+        deliveryStatuses,
       };
 
+      console.log("📊 Lookup data loaded:", {
+        employeesCount: employees.length,
+        generalStatusesCount: generalStatuses.length,
+        customerStatusesCount: customerStatuses.length,
+        factoryStatusesCount: factoryStatuses.length,
+        deliveryStatusesCount: deliveryStatuses.length,
+      });
+
       const changes = orderServiceApi.getOrderChanges(oldOrder, updatedOrder, lookupData);
+      console.log("📝 Detected changes:", changes);
       if (changes.length > 0) {
         // Get current logged-in user info
         const currentUser = getCurrentUserForService();
