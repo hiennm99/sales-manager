@@ -1,7 +1,7 @@
 // store/useExchangeRateStore.ts
 
 import { DEFAULTS } from "@/constants/app-constants";
-import { exchangeRateService } from "@/services/exchangeRate.service";
+import { exchangeRateService } from "@/services/exchangeRateService.ts";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 

@@ -3,7 +3,7 @@
 import { FiChevronLeft, FiChevronRight, FiDownload, FiTrash2, FiX } from "react-icons/fi";
 import React, { useState } from "react";
 import type { OrderPreviewPicture } from "../../../types/orderPreview";
-import { orderPreviewServiceApi } from "../services/orderPreview.service.api";
+import { orderPreviewService } from "../services/orderPreviewService.ts";
 
 interface PreviewPictureGalleryProps {
   pictures: OrderPreviewPicture[];
@@ -29,7 +29,7 @@ export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
 
   const handleDownload = async (picture: OrderPreviewPicture) => {
     try {
-      const blob = await orderPreviewServiceApi.downloadPreviewPicture(
+      const blob = await orderPreviewService.downloadPreviewPicture(
         picture.picture_url,
       );
       const url = window.URL.createObjectURL(blob);
@@ -52,7 +52,7 @@ export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
 
     setIsDeleting(true);
     try {
-      await orderPreviewServiceApi.deletePreviewPicture(pictureId);
+      await orderPreviewService.deletePreviewPicture(pictureId);
       onDeleteSuccess?.(pictureId);
       if (selectedIndex !== null) {
         setSelectedIndex(null);

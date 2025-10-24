@@ -8,8 +8,8 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { shallowEqual } from "../hooks/useStoreSelector";
-import type { CRUDService } from "../services/crud.service.factory";
+import { useShallow } from "zustand/react/shallow";
+import type { CRUDService } from "../services/crudService";
 
 export interface CRUDStoreState<T, FormData> {
   // Data
@@ -286,7 +286,7 @@ export function createCRUDStore<T extends { id: string | number }, FormData>(
  * const items = selectors.useItems();
  * const { items, isLoading } = selectors.useItemsWithLoading();
  */
-export function createCRUDStoreSelectors<T, FormData>(
+export function createCRUDStoreSelectors<T extends { id: string | number }, FormData>(
   useStore: ReturnType<typeof createCRUDStore<T, FormData>>,
 ) {
   return {
@@ -296,32 +296,29 @@ export function createCRUDStoreSelectors<T, FormData>(
     // Select items with loading state
     useItemsWithLoading: () =>
       useStore(
-        (state) => ({
+        useShallow((state) => ({
           items: state.items,
           isLoading: state.isLoading,
-        }),
-        shallowEqual,
+        })),
       ),
 
     // Select items with error
     useItemsWithError: () =>
       useStore(
-        (state) => ({
+        useShallow((state) => ({
           items: state.items,
           error: state.error,
-        }),
-        shallowEqual,
+        })),
       ),
 
     // Select complete data state
     useDataState: () =>
       useStore(
-        (state) => ({
+        useShallow((state) => ({
           items: state.items,
           isLoading: state.isLoading,
           error: state.error,
-        }),
-        shallowEqual,
+        })),
       ),
 
     // Select selected item only
@@ -336,7 +333,7 @@ export function createCRUDStoreSelectors<T, FormData>(
     // Select actions only (never triggers re-render)
     useActions: () =>
       useStore(
-        (state) => ({
+        useShallow((state) => ({
           setSelectedItem: state.setSelectedItem,
           fetchItems: state.fetchItems,
           getItemById: state.getItemById,
@@ -348,13 +345,12 @@ export function createCRUDStoreSelectors<T, FormData>(
           bulkUpdateStatus: state.bulkUpdateStatus,
           clearError: state.clearError,
           reset: state.reset,
-        }),
-        () => true, // Actions never change, so never re-render
+        })),
       ),
 
     // Custom selector with shallow compare
     useSelector: <TSelected>(
       selector: (state: CRUDStoreState<T, FormData>) => TSelected,
-    ) => useStore(selector, shallowEqual),
+    ) => useStore(useShallow(selector)),
   };
 }

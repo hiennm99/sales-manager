@@ -25,7 +25,7 @@ import type {
   QuickDateRange,
   TimePeriod,
 } from "../../../types/dashboard";
-import { dashboardServiceApi } from "../services/dashboard.service.api";
+import { dashboardService } from "../services/dashboardService.ts";
 
 // Default filters
 const getDefaultFilters = (): DashboardFilters => ({
@@ -190,7 +190,7 @@ export const useDashboardStore = create<DashboardStore>()(
         set({ isLoading: true, error: null });
 
         try {
-          const data = await dashboardServiceApi.getDashboardData(filters);
+          const data = await dashboardService.getDashboardData(filters);
           set({
             data,
             isLoading: false,
@@ -324,7 +324,7 @@ export const useDashboardStore = create<DashboardStore>()(
         const { filters } = get();
 
         try {
-          const trends = await dashboardServiceApi.getDashboardTrends(filters);
+          const trends = await dashboardService.getDashboardTrends(filters);
           set({ trends });
         } catch (error) {
           console.error("Error fetching trends:", error);

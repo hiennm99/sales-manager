@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Employee, EmployeeFormData } from "../../../types/employee";
-import { employeeServiceApi } from "../services/employee.service.api";
+import { employeeService } from "../services/employeeService.ts";
 
 interface EmployeeStore {
   employees: Employee[];
@@ -44,7 +44,7 @@ export const useEmployeeStore = create<EmployeeStore>()(
       fetchEmployees: async () => {
         set({ isLoading: true, error: null });
         try {
-          const employees = await employeeServiceApi.getAll();
+          const employees = await employeeService.getAll();
           set({ employees, isLoading: false });
         } catch (error) {
           const errorMessage =
@@ -62,7 +62,7 @@ export const useEmployeeStore = create<EmployeeStore>()(
       createEmployee: async (data: EmployeeFormData) => {
         set({ isLoading: true, error: null });
         try {
-          const newEmployee = await employeeServiceApi.create(data);
+          const newEmployee = await employeeService.create(data);
 
           set((state) => ({
             employees: [newEmployee, ...state.employees],
@@ -84,7 +84,7 @@ export const useEmployeeStore = create<EmployeeStore>()(
       updateEmployee: async (id: number, data: Partial<EmployeeFormData>) => {
         set({ isLoading: true, error: null });
         try {
-          const updatedEmployee = await employeeServiceApi.update(id, data);
+          const updatedEmployee = await employeeService.update(id, data);
 
           if (!updatedEmployee) throw new Error("Employee not found");
 
@@ -114,7 +114,7 @@ export const useEmployeeStore = create<EmployeeStore>()(
       deleteEmployee: async (id: number) => {
         set({ isLoading: true, error: null });
         try {
-          const success = await employeeServiceApi.delete(id);
+          const success = await employeeService.delete(id);
 
           if (!success) throw new Error("Failed to delete employee");
 
@@ -137,7 +137,7 @@ export const useEmployeeStore = create<EmployeeStore>()(
       toggleEmployeeStatus: async (id: number) => {
         set({ isLoading: true, error: null });
         try {
-          const toggledEmployee = await employeeServiceApi.toggleStatus(id);
+          const toggledEmployee = await employeeService.toggleStatus(id);
 
           if (!toggledEmployee) throw new Error("Employee not found");
 
@@ -168,7 +168,7 @@ export const useEmployeeStore = create<EmployeeStore>()(
             return;
           }
 
-          const employees = await employeeServiceApi.search(query);
+          const employees = await employeeService.search(query);
           set({ employees, isLoading: false });
         } catch (error) {
           const errorMessage =
@@ -182,7 +182,7 @@ export const useEmployeeStore = create<EmployeeStore>()(
       bulkDeleteEmployees: async (ids: number[]) => {
         set({ isLoading: true, error: null });
         try {
-          await employeeServiceApi.bulkDelete(ids);
+          await employeeService.bulkDelete(ids);
 
           set((state) => ({
             employees: state.employees.filter((a) => !ids.includes(a.id)),
@@ -205,7 +205,7 @@ export const useEmployeeStore = create<EmployeeStore>()(
       bulkUpdateStatus: async (ids: number[], is_active: boolean) => {
         set({ isLoading: true, error: null });
         try {
-          await employeeServiceApi.bulkUpdateStatus(ids, is_active);
+          await employeeService.bulkUpdateStatus(ids, is_active);
 
           const updatedSelectedEmployee = get().selectedEmployee
             ? {

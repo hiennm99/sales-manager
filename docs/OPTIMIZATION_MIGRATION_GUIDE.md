@@ -6,8 +6,8 @@ This guide explains the new optimized architecture and how to migrate existing c
 
 ### Phase 1: Foundation ✅ COMPLETED
 - **Theme System** (`src/styles/theme.ts`) - Centralized color, shadow, and component presets
-- **CRUD Service Factory** (`src/services/crud.service.factory.ts`) - Generic CRUD service creator
-- **CRUD Store Factory** (`src/store/crud.store.factory.ts`) - Generic Zustand store creator
+- **CRUD Service Factory** (`src/services/crudService.ts`) - Generic CRUD service creator
+- **CRUD Store Factory** (`src/store/crudStore.ts`) - Generic Zustand store creator
 
 ### Phase 2: Components ✅ COMPLETED
 - **FormInput** (`src/components/ui/forms/FormInput.tsx`) - Unified input component (replaces Input, InputField, TextBox, SearchInput)
@@ -65,7 +65,7 @@ theme.components      // Component-specific presets (button, input, card, sectio
 ### Before (Repetitive Code)
 ```typescript
 // Old approach - repeated in every service
-export const employeeServiceApi = {
+export const employeeService = {
   async getAll(): Promise<Employee[]> {
     const { data, error } = await supabase.from('employees').select('*');
     if (error) throw error;
@@ -91,7 +91,7 @@ export const employeeServiceApi = {
 import { createCRUDService } from '@/services/crud.service.factory';
 import type { Employee, EmployeeFormData } from '@/types/employee';
 
-export const employeeServiceApi = createCRUDService<Employee, EmployeeFormData>(
+export const employeeService = createCRUDService<Employee, EmployeeFormData>(
   {
     tableName: 'employees',
     idColumn: 'id',
@@ -165,11 +165,11 @@ export const useEmployeeStore = create<EmployeeStore>()(
 ### After (Using Factory)
 ```typescript
 import { createCRUDStore } from '@/store/crud.store.factory';
-import { employeeServiceApi } from './employee.service.api';
+import { employeeService } from './employee.service.api';
 import type { Employee, EmployeeFormData } from '@/types/employee';
 
 export const useEmployeeStore = createCRUDStore<Employee, EmployeeFormData>(
-  employeeServiceApi,
+  employeeService,
   {
     storeName: 'employees',
     persistKey: 'employee-store',
@@ -317,7 +317,7 @@ import { useEmployeeStore } from '@/features/employees/store';
   required
   error={errors.employeeId}
   fetchOptions={async (query) => {
-    const results = await employeeServiceApi.search(query);
+    const results = await employeeService.search(query);
     return results.map(emp => ({
       id: emp.id,
       label: emp.name,
@@ -326,7 +326,7 @@ import { useEmployeeStore } from '@/features/employees/store';
     }));
   }}
   getInitialLabel={async (id) => {
-    const emp = await employeeServiceApi.getById(id);
+    const emp = await employeeService.getById(id);
     return emp?.name || '';
   }}
   onChange={(name, value, option) => {
@@ -345,7 +345,7 @@ import { useEmployeeStore } from '@/features/employees/store';
   name="productId"
   placeholder="Search by name or SKU..."
   fetchOptions={async (query) => {
-    const results = await productServiceApi.search(query);
+    const results = await productService.search(query);
     return results.map(prod => ({
       id: prod.id,
       label: prod.name,
@@ -394,7 +394,7 @@ import { useFetch } from '@/hooks';
 
 function EmployeeList() {
   const { data: employees, isLoading, error, refetch } = useFetch(
-    () => employeeServiceApi.getAll(),
+    () => employeeService.getAll(),
     {
       immediate: true,
       onSuccess: (data) => console.log('Loaded:', data),
@@ -507,12 +507,12 @@ src/
 ├── styles/
 │   └── theme.ts                    # NEW: Centralized theme
 ├── services/
-│   ├── crud.service.factory.ts     # NEW: CRUD service factory
-│   ├── database.service.ts
-│   ├── validation.service.ts
+│   ├── crudService.ts     # NEW: CRUD service factory
+│   ├── databaseService.ts
+│   ├── validationService.ts
 │   └── ...
 ├── store/
-│   ├── crud.store.factory.ts       # NEW: CRUD store factory
+│   ├── crudStore.ts       # NEW: CRUD store factory
 │   └── ...
 ├── components/
 │   ├── ui/
@@ -539,7 +539,7 @@ src/
 ├── features/
 │   ├── employees/
 │   │   ├── services/
-│   │   │   └── employee.service.api.ts  # UPDATED: Uses factory
+│   │   │   └── employeeService.ts  # UPDATED: Uses factory
 │   │   ├── store/
 │   │   │   └── useEmployeeStore.ts      # UPDATED: Uses factory
 │   │   └── ...

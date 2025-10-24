@@ -1,4 +1,4 @@
-// src/utils/error-handler.ts
+// src/utils/errorHandler.ts
 /**
  * Error Handler Utilities
  * Provides centralized error handling and formatting

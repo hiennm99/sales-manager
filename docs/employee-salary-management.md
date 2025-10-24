@@ -165,10 +165,10 @@ An employee can be both artist and salesperson:
 
 ### Calculate Monthly Salary
 ```typescript
-import { employeeSalaryServiceApi } from '@/features/employees/services/employeeSalary.service.api';
+import { employeeSalaryService } from '@/features/employees/services/employeeSalary.service.api';
 
 // Calculate for specific employee and month
-const salaries = await employeeSalaryServiceApi.calculateEmployeeSalary({
+const salaries = await employeeSalaryService.calculateEmployeeSalary({
   employee_id: 1,
   year: 2025,
   month: 10
@@ -180,7 +180,7 @@ console.log(salaries[0].total_salary); // Total salary in VND
 ### Calculate and Save
 ```typescript
 // Calculate and save as draft
-const savedSalary = await employeeSalaryServiceApi.calculateAndSave(
+const savedSalary = await employeeSalaryService.calculateAndSave(
   1,      // employee_id
   2025,   // year
   10,     // month
@@ -193,7 +193,7 @@ console.log(savedSalary.status); // 'draft'
 ### Approve Salary
 ```typescript
 // Approve the salary
-const approved = await employeeSalaryServiceApi.approveSalary(
+const approved = await employeeSalaryService.approveSalary(
   1,      // employee_id
   2025,   // year
   10,     // month
@@ -206,7 +206,7 @@ console.log(approved.status); // 'approved'
 ### Mark as Paid
 ```typescript
 // Mark as paid
-const paid = await employeeSalaryServiceApi.markAsPaid(
+const paid = await employeeSalaryService.markAsPaid(
   1,                  // employee_id
   2025,               // year
   10,                 // month
@@ -220,7 +220,7 @@ console.log(paid.status); // 'paid'
 ### Get All Salaries for a Month
 ```typescript
 // Get all employee salaries for October 2025
-const salaries = await employeeSalaryServiceApi.getSalaryRecords({
+const salaries = await employeeSalaryService.getSalaryRecords({
   year: 2025,
   month: 10
 });
@@ -233,7 +233,7 @@ salaries.forEach(s => {
 ### Get Yearly Breakdown
 ```typescript
 // Get 12-month breakdown for an employee
-const breakdown = await employeeSalaryServiceApi.getYearlySalaryBreakdown(1, 2025);
+const breakdown = await employeeSalaryService.getYearlySalaryBreakdown(1, 2025);
 
 breakdown.forEach(month => {
   console.log(`Month ${month.period_start}: ${month.total_salary} VND`);

@@ -14,7 +14,7 @@ import {
   INITIAL_ORDER_ITEM,
   INITIAL_STATUS_VALUES,
 } from "../constants/orderDefaults";
-import { orderServiceApi } from "../services/order.service.api";
+import { orderService } from "../services/orderService.ts";
 
 type ShippingData = {
   carrier_unit?: string;
@@ -191,7 +191,7 @@ export const useOrderStore = create<OrderStore>()(
       fetchOrders: async () => {
         set({ isLoading: true, error: null });
         try {
-          const orders = await orderServiceApi.getOrders();
+          const orders = await orderService.getOrders();
           set({ orders, isLoading: false });
         } catch (error) {
           const errorMessage =
@@ -212,7 +212,7 @@ export const useOrderStore = create<OrderStore>()(
 
         set({ isLoading: true, error: null });
         try {
-          const items = await orderServiceApi.getOrderItems(orderId);
+          const items = await orderService.getOrderItems(orderId);
           set((state) => ({
             orderItems: {
               ...state.orderItems,
@@ -238,7 +238,7 @@ export const useOrderStore = create<OrderStore>()(
       ) => {
         set({ isLoading: true, error: null });
         try {
-          const newOrder = await orderServiceApi.createOrder(
+          const newOrder = await orderService.createOrder(
             formData,
             items,
             financialData,
@@ -263,7 +263,7 @@ export const useOrderStore = create<OrderStore>()(
         set({ isLoading: true, error: null });
         try {
           // GỌI API: Giả định có service API để cập nhật danh sách items cho một order
-          const updatedItemsFromApi = await orderServiceApi.updateOrderItems(
+          const updatedItemsFromApi = await orderService.updateOrderItems(
             orderId,
             updatedItems,
           );
@@ -394,7 +394,7 @@ export const useOrderStore = create<OrderStore>()(
             financialData.delivery_status_id = updatedOrder.delivery_status_id;
 
           // 1. Cập nhật thông tin Order chính
-          const updatedOrderFromApi = await orderServiceApi.updateOrder(
+          const updatedOrderFromApi = await orderService.updateOrder(
             id,
             formData,
             financialData,
@@ -427,7 +427,7 @@ export const useOrderStore = create<OrderStore>()(
       deleteOrder: async (id: string) => {
         set({ isLoading: true, error: null });
         try {
-          await orderServiceApi.deleteOrder(id);
+          await orderService.deleteOrder(id);
           const numericId = parseInt(id, 10);
 
           set((state) => {
@@ -459,7 +459,7 @@ export const useOrderStore = create<OrderStore>()(
       ) => {
         set({ isLoading: true, error: null });
         try {
-          const updatedOrder = await orderServiceApi.updateOrderStatus(
+          const updatedOrder = await orderService.updateOrderStatus(
             id,
             statusType,
             statusId,
@@ -490,7 +490,7 @@ export const useOrderStore = create<OrderStore>()(
       updateShippingInfo: async (id: string, shippingData: ShippingData) => {
         set({ isLoading: true, error: null });
         try {
-          const updatedOrder = await orderServiceApi.updateShippingInfo(
+          const updatedOrder = await orderService.updateShippingInfo(
             id,
             shippingData,
           );
@@ -525,7 +525,7 @@ export const useOrderStore = create<OrderStore>()(
             return;
           }
 
-          const orders = await orderServiceApi.searchOrders(query);
+          const orders = await orderService.searchOrders(query);
           set({ orders, isLoading: false });
         } catch (error) {
           const errorMessage =
@@ -537,7 +537,7 @@ export const useOrderStore = create<OrderStore>()(
       filterOrdersByDateRange: async (startDate: string, endDate: string) => {
         set({ isLoading: true, error: null });
         try {
-          const orders = await orderServiceApi.filterOrdersByDateRange(
+          const orders = await orderService.filterOrdersByDateRange(
             startDate,
             endDate,
           );
@@ -552,7 +552,7 @@ export const useOrderStore = create<OrderStore>()(
       getOrdersByShop: async (shopId: number) => {
         set({ isLoading: true, error: null });
         try {
-          const orders = await orderServiceApi.getOrdersByShop(shopId);
+          const orders = await orderService.getOrdersByShop(shopId);
           set({ orders, isLoading: false });
         } catch (error) {
           const errorMessage =
@@ -566,7 +566,7 @@ export const useOrderStore = create<OrderStore>()(
       getOrdersByEmployee: async (employeeId: number) => {
         set({ isLoading: true, error: null });
         try {
-          const orders = await orderServiceApi.getOrdersByEmployee(employeeId);
+          const orders = await orderService.getOrdersByEmployee(employeeId);
           set({ orders, isLoading: false });
         } catch (error) {
           const errorMessage =
@@ -580,7 +580,7 @@ export const useOrderStore = create<OrderStore>()(
       bulkDeleteOrders: async (ids: number[]) => {
         set({ isLoading: true, error: null });
         try {
-          await orderServiceApi.bulkDeleteOrders(ids);
+          await orderService.bulkDeleteOrders(ids);
 
           set((state) => {
             const newOrderItems = { ...state.orderItems };
@@ -606,7 +606,7 @@ export const useOrderStore = create<OrderStore>()(
       exportOrders: async () => {
         set({ isLoading: true, error: null });
         try {
-          await orderServiceApi.exportOrders();
+          await orderService.exportOrders();
           set({ isLoading: false });
         } catch (error) {
           const errorMessage =

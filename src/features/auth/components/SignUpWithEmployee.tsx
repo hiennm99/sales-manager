@@ -4,7 +4,7 @@ import { FiAlertCircle, FiMail, FiLock, FiUsers } from "react-icons/fi";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { employeeServiceApi } from "../../employees/services/employee.service.api";
+import { employeeService } from "../../employees/services/employeeService.ts";
 import type { Employee } from "../../../types/employee";
 import { useAuthStore } from "../store/useAuthStore";
 
@@ -25,7 +25,7 @@ export const SignUpWithEmployee = () => {
     const loadEmployees = async () => {
       setLoadingEmployees(true);
       try {
-        const data = await employeeServiceApi.getAll();
+        const data = await employeeService.getAll();
         // Filter employees that don't have user_id yet
         const availableEmployees = data.filter((emp) => !emp.user_id);
         setEmployees(availableEmployees);

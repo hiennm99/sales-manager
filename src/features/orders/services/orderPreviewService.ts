@@ -1,4 +1,4 @@
-// src/features/orders/services/orderPreview.service.api.ts
+// src/features/orders/services/orderPreviewService.ts
 import { handleSupabaseError, supabase } from "../../../lib/supabase";
 import { databaseService, imageService } from "../../../services";
 import type {
@@ -10,7 +10,7 @@ import {
   trackPictureDelete,
   trackPictureUpload,
 } from "../utils/orderHistoryHelper";
-import { orderHistoryServiceApi } from "./orderHistory.service.api";
+import { orderHistoryService } from "./orderHistoryService.ts";
 
 /**
  * Storage configuration
@@ -42,7 +42,7 @@ const mapToPreviewPictureRow = (
  * Order Preview Picture Supabase Service
  * Handles all database operations related to order preview pictures
  */
-export const orderPreviewServiceApi = {
+export const orderPreviewService = {
   /**
    * Upload a preview picture to Supabase storage and create database record
    */
@@ -293,7 +293,7 @@ export const orderPreviewServiceApi = {
     // Track bulk picture deletion in order history
     if (pictures.length > 0) {
       try {
-        await orderHistoryServiceApi.createHistoryRecord(orderId, "updated", {
+        await orderHistoryService.createHistoryRecord(orderId, "updated", {
           fieldName: "Preview Pictures",
           description: `Bulk deleted ${pictures.length} preview pictures`,
           changedByEmployeeId: employeeId,
@@ -394,7 +394,7 @@ export const orderPreviewServiceApi = {
       // Create history entries for each order
       for (const [orderId, orderPictures] of Object.entries(picturesByOrder)) {
         try {
-          await orderHistoryServiceApi.createHistoryRecord(
+          await orderHistoryService.createHistoryRecord(
             parseInt(orderId),
             "updated",
             {

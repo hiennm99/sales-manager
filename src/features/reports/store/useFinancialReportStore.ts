@@ -13,12 +13,12 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import {
   expensesServiceApi,
-  financialReportServiceApi,
+  financialReportService,
   incomingMoneyServiceApi,
   moneyOnEtsyServiceApi,
   receivedMoneyServiceApi,
   transferredMoneyServiceApi,
-} from "../services/financialReport.service.api";
+} from "../services/financialReportService.ts";
 
 interface FinancialReportState {
   // Reports list
@@ -107,7 +107,7 @@ export const useFinancialReportStore = create<FinancialReportState>()(
       loadReports: async () => {
         set({ isLoading: true });
         try {
-          const reports = await financialReportServiceApi.getReportPeriods(
+          const reports = await financialReportService.getReportPeriods(
             get().filters,
           );
           set({ reports, isLoading: false });
@@ -126,7 +126,7 @@ export const useFinancialReportStore = create<FinancialReportState>()(
         const periodEnd = new Date(year, month, 0).toISOString().split("T")[0];
 
         try {
-          const newReport = await financialReportServiceApi.createReportPeriod({
+          const newReport = await financialReportService.createReportPeriod({
             shopId,
             year,
             month,
@@ -170,7 +170,7 @@ export const useFinancialReportStore = create<FinancialReportState>()(
             expenses,
             transferredMoney,
           ] = await Promise.all([
-            financialReportServiceApi.getReportPeriod(reportId),
+            financialReportService.getReportPeriod(reportId),
             moneyOnEtsyServiceApi.getByReportPeriod(reportId),
             incomingMoneyServiceApi.getByReportPeriod(reportId),
             receivedMoneyServiceApi.getByReportPeriod(reportId),
@@ -229,7 +229,7 @@ export const useFinancialReportStore = create<FinancialReportState>()(
           // Save CSV files to notes
           const notesData = JSON.stringify({ csvFiles });
 
-          const updated = await financialReportServiceApi.updateReportPeriod(
+          const updated = await financialReportService.updateReportPeriod(
             currentReport.id,
             {
               totalSales: currentReport.total_sales,
@@ -255,7 +255,7 @@ export const useFinancialReportStore = create<FinancialReportState>()(
       // Delete report
       deleteReport: async (id) => {
         try {
-          await financialReportServiceApi.deleteReportPeriod(id);
+          await financialReportService.deleteReportPeriod(id);
 
           if (get().currentReport?.id === id) {
             set({
@@ -280,7 +280,7 @@ export const useFinancialReportStore = create<FinancialReportState>()(
       // Approve report
       approveReport: async (id) => {
         try {
-          const updated = await financialReportServiceApi.approveReport(id);
+          const updated = await financialReportService.approveReport(id);
 
           if (get().currentReport?.id === id) {
             set({ currentReport: updated });
@@ -296,7 +296,7 @@ export const useFinancialReportStore = create<FinancialReportState>()(
       // Finalize report
       finalizeReport: async (id) => {
         try {
-          const updated = await financialReportServiceApi.finalizeReport(id);
+          const updated = await financialReportService.finalizeReport(id);
 
           if (get().currentReport?.id === id) {
             set({ currentReport: updated });

@@ -1,4 +1,4 @@
-// src/services/exchangeRate.service.ts
+// src/services/exchangeRateService.ts
 /**
  * Exchange Rate Service
  * Handles fetching and caching exchange rates from external API

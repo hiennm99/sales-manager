@@ -1,6 +1,6 @@
 // src/features/settings/pages/SettingsPage.tsx
 
-import { EmployeeList } from "@/features/employees";
+import { EmployeeList } from "@/features/employees/pages/EmployeeList";
 import { ShopListAdmin } from "@/features/shops";
 import { StatusList } from "@/features/statuses";
 import { FiSettings } from "react-icons/fi";

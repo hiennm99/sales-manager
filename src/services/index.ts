@@ -4,24 +4,24 @@
  */
 
 // Storage Service
-export { storageService } from "./storage.service";
-export type { UploadOptions, UploadResult } from "./storage.service";
+export { storageService } from "./storageService.ts";
+export type { UploadOptions, UploadResult } from "./storageService.ts";
 
 // Image Service
-export { imageService } from "./image.service";
+export { imageService } from "./imageService.ts";
 export type {
   ImageConversionOptions,
   ImageDimensions,
   ImageValidationOptions,
-} from "./image.service";
+} from "./imageService.ts";
 
 // Database Service
-export { databaseService } from "./database.service";
-export type { TableInfo } from "./database.service";
+export { databaseService } from "./databaseService.ts";
+export type { TableInfo } from "./databaseService.ts";
 
 // Validation Service
-export { validationService } from "./validation.service";
-export type { ValidationResult } from "./validation.service";
+export { validationService } from "./validationService.ts";
+export type { ValidationResult } from "./validationService.ts";
 
 // Utility Service
-export { utilityService } from "./utility.service";
+export { utilityService } from "./utilityService.ts";

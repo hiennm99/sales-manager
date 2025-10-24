@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import type { OrderPreviewPicture } from "../../../types/orderPreview";
-import { orderPreviewServiceApi } from "../services/orderPreview.service.api";
+import { orderPreviewService } from "../services/orderPreviewService.ts";
 
 interface OrderPreviewState {
   // State
@@ -32,7 +32,7 @@ export const useOrderPreviewStore = create<OrderPreviewState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const data =
-        await orderPreviewServiceApi.getPreviewPicturesByOrderId(orderId);
+        await orderPreviewService.getPreviewPicturesByOrderId(orderId);
       set((state) => ({
         pictures: {
           ...state.pictures,
@@ -58,7 +58,7 @@ export const useOrderPreviewStore = create<OrderPreviewState>((set) => ({
   ) => {
     set({ isLoading: true, error: null });
     try {
-      const picture = await orderPreviewServiceApi.uploadPreviewPicture(
+      const picture = await orderPreviewService.uploadPreviewPicture(
         orderId,
         file,
         employeeId,
@@ -87,7 +87,7 @@ export const useOrderPreviewStore = create<OrderPreviewState>((set) => ({
   deletePreviewPicture: async (orderId: number, pictureId: number) => {
     set({ isLoading: true, error: null });
     try {
-      await orderPreviewServiceApi.deletePreviewPicture(pictureId);
+      await orderPreviewService.deletePreviewPicture(pictureId);
 
       set((state) => ({
         pictures: {

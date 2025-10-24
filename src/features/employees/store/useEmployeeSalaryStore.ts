@@ -7,7 +7,7 @@ import type {
   EmployeeSalaryFilters,
   EmployeeSalaryPeriod,
 } from "../../../types/employee";
-import { employeeSalaryServiceApi } from "../services/employeeSalary.service.api";
+import { employeeSalaryService } from "../services/employeeSalaryService.ts";
 
 interface EmployeeSalaryState {
   // Data
@@ -103,7 +103,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
         set({ isLoading: true, error: null });
         try {
           const salaries =
-            await employeeSalaryServiceApi.getSalaryRecords(filters);
+            await employeeSalaryService.getSalaryRecords(filters);
           set({ salaries, isLoading: false });
         } catch (error) {
           const errorMessage =
@@ -119,7 +119,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
       fetchSalaryRecord: async (employee_id, year, month) => {
         set({ isLoading: true, error: null });
         try {
-          const salary = await employeeSalaryServiceApi.getSalaryRecord(
+          const salary = await employeeSalaryService.getSalaryRecord(
             employee_id,
             year,
             month,
@@ -140,7 +140,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
         set({ isLoading: true, error: null });
         try {
           const calculatedSalaries =
-            await employeeSalaryServiceApi.calculateEmployeeSalary(filters);
+            await employeeSalaryService.calculateEmployeeSalary(filters);
           set({ calculatedSalaries, isLoading: false });
         } catch (error) {
           const errorMessage =
@@ -156,7 +156,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
       calculateAndSave: async (employee_id, year, month, calculated_by) => {
         set({ isLoading: true, error: null });
         try {
-          let salary = await employeeSalaryServiceApi.calculateAndSave(
+          let salary = await employeeSalaryService.calculateAndSave(
             employee_id,
             year,
             month,
@@ -164,7 +164,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
 
           // If calculated_by is provided, update the salary record with it
           if (calculated_by) {
-            salary = await employeeSalaryServiceApi.saveSalaryRecord({
+            salary = await employeeSalaryService.saveSalaryRecord({
               employee_id: salary.employee_id,
               salary_period_year: salary.salary_period_year,
               salary_period_month: salary.salary_period_month ?? undefined,
@@ -210,7 +210,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
         set({ isLoading: true, error: null });
         try {
           // Get current record
-          const current = await employeeSalaryServiceApi.getSalaryRecord(
+          const current = await employeeSalaryService.getSalaryRecord(
             employee_id,
             year,
             month,
@@ -241,7 +241,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
           };
 
           const updated =
-            await employeeSalaryServiceApi.saveSalaryRecord(formData);
+            await employeeSalaryService.saveSalaryRecord(formData);
 
           // Update in state
           const salaries = get().salaries;
@@ -272,7 +272,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
       deleteSalary: async (employee_id, year, month) => {
         set({ isLoading: true, error: null });
         try {
-          await employeeSalaryServiceApi.deleteSalaryRecord(
+          await employeeSalaryService.deleteSalaryRecord(
             employee_id,
             year,
             month,
@@ -301,7 +301,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
       approveSalary: async (employee_id, year, month, approved_by) => {
         set({ isLoading: true, error: null });
         try {
-          const approved = await employeeSalaryServiceApi.approveSalary(
+          const approved = await employeeSalaryService.approveSalary(
             employee_id,
             year,
             month,
@@ -339,7 +339,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
       markAsPaid: async (employee_id, year, month) => {
         set({ isLoading: true, error: null });
         try {
-          const paid = await employeeSalaryServiceApi.markAsPaid(
+          const paid = await employeeSalaryService.markAsPaid(
             employee_id,
             year,
             month,
@@ -380,7 +380,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
         try {
           // Calculate for all employees at once (without filtering by employee_id)
           const calculated =
-            await employeeSalaryServiceApi.calculateEmployeeSalary({
+            await employeeSalaryService.calculateEmployeeSalary({
               year,
               month,
             });
@@ -403,7 +403,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
 
             // Save directly without recalculating
             const saved =
-              await employeeSalaryServiceApi.saveSalaryRecord(formData);
+              await employeeSalaryService.saveSalaryRecord(formData);
             savedSalaries.push(saved);
           }
 

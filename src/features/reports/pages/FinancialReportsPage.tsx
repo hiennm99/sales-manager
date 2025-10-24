@@ -37,12 +37,12 @@ import { MoneyOnEtsyForm } from "../components/MoneyOnEtsyForm";
 import { OverviewTab } from "../components/OverviewTab";
 import {
   expensesServiceApi,
-  financialReportServiceApi,
+  financialReportService,
   incomingMoneyServiceApi,
   moneyOnEtsyServiceApi,
   receivedMoneyServiceApi,
   transferredMoneyServiceApi,
-} from "../services/financialReport.service.api";
+} from "../services/financialReportService.ts";
 
 type TabType =
   | "overview"
@@ -81,7 +81,7 @@ export const FinancialReportsPage: React.FC = () => {
   const loadReports = useCallback(async () => {
     setIsLoading(true);
     try {
-      const reports = await financialReportServiceApi.getReportPeriods(filters);
+      const reports = await financialReportService.getReportPeriods(filters);
       setAllReports(reports);
     } catch (error) {
       console.error("Error loading reports:", error);
@@ -108,7 +108,7 @@ export const FinancialReportsPage: React.FC = () => {
     const periodEnd = new Date(year, month, 0).toISOString().split("T")[0];
 
     try {
-      const newReport = await financialReportServiceApi.createReportPeriod({
+      const newReport = await financialReportService.createReportPeriod({
         shopId,
         year,
         month,
@@ -137,7 +137,7 @@ export const FinancialReportsPage: React.FC = () => {
     try {
       // If report already has an ID, just update it
       if (currentReport.id && currentReport.id > 0) {
-        await financialReportServiceApi.updateReportPeriod(currentReport.id, {
+        await financialReportService.updateReportPeriod(currentReport.id, {
           totalSales: currentReport.total_sales,
           totalFees: currentReport.total_fees,
           netProfit: currentReport.net_profit,
@@ -151,7 +151,7 @@ export const FinancialReportsPage: React.FC = () => {
         setUploadedData(null);
       } else {
         // Create new report period
-        const savedReport = await financialReportServiceApi.createReportPeriod({
+        const savedReport = await financialReportService.createReportPeriod({
           shopId: currentReport.shop_id,
           year: currentReport.year,
           month: currentReport.month,
@@ -278,7 +278,7 @@ export const FinancialReportsPage: React.FC = () => {
 
   const handleDeleteReport = async (id: number) => {
     try {
-      await financialReportServiceApi.deleteReportPeriod(id);
+      await financialReportService.deleteReportPeriod(id);
       await loadReports();
       if (currentReport?.id === id) {
         setCurrentReport(null);
@@ -293,7 +293,7 @@ export const FinancialReportsPage: React.FC = () => {
 
   const handleApproveReport = async (id: number) => {
     try {
-      const updatedReport = await financialReportServiceApi.approveReport(id);
+      const updatedReport = await financialReportService.approveReport(id);
       await loadReports();
       if (currentReport?.id === id) {
         setCurrentReport(updatedReport);
@@ -307,7 +307,7 @@ export const FinancialReportsPage: React.FC = () => {
 
   const handleFinalizeReport = async (id: number) => {
     try {
-      const updatedReport = await financialReportServiceApi.finalizeReport(id);
+      const updatedReport = await financialReportService.finalizeReport(id);
       await loadReports();
       if (currentReport?.id === id) {
         setCurrentReport(updatedReport);

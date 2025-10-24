@@ -3,7 +3,7 @@
 import type { ExcelUploadData } from "@/types/financialReport";
 import { FiAlertCircle, FiCheckCircle, FiUpload, FiX } from "react-icons/fi";
 import React, { useRef, useState } from "react";
-import { excelParserService } from "../services/financialReport.service.api";
+import { excelParserService } from "../services/financialReportService.ts";
 
 interface ExcelUploadProps {
   onUploadSuccess: (data: ExcelUploadData) => void;

@@ -4,7 +4,7 @@ import { FiCalendar, FiDollarSign, FiEye, FiTrendingUp, FiUsers } from "react-ic
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { EmployeeSalaryPeriod } from "../../../types/employee";
-import { employeeSalaryServiceApi } from "../services/employeeSalary.service.api";
+import { employeeSalaryService } from "../services/employeeSalaryService.ts";
 import { useEmployeeStore } from "../store/useEmployeeStore";
 
 export const EmployeeSalaryPage: React.FC = () => {
@@ -34,7 +34,7 @@ export const EmployeeSalaryPage: React.FC = () => {
   const loadSalaryData = async () => {
     setIsLoading(true);
     try {
-      const data = await employeeSalaryServiceApi.calculateEmployeeSalary({
+      const data = await employeeSalaryService.calculateEmployeeSalary({
         employee_id: selectedEmployeeId,
         year,
         month: viewMode === "monthly" ? month : undefined,

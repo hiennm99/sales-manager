@@ -7,7 +7,7 @@ import type {
   FactoryStatus,
   GeneralStatus,
 } from "../../../types/status";
-import { statusServiceApi } from "../services/status.service.api";
+import { statusServiceApi } from "../services/statusService.ts";
 
 interface StatusStore {
   // Data

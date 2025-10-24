@@ -5,7 +5,7 @@ import type {
   OrderHistory,
   OrderHistoryActionType,
 } from "../../../types/orderHistory";
-import { orderHistoryServiceApi } from "../services/orderHistory.service.api";
+import { orderHistoryService } from "../services/orderHistoryService.ts";
 
 interface OrderHistoryState {
   // State
@@ -39,7 +39,7 @@ export const useOrderHistoryStore = create<OrderHistoryState>((set) => ({
   loadOrderHistory: async (orderId: number) => {
     set({ isLoading: true, error: null });
     try {
-      const data = await orderHistoryServiceApi.getOrderHistory(orderId);
+      const data = await orderHistoryService.getOrderHistory(orderId);
       set((state) => ({
         history: {
           ...state.history,
@@ -62,7 +62,7 @@ export const useOrderHistoryStore = create<OrderHistoryState>((set) => ({
   ) => {
     set({ isLoading: true, error: null });
     try {
-      const record = await orderHistoryServiceApi.createHistoryRecord(
+      const record = await orderHistoryService.createHistoryRecord(
         orderId,
         actionType,
         options,
@@ -90,7 +90,7 @@ export const useOrderHistoryStore = create<OrderHistoryState>((set) => ({
   deleteHistoryRecord: async (orderId: number, recordId: number) => {
     set({ isLoading: true, error: null });
     try {
-      await orderHistoryServiceApi.deleteHistoryRecord(recordId);
+      await orderHistoryService.deleteHistoryRecord(recordId);
 
       set((state) => ({
         history: {

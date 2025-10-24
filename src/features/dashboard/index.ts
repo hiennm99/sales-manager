@@ -7,7 +7,7 @@ export { DashboardPage } from "./pages/DashboardPage";
 export { useDashboardStore } from "./store/useDashboardStore";
 
 // Services
-export { dashboardServiceApi } from "./services/dashboard.service.api";
+export { dashboardService } from "./services/dashboardService.ts";
 
 // Components
 export * from "./components";

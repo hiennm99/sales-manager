@@ -5,8 +5,8 @@ import React, { useEffect, useState } from "react";
 import type { OrderHistory } from "../../../types/orderHistory";
 import type { OrderPreviewPicture } from "../../../types/orderPreview";
 import { useEmployeeStore } from "../../employees/store/useEmployeeStore";
-import { orderHistoryServiceApi } from "../services/orderHistory.service.api";
-import { orderPreviewServiceApi } from "../services/orderPreview.service.api";
+import { orderHistoryService } from "../services/orderHistoryService.ts";
+import { orderPreviewService } from "../services/orderPreviewService.ts";
 import { OrderHistoryTimeline } from "./OrderHistoryTimeline";
 import { PreviewPictureGallery } from "./PreviewPictureGallery";
 import { PreviewPictureUpload } from "./PreviewPictureUpload";
@@ -37,7 +37,7 @@ export const OrderDetailTabs: React.FC<OrderDetailTabsProps> = ({
       setIsLoadingPictures(true);
       try {
         const data =
-          await orderPreviewServiceApi.getPreviewPicturesByOrderId(orderId);
+          await orderPreviewService.getPreviewPicturesByOrderId(orderId);
         setPictures(data);
       } catch (err) {
         console.error("Failed to load preview pictures:", err);
@@ -55,7 +55,7 @@ export const OrderDetailTabs: React.FC<OrderDetailTabsProps> = ({
     const loadHistory = async () => {
       setIsLoadingHistory(true);
       try {
-        const data = await orderHistoryServiceApi.getOrderHistory(orderId);
+        const data = await orderHistoryService.getOrderHistory(orderId);
         setHistory(data);
       } catch (err) {
         console.error("Failed to load order history:", err);

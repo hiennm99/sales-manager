@@ -14,7 +14,7 @@ Complete guide for implementing the optimization across the entire project.
 - [x] Export types for TypeScript
 
 ### CRUD Service Factory
-- [x] Create `src/services/crud.service.factory.ts`
+- [x] Create `src/services/crudService.ts`
 - [x] Implement getAll() method
 - [x] Implement getById() method
 - [x] Implement create() method
@@ -29,7 +29,7 @@ Complete guide for implementing the optimization across the entire project.
 - [x] Add logging
 
 ### CRUD Store Factory
-- [x] Create `src/store/crud.store.factory.ts`
+- [x] Create `src/store/crudStore.ts`
 - [x] Implement state management
 - [x] Implement all CRUD actions
 - [x] Add automatic persistence
@@ -342,10 +342,10 @@ Complete guide for implementing the optimization across the entire project.
 - [ ] Delete old ProductAutocomplete.tsx (if replaced)
 
 ### Remove Old Services
-- [ ] Delete old employee.service.api.ts (if migrated)
-- [ ] Delete old product.service.api.ts (if migrated)
-- [ ] Delete old shop.service.api.ts (if migrated)
-- [ ] Delete old status.service.api.ts (if migrated)
+- [ ] Delete old employeeService.ts (if migrated)
+- [ ] Delete old productService.ts (if migrated)
+- [ ] Delete old shopService.ts (if migrated)
+- [ ] Delete old statusService.ts (if migrated)
 
 ### Remove Old Stores
 - [ ] Delete old useEmployeeStore.ts (if migrated)

@@ -10,7 +10,7 @@ import {
   expensesServiceApi,
   receivedMoneyServiceApi,
   transferredMoneyServiceApi,
-} from "../services/financialReport.service.api";
+} from "../services/financialReportService.ts";
 
 interface ReportListViewProps {
   reports: FinancialReportPeriod[];

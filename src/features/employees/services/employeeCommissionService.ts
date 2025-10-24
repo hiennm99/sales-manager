@@ -1,4 +1,4 @@
-// src/features/employees/services/employeeCommission.service.api.ts
+// src/features/employees/services/employeeCommissionService.ts
 
 import { endOfMonth, format } from "date-fns";
 import { handleSupabaseError, supabase } from "../../../lib/supabase";
@@ -9,7 +9,7 @@ import type { EmployeeCommission } from "../../../types/employee";
  * Handles reading commission records from employee_commission table
  * Note: This table is auto-populated by trigger, so no create/update/delete methods
  */
-export const employeeCommissionServiceApi = {
+export const employeeCommissionService = {
   /**
    * Get all commissions for a specific employee
    */

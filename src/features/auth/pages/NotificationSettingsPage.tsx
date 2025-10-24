@@ -6,7 +6,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
-import type { NotificationConfig } from "@/services/notification.service";
+import type { NotificationConfig } from "@/services/notificationService.ts";
 
 export const NotificationSettingsPage = () => {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-// src/features/employees/services/employeeSalary.service.api.ts
+// src/features/employees/services/employeeSalaryService.ts
 
 import { endOfMonth, endOfYear, format } from "date-fns";
 import { handleSupabaseError, supabase } from "../../../lib/supabase";
@@ -20,7 +20,7 @@ const employeeSalaryTable = () => supabase.from("employee_salary");
  * Employee Salary Service API
  * Handles salary calculations, storage, and management
  */
-export const employeeSalaryServiceApi = {
+export const employeeSalaryService = {
   /**
    * Calculate employee salary for a specific period using employee_commission table
    * - Artist commission: Sum of artist_commission_amount_vnd

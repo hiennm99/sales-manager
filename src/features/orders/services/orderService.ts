@@ -1,4 +1,4 @@
-// src/features/orders/services/order.service.api.ts
+// src/features/orders/services/orderService.ts
 
 import {
   cleanInsertData,
@@ -6,7 +6,7 @@ import {
   supabase,
 } from "@/lib/supabase";
 import { databaseService } from "@/services";
-import { notificationService } from "@/services/notification.service.ts";
+import { notificationService } from "@/services/notificationService.ts";
 import { getCurrentUserForService } from "@/store/useUserStore.ts";
 import type {
   Order,
@@ -26,8 +26,8 @@ import {
   formatChangesForNotification,
   type LookupData,
 } from "@/utils/changeTracker.ts";
-import { employeeServiceApi } from "../../employees/services/employee.service.api";
-import { statusServiceApi } from "../../statuses/services/status.service.api";
+import { employeeService } from "../../employees/services/employeeService.ts";
+import { statusServiceApi } from "../../statuses/services/statusService.ts";
 
 /**
  * Helper function to convert camelCase to snake_case for database fields
@@ -158,7 +158,7 @@ const orderItemsTable = () => supabase.from("order_items");
  * Order Supabase Service
  * Handles all database operations related to orders using Supabase
  */
-export const orderServiceApi = {
+export const orderService = {
   /**
    * Fetch all orders
    */
@@ -496,7 +496,7 @@ export const orderServiceApi = {
       // Fetch lookup data for proper display of status and employee names
       const [employees, generalStatuses, customerStatuses, factoryStatuses, deliveryStatuses] = 
         await Promise.all([
-          employeeServiceApi.getAll(),
+          employeeService.getAll(),
           statusServiceApi.getGeneralStatuses(),
           statusServiceApi.getCustomerStatuses(),
           statusServiceApi.getFactoryStatuses(),
@@ -519,7 +519,7 @@ export const orderServiceApi = {
         deliveryStatusesCount: deliveryStatuses.length,
       });
 
-      const changes = orderServiceApi.getOrderChanges(oldOrder, updatedOrder, lookupData);
+      const changes = orderService.getOrderChanges(oldOrder, updatedOrder, lookupData);
       console.log("📝 Detected changes:", changes);
       if (changes.length > 0) {
         // Get current logged-in user info

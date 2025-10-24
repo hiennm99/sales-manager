@@ -32,7 +32,7 @@ const OrderCreate = lazyLoad(() =>
   import("@/features/orders").then((m) => ({ default: m.OrderCreate })),
 );
 const EmployeeListAdmin = lazyLoad(() =>
-  import("@/features/employees").then((m) => ({ default: m.EmployeeList })),
+  import("@/features/employees/pages/EmployeeList").then((m) => ({ default: m.EmployeeList })),
 );
 const StatusList = lazyLoad(() =>
   import("@/features/statuses").then((m) => ({ default: m.StatusList })),

@@ -6,7 +6,7 @@ import type { Order, OrderItem } from "../../../types/order";
 import { OrderDetailTabs } from "../components";
 import { OrderForm } from "../components/OrderForm";
 import { useOrderStore } from "../store/useOrderStore";
-import { orderServiceApi } from "../services/order.service.api";
+import { orderService } from "../services/orderService.ts";
 
 /**
  * Component for viewing and editing an existing order
@@ -40,7 +40,7 @@ export const OrderDetail: React.FC = () => {
         setDbLoading(true);
         setDbError(null);
         try {
-          const fetchedOrder = await orderServiceApi.getOrderById(Number(orderId));
+          const fetchedOrder = await orderService.getOrderById(Number(orderId));
           setDbOrder(fetchedOrder);
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : "Failed to fetch order";

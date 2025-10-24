@@ -31,8 +31,8 @@ Successfully implemented a comprehensive Financial Reports feature with Excel up
   - Foreign key relationships with CASCADE DELETE
 
 ### Services
-- **`src/features/reports/services/financialReport.service.api.ts`** - Complete API layer
-  - `financialReportServiceApi` - CRUD operations for reports
+- **`src/features/reports/services/financialReportService.ts`** - Complete API layer
+  - `financialReportService` - CRUD operations for reports
   - `moneyOnEtsyServiceApi` - Manage Etsy balance
   - `incomingMoneyServiceApi` - Manage incoming payments
   - `receivedMoneyServiceApi` - Manage received payments
@@ -190,13 +190,13 @@ Successfully implemented a comprehensive Financial Reports feature with Excel up
 
 ### Report Management
 ```typescript
-financialReportServiceApi.getReportPeriods(filters?)
-financialReportServiceApi.getReportPeriod(id)
-financialReportServiceApi.createReportPeriod(formData)
-financialReportServiceApi.updateReportPeriod(id, formData)
-financialReportServiceApi.deleteReportPeriod(id)
-financialReportServiceApi.approveReport(id)
-financialReportServiceApi.finalizeReport(id)
+financialReportService.getReportPeriods(filters?)
+financialReportService.getReportPeriod(id)
+financialReportService.createReportPeriod(formData)
+financialReportService.updateReportPeriod(id, formData)
+financialReportService.deleteReportPeriod(id)
+financialReportService.approveReport(id)
+financialReportService.finalizeReport(id)
 ```
 
 ### Data Services

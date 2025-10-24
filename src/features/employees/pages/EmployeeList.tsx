@@ -4,7 +4,7 @@
  * Modern admin interface for managing employees
  */
 
-import { useEmployeeStore } from "@/features/employees";
+import { useEmployeeStore } from "../store/useEmployeeStore";
 import { FiEdit2, FiPlus, FiSearch, FiTrash2 } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";

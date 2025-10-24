@@ -163,7 +163,7 @@ export function useActions<TState, TActions>(...)
 ```
 
 #### 2. Enhanced CRUD Store Factory
-**Location**: `src/store/crud.store.factory.ts`
+**Location**: `src/store/crudStore.ts`
 
 **Added `createCRUDStoreSelectors` function**:
 ```typescript

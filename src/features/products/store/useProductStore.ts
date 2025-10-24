@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Product, ProductFormData } from "../../../types/product";
-import { productServiceApi } from "../services/product.service.api";
+import { productService } from "../services/productService.ts";
 
 interface ProductStore {
   products: Product[];
@@ -46,7 +46,7 @@ export const useProductStore = create<ProductStore>()(
       fetchProducts: async () => {
         set({ isLoading: true, error: null });
         try {
-          const products = await productServiceApi.getProducts();
+          const products = await productService.getProducts();
           set({ products, isLoading: false });
         } catch (error) {
           const errorMessage =
@@ -67,7 +67,7 @@ export const useProductStore = create<ProductStore>()(
       createProduct: async (data: ProductFormData, imageFile?: File) => {
         set({ isLoading: true, error: null });
         try {
-          const newProduct = await productServiceApi.createProduct(
+          const newProduct = await productService.createProduct(
             data,
             imageFile,
           );
@@ -94,7 +94,7 @@ export const useProductStore = create<ProductStore>()(
       ) => {
         set({ isLoading: true, error: null });
         try {
-          const updatedProduct = await productServiceApi.updateProduct(
+          const updatedProduct = await productService.updateProduct(
             id,
             data,
             imageFile,
@@ -125,7 +125,7 @@ export const useProductStore = create<ProductStore>()(
       deleteProduct: async (id: string) => {
         set({ isLoading: true, error: null });
         try {
-          await productServiceApi.deleteProduct(id);
+          await productService.deleteProduct(id);
           const numericId = parseInt(id, 10);
 
           set((state) => ({
@@ -148,7 +148,7 @@ export const useProductStore = create<ProductStore>()(
         set({ isLoading: true, error: null });
         try {
           const toggledProduct =
-            await productServiceApi.toggleProductStatus(id);
+            await productService.toggleProductStatus(id);
           const numericId = parseInt(id, 10);
 
           set((state) => ({
@@ -178,7 +178,7 @@ export const useProductStore = create<ProductStore>()(
             return;
           }
 
-          const products = await productServiceApi.searchProducts(query);
+          const products = await productService.searchProducts(query);
           set({ products, isLoading: false });
         } catch (error) {
           const errorMessage =
@@ -192,7 +192,7 @@ export const useProductStore = create<ProductStore>()(
       bulkDeleteProducts: async (ids: number[]) => {
         set({ isLoading: true, error: null });
         try {
-          await productServiceApi.bulkDeleteProducts(ids);
+          await productService.bulkDeleteProducts(ids);
 
           set((state) => ({
             products: state.products.filter((p) => !ids.includes(p.id)),
@@ -214,7 +214,7 @@ export const useProductStore = create<ProductStore>()(
       bulkUpdateStatus: async (ids: number[], is_active: boolean) => {
         set({ isLoading: true, error: null });
         try {
-          await productServiceApi.bulkUpdateStatus(ids, is_active);
+          await productService.bulkUpdateStatus(ids, is_active);
 
           const updatedSelectedProduct = get().selectedProduct
             ? {

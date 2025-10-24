@@ -1,7 +1,7 @@
 // components/ImageUpload.tsx
 
-import { imageService } from "@/services/image.service";
-import { storageService } from "@/services/storage.service";
+import { imageService } from "@/services/imageService.ts";
+import { storageService } from "@/services/storageService.ts";
 import { FiAlertCircle, FiCheckCircle, FiEye, FiTrash2, FiUpload, FiX } from "react-icons/fi";
 import React, { useRef, useState } from "react";
 

@@ -1,4 +1,4 @@
-// src/features/dashboard/services/dashboard.service.api.ts
+// src/features/dashboard/services/dashboardService.ts
 
 import { format } from "date-fns";
 import { handleSupabaseError, supabase } from "../../../lib/supabase";
@@ -23,7 +23,7 @@ import type { Order } from "../../../types/order";
  * Dashboard Service API
  * Handles all dashboard-related data fetching and calculations
  */
-export const dashboardServiceApi = {
+export const dashboardService = {
   /**
    * Get complete dashboard data
    */

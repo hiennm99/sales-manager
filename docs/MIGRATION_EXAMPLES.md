@@ -7,11 +7,11 @@ This document provides concrete examples of migrating existing services and stor
 ### Before: Original Implementation
 
 ```typescript
-// src/features/shops/services/shop.service.api.ts (OLD)
+// src/features/shops/services/shopService.ts (OLD)
 import { supabase } from '../../../lib/supabase';
 import type { Shop, ShopFormData } from '../../../types/shop';
 
-export const shopServiceApi = {
+export const shopService = {
   async getAll(): Promise<Shop[]> {
     const { data, error } = await supabase
       .from('shops')
@@ -109,11 +109,11 @@ export const shopServiceApi = {
 ### After: Using Factory
 
 ```typescript
-// src/features/shops/services/shop.service.api.ts (NEW)
+// src/features/shops/services/shopService.ts (NEW)
 import { createCRUDService } from '../../../services/crud.service.factory';
 import type { Shop, ShopFormData } from '../../../types/shop';
 
-export const shopServiceApi = createCRUDService<Shop, ShopFormData>(
+export const shopService = createCRUDService<Shop, ShopFormData>(
   {
     tableName: 'shops',
     idColumn: 'id',
@@ -149,7 +149,7 @@ export const shopServiceApi = createCRUDService<Shop, ShopFormData>(
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Shop, ShopFormData } from '../../../types/shop';
-import { shopServiceApi } from '../services/shop.service.api';
+import { shopService } from '../services/shop.service.api';
 
 interface ShopStore {
   shops: Shop[];
@@ -180,7 +180,7 @@ export const useShopStore = create<ShopStore>()(
       fetchShops: async () => {
         set({ isLoading: true, error: null });
         try {
-          const shops = await shopServiceApi.getAll();
+          const shops = await shopService.getAll();
           set({ shops, isLoading: false });
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Failed to fetch shops';
@@ -195,7 +195,7 @@ export const useShopStore = create<ShopStore>()(
       createShop: async (data: ShopFormData) => {
         set({ isLoading: true, error: null });
         try {
-          const newShop = await shopServiceApi.create(data);
+          const newShop = await shopService.create(data);
           set(state => ({
             shops: [newShop, ...state.shops],
             selectedShop: newShop,
@@ -212,7 +212,7 @@ export const useShopStore = create<ShopStore>()(
       updateShop: async (id: number, data: Partial<ShopFormData>) => {
         set({ isLoading: true, error: null });
         try {
-          const updatedShop = await shopServiceApi.update(id, data);
+          const updatedShop = await shopService.update(id, data);
           if (!updatedShop) throw new Error('Shop not found');
           set(state => ({
             shops: state.shops.map(s => s.id === id ? updatedShop : s),
@@ -230,7 +230,7 @@ export const useShopStore = create<ShopStore>()(
       deleteShop: async (id: number) => {
         set({ isLoading: true, error: null });
         try {
-          await shopServiceApi.delete(id);
+          await shopService.delete(id);
           set(state => ({
             shops: state.shops.filter(s => s.id !== id),
             selectedShop: state.selectedShop?.id === id ? null : state.selectedShop,
@@ -246,7 +246,7 @@ export const useShopStore = create<ShopStore>()(
       searchShops: async (query: string) => {
         set({ isLoading: true, error: null });
         try {
-          const shops = await shopServiceApi.search(query);
+          const shops = await shopService.search(query);
           set({ shops, isLoading: false });
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Failed to search shops';
@@ -257,7 +257,7 @@ export const useShopStore = create<ShopStore>()(
       bulkDeleteShops: async (ids: number[]) => {
         set({ isLoading: true, error: null });
         try {
-          await shopServiceApi.bulkDelete(ids);
+          await shopService.bulkDelete(ids);
           set(state => ({
             shops: state.shops.filter(s => !ids.includes(s.id)),
             selectedShop: state.selectedShop && ids.includes(state.selectedShop.id) ? null : state.selectedShop,
@@ -273,7 +273,7 @@ export const useShopStore = create<ShopStore>()(
       bulkUpdateStatus: async (ids: number[], is_active: boolean) => {
         set({ isLoading: true, error: null });
         try {
-          await shopServiceApi.bulkUpdateStatus(ids, is_active);
+          await shopService.bulkUpdateStatus(ids, is_active);
           set(state => ({
             shops: state.shops.map(s => ids.includes(s.id) ? { ...s, is_active } : s),
             isLoading: false,
@@ -303,11 +303,11 @@ export const useShopStore = create<ShopStore>()(
 ```typescript
 // src/features/shops/store/useShopStore.ts (NEW)
 import { createCRUDStore } from '../../../store/crud.store.factory';
-import { shopServiceApi } from '../services/shop.service.api';
+import { shopService } from '../services/shop.service.api';
 import type { Shop, ShopFormData } from '../../../types/shop';
 
 export const useShopStore = createCRUDStore<Shop, ShopFormData>(
-  shopServiceApi,
+  shopService,
   {
     storeName: 'shops',
     persistKey: 'shop-store',
@@ -681,14 +681,14 @@ export const OrderCard: React.FC = ({ order }) => {
 ### Unit Tests
 ```typescript
 // Test factory-created service
-describe('shopServiceApi', () => {
+describe('shopService', () => {
   it('should fetch all shops', async () => {
-    const shops = await shopServiceApi.getAll();
+    const shops = await shopService.getAll();
     expect(Array.isArray(shops)).toBe(true);
   });
 
   it('should create a shop', async () => {
-    const shop = await shopServiceApi.create({
+    const shop = await shopService.create({
       name: 'Test Shop',
       code: 'TEST',
       address: '123 Main St',

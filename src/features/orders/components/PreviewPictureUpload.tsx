@@ -4,7 +4,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FiUpload, FiX } from "react-icons/fi";
 import React, { useRef, useState } from "react";
 import type { OrderPreviewPicture } from "../../../types/orderPreview";
-import { orderPreviewServiceApi } from "../services/orderPreview.service.api";
+import { orderPreviewService } from "../services/orderPreviewService.ts";
 
 interface PreviewPictureUploadProps {
   orderId: number;
@@ -62,7 +62,7 @@ export const PreviewPictureUpload: React.FC<PreviewPictureUploadProps> = ({
     setIsUploading(true);
 
     try {
-      const picture = await orderPreviewServiceApi.uploadPreviewPicture(
+      const picture = await orderPreviewService.uploadPreviewPicture(
         orderId,
         file,
         employeeId,

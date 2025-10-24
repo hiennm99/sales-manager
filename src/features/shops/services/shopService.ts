@@ -28,7 +28,7 @@ const mapToRow = (data: Database["public"]["Tables"]["shops"]["Row"]): Shop => {
  * Shop Supabase Service
  * Handles all database operations related to shops using Supabase
  */
-export const shopServiceApi = {
+export const shopService = {
   /**
    * Get all shops
    */

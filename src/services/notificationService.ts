@@ -1,4 +1,4 @@
-// services/notification.service.ts
+// services/notificationService.ts
 
 export interface NotificationPayload {
   type: "order_created" | "order_updated" | "order_status_changed";

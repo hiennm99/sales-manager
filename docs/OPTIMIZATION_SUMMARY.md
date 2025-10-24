@@ -87,7 +87,7 @@ Dependencies: 3 → 1 chart library
 **Files Created/Modified**:
 - ✅ `src/hooks/useStoreSelector.ts` (new, 150 lines)
 - ✅ `src/hooks/index.ts` (updated exports)
-- ✅ `src/store/crud.store.factory.ts` (added selectors, +80 lines)
+- ✅ `src/store/crudStore.ts` (added selectors, +80 lines)
 - ✅ `src/features/orders/pages/OrderList.tsx` (refactored)
 - ✅ `src/features/employees/pages/EmployeeList.tsx` (refactored)
 
@@ -279,7 +279,7 @@ export const ERROR_MESSAGES = {
   },
 };
 
-// src/utils/error-handler.ts
+// src/utils/errorHandler.ts
 export const formatError = (error: unknown): string => {
   // Centralized error formatting
 };
@@ -404,7 +404,7 @@ export const useFormValidation = <T extends Record<string, any>>(
 1. Read [SELECTOR_PATTERNS.md](./SELECTOR_PATTERNS.md) for examples
 2. Look at refactored components (OrderList, EmployeeList)
 3. Check SharedChart usage in chart components
-4. Review store factory (`crud.store.factory.ts`)
+4. Review store factory (`crudStore.ts`)
 
 **Issues?** Common problems:
 - **Build errors**: Check TypeScript strict mode

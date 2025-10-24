@@ -122,7 +122,7 @@ Bank transfers and withdrawals
 
 ## API Services
 
-### financialReportServiceApi
+### financialReportService
 - `getReportPeriods()` - Get all reports
 - `getReportPeriod(id)` - Get single report
 - `createReportPeriod()` - Create new report

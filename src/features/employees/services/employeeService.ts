@@ -1,4 +1,4 @@
-// src/features/employees/services/employee.service.api.ts
+// src/features/employees/services/employeeService.ts
 
 import { DEFAULTS } from "../../../constants";
 import { handleSupabaseError, supabase } from "../../../lib/supabase";
@@ -35,7 +35,7 @@ const mapToRow = (
  * Employee Supabase Service
  * Handles all database operations related to employees using Supabase
  */
-export const employeeServiceApi = {
+export const employeeService = {
   /**
    * Get all employees
    */

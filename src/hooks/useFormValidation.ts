@@ -5,7 +5,7 @@
  */
 
 import { useCallback, useState } from "react";
-import { formatValidationError } from "../utils/error-handler";
+import { formatValidationError } from "@/utils/errorHandler.ts";
 
 export interface ValidationRule {
   /** Validation rule name (e.g., 'REQUIRED', 'MIN_LENGTH') */

@@ -54,7 +54,7 @@ src/features/dashboard/
 │   ├── DashboardPage.tsx          # Main dashboard page
 │   └── index.ts                   # Page exports
 ├── services/
-│   └── dashboard.service.api.ts   # API service layer
+│   └── dashboardService.ts   # API service layer
 └── store/
     └── useDashboardStore.ts       # Zustand state management
 
@@ -67,7 +67,7 @@ src/components/ui/
 
 ## Data Flow
 
-### Service Layer (`dashboard.service.api.ts`)
+### Service Layer (`dashboardService.ts`)
 Provides methods to fetch aggregated data from Supabase:
 
 - `getStats(dateRange?)` - Overall statistics with growth calculations

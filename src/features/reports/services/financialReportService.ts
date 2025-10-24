@@ -1,4 +1,4 @@
-// services/financialReport.service.api.ts
+// services/financialReportService.ts
 
 import { supabase } from "@/lib/supabase";
 import type {
@@ -57,7 +57,7 @@ const mapToReportRow = (
   return row;
 };
 
-export const financialReportServiceApi = {
+export const financialReportService = {
   // Get all report periods
   async getReportPeriods(
     filters?: FinancialReportFilters,

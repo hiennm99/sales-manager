@@ -1,7 +1,7 @@
 // features/employees/components/EmployeeCard.tsx
 
 import { Button } from "@/components/ui/Button";
-import { useEmployeeStore } from "@/features/employees";
+import { useEmployeeStore } from "../store/useEmployeeStore";
 import { cn } from "@/lib/utils";
 import { type Employee, getEmployeeInitials } from "@/types/employee";
 import React from "react";

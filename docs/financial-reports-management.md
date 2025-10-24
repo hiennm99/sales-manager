@@ -72,7 +72,7 @@ Comprehensive monthly and yearly financial report management system for managers
 ### Updated Files
 1. **FinancialReportsPage.tsx** - Main page with dual view modes
 2. **components/index.ts** - Export new components
-3. **financialReport.service.api.ts** - Fixed type issues (removed `as any`)
+3. **financialReportService.ts** - Fixed type issues (removed `as any`)
 
 ## Database Integration
 
@@ -252,7 +252,7 @@ No changes needed - uses existing `/reports` route
 Uses existing `useShopStore` for shop data
 
 ### Service Integration
-All CRUD operations through `financialReportServiceApi`
+All CRUD operations through `financialReportService`
 
 ### Type Safety
 Full TypeScript support with proper type definitions

@@ -1,7 +1,7 @@
 // src/features/orders/utils/orderHistoryHelper.ts
 
 import type { Order, OrderItem } from "../../../types/order";
-import { orderHistoryServiceApi } from "../services/orderHistory.service.api";
+import { orderHistoryService } from "../services/orderHistoryService.ts";
 
 /**
  * Helper to track order creation
@@ -11,7 +11,7 @@ export const trackOrderCreated = async (
   employeeId?: number,
 ): Promise<void> => {
   try {
-    await orderHistoryServiceApi.createHistoryRecord(orderId, "created", {
+    await orderHistoryService.createHistoryRecord(orderId, "created", {
       description: "Order created",
       changedByEmployeeId: employeeId,
     });
@@ -38,7 +38,7 @@ export const trackStatusChange = async (
       delivery: "Delivery Status",
     };
 
-    await orderHistoryServiceApi.createHistoryRecord(
+    await orderHistoryService.createHistoryRecord(
       orderId,
       "status_changed",
       {
@@ -63,7 +63,7 @@ export const trackPictureUpload = async (
   employeeId?: number,
 ): Promise<void> => {
   try {
-    await orderHistoryServiceApi.createHistoryRecord(orderId, "picture_added", {
+    await orderHistoryService.createHistoryRecord(orderId, "picture_added", {
       fieldName: pictureName,
       description: `Preview picture uploaded: ${pictureName}`,
       changedByEmployeeId: employeeId,
@@ -93,7 +93,7 @@ export const trackPictureDelete = async (
   employeeId?: number,
 ): Promise<void> => {
   try {
-    await orderHistoryServiceApi.createHistoryRecord(orderId, "updated", {
+    await orderHistoryService.createHistoryRecord(orderId, "updated", {
       fieldName: pictureName,
       description: `Preview picture deleted: ${pictureName}`,
       changedByEmployeeId: employeeId,
@@ -112,7 +112,7 @@ export const trackOrderShipped = async (
   employeeId?: number,
 ): Promise<void> => {
   try {
-    await orderHistoryServiceApi.createHistoryRecord(orderId, "shipped", {
+    await orderHistoryService.createHistoryRecord(orderId, "shipped", {
       description: trackingNumber
         ? `Order shipped with tracking: ${trackingNumber}`
         : "Order marked as shipped",
@@ -131,7 +131,7 @@ export const trackOrderDelivered = async (
   employeeId?: number,
 ): Promise<void> => {
   try {
-    await orderHistoryServiceApi.createHistoryRecord(orderId, "delivered", {
+    await orderHistoryService.createHistoryRecord(orderId, "delivered", {
       description: "Order marked as delivered",
       changedByEmployeeId: employeeId,
     });
@@ -149,7 +149,7 @@ export const trackRefund = async (
   employeeId?: number,
 ): Promise<void> => {
   try {
-    await orderHistoryServiceApi.createHistoryRecord(orderId, "refunded", {
+    await orderHistoryService.createHistoryRecord(orderId, "refunded", {
       description: refundAmount
         ? `Refund processed: $${refundAmount}`
         : "Refund processed",
@@ -171,7 +171,7 @@ export const trackFieldUpdate = async (
   employeeId?: number,
 ): Promise<void> => {
   try {
-    await orderHistoryServiceApi.createHistoryRecord(orderId, "updated", {
+    await orderHistoryService.createHistoryRecord(orderId, "updated", {
       fieldName,
       oldValue: oldValue?.toString() || "None",
       newValue: newValue?.toString() || "None",
@@ -321,7 +321,7 @@ export const trackOrderItemsUpdate = async (
       )
       .join("; ");
 
-    await orderHistoryServiceApi.createHistoryRecord(orderId, "updated", {
+    await orderHistoryService.createHistoryRecord(orderId, "updated", {
       fieldName: "Order Items",
       oldValue: `${oldItemsCount} items`,
       newValue: `${newItemsCount} items: ${itemsSummary}`,

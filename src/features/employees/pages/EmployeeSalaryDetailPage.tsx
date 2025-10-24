@@ -7,7 +7,7 @@ import { FiCalendar, FiChevronDown, FiChevronUp, FiDollarSign, FiTrendingDown, F
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { EmployeeSalaryPeriod } from "../../../types/employee";
-import { employeeSalaryServiceApi } from "../services";
+import { employeeSalaryService } from "../services";
 import { useEmployeeStore } from "../store/useEmployeeStore";
 
 export const EmployeeSalaryDetailPage: React.FC = () => {
@@ -38,7 +38,7 @@ export const EmployeeSalaryDetailPage: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const data = await employeeSalaryServiceApi.getYearlySalaryBreakdown(
+      const data = await employeeSalaryService.getYearlySalaryBreakdown(
         parseInt(employeeId),
         selectedYear,
       );

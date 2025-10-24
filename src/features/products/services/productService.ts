@@ -1,4 +1,4 @@
-// src/features/products/services/product.service.api.ts
+// src/features/products/services/productService.ts
 
 import {
   CACHE,
@@ -180,7 +180,7 @@ const productExists = async (id: number): Promise<boolean> => {
  * Product Supabase Service
  * Handles all database operations related to products using Supabase
  */
-export const productServiceApi = {
+export const productService = {
   /**
    * Fetch all products
    */
@@ -493,7 +493,7 @@ export const productServiceApi = {
  * Helper function to download products as CSV
  */
 export const downloadProductsCSV = async (): Promise<void> => {
-  const products = await productServiceApi.exportProducts();
+  const products = await productService.exportProducts();
 
   if (products.length === 0) {
     console.warn("No products to export");

@@ -1,4 +1,4 @@
-// src/features/orders/services/orderHistory.service.api.ts
+// src/features/orders/services/orderHistoryService.ts
 
 import { handleSupabaseError, supabase } from "../../../lib/supabase";
 import type {
@@ -31,7 +31,7 @@ const mapToOrderHistoryRow = (
  * Order History Supabase Service
  * Handles all database operations related to order history tracking
  */
-export const orderHistoryServiceApi = {
+export const orderHistoryService = {
   /**
    * Create a new history record
    */

@@ -1,4 +1,4 @@
-// src/features/statuses/services/status.service.api.ts
+// src/features/statuses/services/statusService.ts
 
 import { handleSupabaseError, supabase } from "../../../lib/supabase";
 import type {
@@ -16,7 +16,7 @@ const customerStatusesTable = () => supabase.from("customer_statuses");
 const factoryStatusesTable = () => supabase.from("factory_statuses");
 const deliveryStatusesTable = () => supabase.from("delivery_statuses");
 
-class StatusServiceApi {
+class StatusService {
   // General Statuses
   async getGeneralStatuses(): Promise<GeneralStatus[]> {
     const { data, error } = await generalStatusesTable()
@@ -182,4 +182,4 @@ class StatusServiceApi {
   }
 }
 
-export const statusServiceApi = new StatusServiceApi();
+export const statusServiceApi = new StatusService();
