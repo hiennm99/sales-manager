@@ -18,7 +18,17 @@ import type {
   FinancialReportPeriod,
 } from "@/types/financialReport";
 import { formatCurrency } from "@/types/financialReport";
-import { FiCalendar, FiCheckCircle, FiDownload, FiFileText, FiImage, FiList, FiPlus, FiUpload, FiXCircle } from "react-icons/fi";
+import {
+  FiFileText,
+  FiList,
+  FiPlus,
+  FiUpload,
+  FiCalendar,
+  FiCheckCircle,
+  FiXCircle,
+  FiDownload,
+  FiImage,
+} from "react-icons/fi";
 import React, { useCallback, useEffect, useState } from "react";
 import { DataTableTab } from "../components/DataTableTab";
 import { DocumentsTab } from "../components/DocumentsTab";
@@ -316,17 +326,17 @@ export const FinancialReportsPage: React.FC = () => {
   };
 
   const tabs = [
-    { id: "overview" as TabType, label: "Tổng Quan", icon: FileText },
+    { id: "overview" as TabType, label: "Tổng Quan", icon: FiFileText },
     {
       id: "money-on-etsy" as TabType,
       label: "Tiền Còn Trên Etsy",
-      icon: Upload,
+      icon: FiUpload,
     },
-    { id: "incoming" as TabType, label: "Tiền Đang Về", icon: Calendar },
-    { id: "received" as TabType, label: "Tiền Đã Về", icon: CheckCircle },
-    { id: "expenses" as TabType, label: "Các Chi Phí", icon: XCircle },
-    { id: "transferred" as TabType, label: "Tiền Đã CK", icon: Download },
-    { id: "documents" as TabType, label: "Tài Liệu", icon: Image },
+    { id: "incoming" as TabType, label: "Tiền Đang Về", icon: FiCalendar },
+    { id: "received" as TabType, label: "Tiền Đã Về", icon: FiCheckCircle },
+    { id: "expenses" as TabType, label: "Các Chi Phí", icon: FiXCircle },
+    { id: "transferred" as TabType, label: "Tiền Đã CK", icon: FiDownload },
+    { id: "documents" as TabType, label: "Tài Liệu", icon: FiImage },
   ];
 
   return (
@@ -501,9 +511,9 @@ export const FinancialReportsPage: React.FC = () => {
                         {
                           key: "amount",
                           label: "Số tiền",
-                          render: (value, row) => (
+                          render: (value) => (
                             <span className="font-semibold text-indigo-600">
-                              {formatCurrency(value, row.currency)}
+                              {formatCurrency(value)}
                             </span>
                           ),
                         },
@@ -561,9 +571,9 @@ export const FinancialReportsPage: React.FC = () => {
                         {
                           key: "amount",
                           label: "Số tiền",
-                          render: (value, row) => (
+                          render: (value) => (
                             <span className="font-semibold text-blue-600">
-                              {formatCurrency(value, row.currency)}
+                              {formatCurrency(value)}
                             </span>
                           ),
                         },
@@ -628,9 +638,9 @@ export const FinancialReportsPage: React.FC = () => {
                         {
                           key: "amount",
                           label: "Số tiền",
-                          render: (value, row) => (
+                          render: (value) => (
                             <span className="font-semibold text-green-600">
-                              {formatCurrency(value, row.currency)}
+                              {formatCurrency(value)}
                             </span>
                           ),
                         },
@@ -685,9 +695,9 @@ export const FinancialReportsPage: React.FC = () => {
                         {
                           key: "amount",
                           label: "Số tiền",
-                          render: (value, row) => (
-                            <span className="font-semibold text-red-600">
-                              {formatCurrency(value, row.currency)}
+                          render: (value) => (
+                            <span className="font-semibold text-green-600">
+                              {formatCurrency(value)}
                             </span>
                           ),
                         },
@@ -749,9 +759,9 @@ export const FinancialReportsPage: React.FC = () => {
                         {
                           key: "amount",
                           label: "Số tiền",
-                          render: (value, row) => (
-                            <span className="font-semibold text-purple-600">
-                              {formatCurrency(value, row.currency)}
+                          render: (value) => (
+                            <span className="font-semibold text-green-600">
+                              {formatCurrency(value)}
                             </span>
                           ),
                         },

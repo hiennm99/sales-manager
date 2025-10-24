@@ -66,7 +66,7 @@ export const CsvFileUpload: React.FC<CsvFileUploadProps> = ({
         const filePath = `csv-reports/${shopId}/${year}/${month}/${fileName}`;
 
         // Upload to Supabase Storage
-        const { data, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from("financial-documents")
           .upload(filePath, file, {
             cacheControl: "3600",

@@ -68,8 +68,8 @@ export const employeeCommissionServiceApi = {
       seller_commission_amount_vnd: row.seller_commission_amount_vnd,
       profit_vnd: row.profit_vnd,
       order_earnings_vnd: row.order_earnings_vnd,
-      created_at: new Date(row.created_at),
-      updated_at: new Date(row.updated_at),
+      created_at: row.created_at ? new Date(row.created_at) : new Date(),
+      updated_at: row.updated_at ? new Date(row.updated_at) : (row.created_at ? new Date(row.created_at) : new Date())
     }));
   },
 
@@ -108,8 +108,8 @@ export const employeeCommissionServiceApi = {
       seller_commission_amount_vnd: data.seller_commission_amount_vnd,
       profit_vnd: data.profit_vnd,
       order_earnings_vnd: data.order_earnings_vnd,
-      created_at: new Date(data.created_at),
-      updated_at: new Date(data.updated_at),
+      created_at: data.created_at ? new Date(data.created_at) : new Date(),
+      updated_at: data.updated_at ? new Date(data.updated_at) : (data.created_at ? new Date(data.created_at) : new Date()),
     };
   },
 
@@ -173,8 +173,8 @@ export const employeeCommissionServiceApi = {
       seller_commission_amount_vnd: row.seller_commission_amount_vnd,
       profit_vnd: row.profit_vnd,
       order_earnings_vnd: row.order_earnings_vnd,
-      created_at: new Date(row.created_at),
-      updated_at: new Date(row.updated_at),
+      created_at: row.created_at ? new Date(row.created_at) : new Date(),
+      updated_at: row.updated_at ? new Date(row.updated_at) : (row.created_at ? new Date(row.created_at) : new Date()),
     }));
   },
 
@@ -208,21 +208,21 @@ export const employeeCommissionServiceApi = {
 
     return {
       artist_total: artistCommissions.reduce(
-        (sum, c) => sum + c.artist_commission_amount_vnd,
+        (sum, c) => sum + (c.artist_commission_amount_vnd ?? 0),
         0,
       ),
       artist_count: artistCommissions.length,
       seller_total: sellerCommissions.reduce(
-        (sum, c) => sum + c.seller_commission_amount_vnd,
+        (sum, c) => sum + (c.seller_commission_amount_vnd ?? 0),
         0,
       ),
       seller_count: sellerCommissions.length,
       total_profit_vnd: artistCommissions.reduce(
-        (sum, c) => sum + c.profit_vnd,
+        (sum, c) => sum + (c.profit_vnd ?? 0),
         0,
       ),
       total_order_earnings_vnd: sellerCommissions.reduce(
-        (sum, c) => sum + c.order_earnings_vnd,
+        (sum, c) => sum + (c.order_earnings_vnd ?? 0),
         0,
       ),
     };

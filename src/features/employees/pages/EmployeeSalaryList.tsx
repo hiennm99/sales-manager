@@ -1,6 +1,6 @@
 // src/features/employees/pages/EmployeeSalaryList.tsx
 
-import { FiCalendar, FiCheckCircle, FiChevronDown, FiClock, FiDollarSign, FiFilter, FiXCircle } from "react-icons/fi";
+import { FiCalendar, FiCheckCircle, FiChevronDown, FiChevronUp, FiClock, FiDollarSign, FiEdit2, FiFilter, FiPercent, FiXCircle } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
 import type { EmployeeSalary } from "../../../types/employee";
 import { SalaryEditModal } from "../components/SalaryEditModal";
@@ -225,7 +225,7 @@ export const EmployeeSalaryList = () => {
           disabled={!selectedMonth || isLoading}
           className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md"
         >
-          <Calculator className="w-5 h-5" />
+          <FiPercent className="w-5 h-5" />
           Tính lương tất cả
         </button>
       </div>
@@ -411,7 +411,7 @@ export const EmployeeSalaryList = () => {
                             className="px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors flex items-center gap-1"
                             title="Chỉnh sửa"
                           >
-                            <Edit className="w-3 h-3" />
+                            <FiEdit2 className="w-3 h-3" />
                             Sửa
                           </button>
                           {salary.status === "draft" &&
@@ -452,7 +452,7 @@ export const EmployeeSalaryList = () => {
                           className="text-gray-600 hover:text-gray-900"
                         >
                           {expandedRows.has(salary.id) ? (
-                            <ChevronUp className="w-5 h-5" />
+                            <FiChevronUp className="w-5 h-5" />
                           ) : (
                             <FiChevronDown className="w-5 h-5" />
                           )}

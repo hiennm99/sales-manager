@@ -17,7 +17,6 @@ export const NotificationSettingsPage = () => {
   const [copied, setCopied] = useState<string | null>(null);
 
   const [config, setConfig] = useState<NotificationConfig>({
-    discord_webhook_url: import.meta.env.VITE_DISCORD_WEBHOOK_URL || "",
     telegram_chat_id: import.meta.env.VITE_TELEGRAM_CHAT_ID || "",
     telegram_token: import.meta.env.VITE_TELEGRAM_BOT_TOKEN || "",
   });
@@ -32,7 +31,6 @@ export const NotificationSettingsPage = () => {
   // Load config from env
   useEffect(() => {
     setConfig({
-      discord_webhook_url: import.meta.env.VITE_DISCORD_WEBHOOK_URL || "",
       telegram_chat_id: import.meta.env.VITE_TELEGRAM_CHAT_ID || "",
       telegram_token: import.meta.env.VITE_TELEGRAM_BOT_TOKEN || "",
     });
@@ -97,7 +95,7 @@ export const NotificationSettingsPage = () => {
               Cài đặt thông báo
             </h1>
             <p className="text-gray-600 mt-1">
-              Quản lý thông báo qua Discord và Telegram
+              Quản lý thông báo qua Telegram
             </p>
           </div>
         </div>
@@ -118,52 +116,6 @@ export const NotificationSettingsPage = () => {
             <p className="text-sm text-green-800">Lưu cài đặt thành công!</p>
           </div>
         )}
-
-        {/* Discord Section */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">#</span>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900">Discord</h2>
-          </div>
-
-          <div className="space-y-4">
-            {/* Enable Discord */}
-            <p className="text-sm text-gray-600">
-              Thông báo sẽ được gửi tới webhook Discord của bạn
-            </p>
-
-            {/* Webhook URL */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Webhook URL
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  name="discord_webhook_url"
-                  value={config.discord_webhook_url}
-                  onChange={handleChange}
-                  placeholder="https://discordapp.com/api/webhooks/..."
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm"
-                />
-                {config.discord_webhook_url && (
-                  <button
-                    onClick={() => handleCopy(config.discord_webhook_url!, "discord")}
-                    className="px-3 py-2 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200 transition-colors"
-                  >
-                    <FiCopy className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Lấy webhook URL từ Discord Server Settings → Integrations →
-                Webhooks
-              </p>
-            </div>
-          </div>
-        </div>
 
         {/* Telegram Section */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
@@ -243,8 +195,7 @@ export const NotificationSettingsPage = () => {
           <h3 className="font-semibold text-blue-900 mb-2">📝 Hướng dẫn</h3>
           <ul className="text-sm text-blue-800 space-y-1">
             <li>• Lưu các giá trị trên vào file <code className="bg-white px-2 py-1 rounded">.env.local</code></li>
-            <li>• Sử dụng các biến: <code className="bg-white px-2 py-1 rounded">VITE_DISCORD_WEBHOOK_URL</code></li>
-            <li>• <code className="bg-white px-2 py-1 rounded">VITE_TELEGRAM_BOT_TOKEN</code></li>
+            <li>• Sử dụng các biến: <code className="bg-white px-2 py-1 rounded">VITE_TELEGRAM_BOT_TOKEN</code></li>
             <li>• <code className="bg-white px-2 py-1 rounded">VITE_TELEGRAM_CHAT_ID</code></li>
           </ul>
         </div>

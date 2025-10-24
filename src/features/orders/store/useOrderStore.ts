@@ -328,7 +328,7 @@ export const useOrderStore = create<OrderStore>()(
             formData.sellerEmployeeId =
               updatedOrder.seller_employee_id ?? undefined;
           if (updatedOrder.artist_commission_rate !== undefined)
-            formData.artistCommissionRate = updatedOrder.artist_commission_rate;
+            formData.artistCommissionRate = updatedOrder.artist_commission_rate ?? undefined;
 
           // Shipping info
           if (updatedOrder.actual_ship_date !== undefined)

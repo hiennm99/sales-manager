@@ -1,6 +1,6 @@
 // features/auth/components/LoginForm.tsx
 
-import { FiMail, FiLock, FiAlertCircle } from "react-icons/fi";
+import { FiMail, FiLock, FiAlertCircle, FiLogIn } from "react-icons/fi";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -31,7 +31,7 @@ export const LoginForm = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <LogIn className="w-8 h-8 text-white" />
+            <FiLogIn className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome Back
@@ -109,7 +109,7 @@ export const LoginForm = () => {
               </>
             ) : (
               <>
-                <LogIn className="w-5 h-5" />
+                <FiLogIn className="w-5 h-5" />
                 <span>Sign In</span>
               </>
             )}

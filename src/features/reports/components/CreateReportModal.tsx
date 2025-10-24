@@ -4,6 +4,7 @@ import { Select } from "@/components/ui/Select";
 import { MONTH_OPTIONS, objectsToOptions, YEAR_OPTIONS } from "@/constants";
 import type { Shop } from "@/types/shop";
 import { FiX } from "react-icons/fi";
+import { Calendar, Building2 } from "lucide-react";
 import React, { useState } from "react";
 
 interface CreateReportModalProps {

@@ -2,7 +2,7 @@
 
 import type { FinancialReportPeriod } from "@/types/financialReport";
 import { formatCurrency } from "@/types/financialReport";
-import { FiFileText, FiTrendingDown, FiTrendingUp } from "react-icons/fi";
+import { FiFileText, FiTrendingDown, FiTrendingUp, FiArrowDownCircle, FiArrowUpCircle, FiImage } from "react-icons/fi";
 import React from "react";
 import { ImageUpload } from "./ImageUpload";
 
@@ -33,7 +33,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-6 border border-emerald-200">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-emerald-600 rounded-lg">
-              <ArrowDownCircle className="w-6 h-6 text-white" />
+              <FiArrowDownCircle className="w-6 h-6 text-white" />
             </div>
             <FiTrendingUp className="w-5 h-5 text-emerald-600" />
           </div>
@@ -41,7 +41,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
             Tổng Tiền Đã Về
           </h3>
           <p className="text-2xl font-bold text-emerald-900">
-            {formatCurrency(totalReceived, "USD")}
+            {formatCurrency(totalReceived)}
           </p>
           <p className="text-xs text-emerald-700 mt-2">Received Money</p>
         </div>
@@ -58,7 +58,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
             Tổng Chi Phí
           </h3>
           <p className="text-2xl font-bold text-rose-900">
-            {formatCurrency(totalExpenses, "USD")}
+            {formatCurrency(totalExpenses)}
           </p>
           <p className="text-xs text-rose-700 mt-2">Total Expenses</p>
         </div>
@@ -67,7 +67,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border border-orange-200">
           <div className="flex items-center justify-between mb-4">
             <div className="p-3 bg-orange-600 rounded-lg">
-              <ArrowUpCircle className="w-6 h-6 text-white" />
+              <FiArrowUpCircle className="w-6 h-6 text-white" />
             </div>
             <FiTrendingDown className="w-5 h-5 text-orange-600" />
           </div>
@@ -75,7 +75,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
             Tổng Tiền Đã Chuyển Khoản
           </h3>
           <p className="text-2xl font-bold text-orange-900">
-            {formatCurrency(totalTransferred, "USD")}
+            {formatCurrency(totalTransferred)}
           </p>
           <p className="text-xs text-orange-700 mt-2">Transferred Money</p>
         </div>
@@ -95,7 +95,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
         <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-6 border border-amber-200">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-amber-100 rounded-lg">
-              <ImageIcon className="w-5 h-5 text-amber-600" />
+              <FiImage className="w-5 h-5 text-amber-600" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">

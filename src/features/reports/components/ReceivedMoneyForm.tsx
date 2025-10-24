@@ -4,7 +4,7 @@ import { DatePicker } from "@/components/ui/DatePicker";
 import { Select } from "@/components/ui/Select";
 import { CURRENCY_OPTIONS_SIMPLE } from "@/constants";
 import type { ReceivedMoney } from "@/types/financialReport";
-import { FiCheckCircle, FiPlus, FiX } from "react-icons/fi";
+import { FiCheckCircle, FiImage, FiPlus, FiX } from "react-icons/fi";
 import React, { useState } from "react";
 import { ImageUpload } from "./ImageUpload";
 
@@ -173,7 +173,7 @@ export const ReceivedMoneyForm: React.FC<ReceivedMoneyFormProps> = ({
             {/* Screenshot Upload */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                <ImageIcon className="w-4 h-4 inline mr-1" />
+                <FiImage className="w-4 h-4 inline mr-1" />
                 Screenshot / Ảnh chứng từ (tùy chọn)
               </label>
               <ImageUpload

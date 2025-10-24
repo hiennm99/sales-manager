@@ -7,7 +7,7 @@ import {
   INCOMING_MONEY_STATUS_OPTIONS,
 } from "@/constants";
 import type { IncomingMoney } from "@/types/financialReport";
-import { FiPackage, FiPlus, FiX } from "react-icons/fi";
+import { FiImage, FiPackage, FiPlus, FiX } from "react-icons/fi";
 import React, { useState } from "react";
 import { ImageUpload } from "./ImageUpload";
 
@@ -201,7 +201,7 @@ export const IncomingMoneyForm: React.FC<IncomingMoneyFormProps> = ({
             {/* Screenshot Upload */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                <ImageIcon className="w-4 h-4 inline mr-1" />
+                <FiImage className="w-4 h-4 inline mr-1" />
                 Screenshot / Ảnh chứng từ (tùy chọn)
               </label>
               <ImageUpload

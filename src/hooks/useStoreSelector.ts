@@ -54,7 +54,7 @@ export function createShallowSelector<TState, TSelected>(
   useStore: UseBoundStore<StoreApi<TState>>,
   selector: (state: TState) => TSelected,
 ): () => TSelected {
-  return () => useStore(selector, shallowEqual);
+  return () => useStore(selector);
 }
 
 /**
@@ -83,16 +83,14 @@ export function createStoreSelectors<TState extends Record<string, any>>(
           },
           [fields.join(",")],
         ),
-        shallowEqual,
       );
     },
 
     // Select with custom selector
     useSelector: <TSelected>(
       selector: (state: TState) => TSelected,
-      equalityFn?: (a: TSelected, b: TSelected) => boolean,
     ) => {
-      return useStore(selector, equalityFn || shallowEqual);
+      return useStore(selector);
     },
   };
 }
@@ -119,7 +117,6 @@ export function useItemsWithLoading<
       items: state.items,
       isLoading: state.isLoading,
     }),
-    shallowEqual,
   );
 }
 
@@ -146,12 +143,11 @@ export function useActions<TState, TActions extends Partial<TState>>(
       (state: TState) => {
         const actions = {} as TActions;
         actionKeys.forEach((key) => {
-          actions[key] = state[key as keyof TState] as TActions[keyof TActions];
+          (actions[key] as any) = state[key as keyof TState];
         });
         return actions;
       },
       [actionKeys.join(",")],
     ),
-    shallowEqual,
   );
 }

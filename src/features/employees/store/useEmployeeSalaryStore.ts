@@ -156,20 +156,35 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
       calculateAndSave: async (employee_id, year, month, calculated_by) => {
         set({ isLoading: true, error: null });
         try {
-          const salary = await employeeSalaryServiceApi.calculateAndSave(
+          let salary = await employeeSalaryServiceApi.calculateAndSave(
             employee_id,
             year,
             month,
-            calculated_by,
           );
+
+          // If calculated_by is provided, update the salary record with it
+          if (calculated_by) {
+            salary = await employeeSalaryServiceApi.saveSalaryRecord({
+              employee_id: salary.employee_id,
+              salary_period_year: salary.salary_period_year,
+              salary_period_month: salary.salary_period_month ?? undefined,
+              base_salary: salary.base_salary,
+              artist_commission_total: salary.artist_commission_total,
+              seller_commission_total: salary.seller_commission_total,
+              other_costs: salary.other_costs,
+              bonus: salary.bonus,
+              deduction: salary.deduction,
+              approved_by: calculated_by,
+            });
+          }
 
           // Update salaries list
           const salaries = get().salaries;
           const index = salaries.findIndex(
             (s) =>
               s.employee_id === employee_id &&
-              s.year === year &&
-              s.month === month,
+              s.salary_period_year === year &&
+              s.salary_period_month === month,
           );
 
           if (index >= 0) {

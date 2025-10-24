@@ -3,7 +3,7 @@
 import { Select } from "@/components/ui/Select";
 import { YEAR_OPTIONS } from "@/constants";
 import { IoArrowBack } from "react-icons/io5";
-import { FiCalendar, FiChevronDown, FiDollarSign, FiTrendingDown, FiTrendingUp } from "react-icons/fi";
+import { FiCalendar, FiChevronDown, FiChevronUp, FiDollarSign, FiTrendingDown, FiTrendingUp } from "react-icons/fi";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import type { EmployeeSalaryPeriod } from "../../../types/employee";
@@ -326,7 +326,7 @@ export const EmployeeSalaryDetailPage: React.FC = () => {
                             className="text-gray-600 hover:text-gray-900 transition-colors"
                           >
                             {expandedRows.has(index) ? (
-                              <ChevronUp className="w-5 h-5" />
+                              <FiChevronUp className="w-5 h-5" />
                             ) : (
                               <FiChevronDown className="w-5 h-5" />
                             )}

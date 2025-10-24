@@ -3,7 +3,10 @@
 import { EmployeeList } from "@/features/employees";
 import { ShopListAdmin } from "@/features/shops";
 import { StatusList } from "@/features/statuses";
-import { FiSettings, FiShoppingBag, FiTag, FiUsers } from "react-icons/fi";
+import { FiSettings } from "react-icons/fi";
+import { AiOutlineShop } from "react-icons/ai";
+import { BiUserCircle } from "react-icons/bi";
+import { BiTag } from "react-icons/bi";
 import React, { useState } from "react";
 
 type SettingsTab = "shops" | "employees" | "statuses";
@@ -12,9 +15,9 @@ export const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<SettingsTab>("shops");
 
   const tabs = [
-    { id: "shops" as SettingsTab, label: "Cửa Hàng", icon: Store },
-    { id: "employees" as SettingsTab, label: "Nhân Viên", icon: Users },
-    { id: "statuses" as SettingsTab, label: "Trạng Thái", icon: Tag },
+    { id: "shops" as SettingsTab, label: "Cửa Hàng", icon: AiOutlineShop },
+    { id: "employees" as SettingsTab, label: "Nhân Viên", icon: BiUserCircle },
+    { id: "statuses" as SettingsTab, label: "Trạng Thái", icon: BiTag },
   ];
 
   return (

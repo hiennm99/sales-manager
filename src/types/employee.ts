@@ -32,17 +32,17 @@ export interface EmployeeCommission extends BaseEntity {
 
   // Artist commission
   artist_employee_id: number | null;
-  artist_commission_rate: number;
-  artist_commission_amount_vnd: number;
+  artist_commission_rate: number | null;
+  artist_commission_amount_vnd: number | null;
 
   // Seller commission
   seller_employee_id: number | null;
-  seller_commission_rate: number;
-  seller_commission_amount_vnd: number;
+  seller_commission_rate: number | null;
+  seller_commission_amount_vnd: number | null;
 
   // Financial snapshot
-  profit_vnd: number;
-  order_earnings_vnd: number;
+  profit_vnd: number | null;
+  order_earnings_vnd: number | null;
 }
 
 // Employee Salary Record (from employee_salary table)

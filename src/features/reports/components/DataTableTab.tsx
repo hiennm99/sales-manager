@@ -60,7 +60,7 @@ export const DataTableTab: React.FC<DataTableTabProps> = ({
               {title}
             </h3>
             <p className="text-2xl font-bold text-indigo-900">
-              {formatCurrency(totalAmount, data[0]?.currency || "USD")}
+              {formatCurrency(totalAmount)}
             </p>
           </div>
           <div className="p-3 bg-indigo-600 rounded-lg">
@@ -146,7 +146,7 @@ export const DataTableTab: React.FC<DataTableTabProps> = ({
                     Tổng cộng
                   </td>
                   <td className="px-6 py-4 text-sm font-bold text-indigo-600 text-right">
-                    {formatCurrency(totalAmount, data[0]?.currency || "USD")}
+                    {formatCurrency(totalAmount)}
                   </td>
                 </tr>
               </tfoot>

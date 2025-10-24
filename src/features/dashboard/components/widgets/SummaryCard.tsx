@@ -1,7 +1,8 @@
 // src/features/dashboard/components/widgets/SummaryCard.tsx
 
 import { FiTrendingDown, FiTrendingUp } from "react-icons/fi";
-import React from "react";
+import { Minus, type LucideIcon } from "lucide-react";
+
 
 interface SummaryCardProps {
   title: string;

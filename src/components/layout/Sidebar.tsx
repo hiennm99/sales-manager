@@ -1,6 +1,6 @@
 // components/layout/Sidebar.tsx
 
-import { FiDollarSign, FiFileText, FiPackage, FiSettings } from "react-icons/fi";
+import { FiDollarSign, FiFileText, FiPackage, FiSettings, FiGrid, FiClipboard } from "react-icons/fi";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "../../lib/utils";
@@ -16,7 +16,7 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   {
-    icon: <LayoutDashboard size={20} />,
+    icon: <FiGrid size={20} />,
     label: "Dashboard",
     path: "/dashboard",
   },
@@ -26,7 +26,7 @@ const menuItems: MenuItem[] = [
     path: "/products",
   },
   {
-    icon: <ClipboardList size={20} />,
+    icon: <FiClipboard size={20} />,
     label: "Đơn hàng",
     path: "/orders",
   },

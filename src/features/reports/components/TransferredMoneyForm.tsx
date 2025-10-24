@@ -5,6 +5,7 @@ import { Select } from "@/components/ui/Select";
 import { CURRENCY_OPTIONS_SIMPLE } from "@/constants";
 import type { TransferredMoney } from "@/types/financialReport";
 import { FiPlus, FiSend, FiX } from "react-icons/fi";
+import { ImageIcon } from "lucide-react";
 import React, { useState } from "react";
 import { ImageUpload } from "./ImageUpload";
 

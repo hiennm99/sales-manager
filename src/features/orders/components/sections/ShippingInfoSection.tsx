@@ -4,7 +4,7 @@
  * Simple section component for shipping information
  */
 
-import { FiCalendar, FiDollarSign, FiFileText, FiRefreshCw, FiTruck } from "react-icons/fi";
+import { FiCalendar, FiDollarSign, FiFileText, FiHash, FiRefreshCw, FiTruck } from "react-icons/fi";
 import React from "react";
 import {
   OptionBox,
@@ -141,7 +141,7 @@ export const ShippingInfoSection: React.FC<ShippingInfoSectionProps> = ({
           placeholder=""
           error={errors.internalTrackingNumber}
           onChange={handleChange}
-          icon={<Hash className="w-5 h-5" />}
+          icon={<FiHash className="w-5 h-5" />}
         />
 
         <TextBox
@@ -152,7 +152,7 @@ export const ShippingInfoSection: React.FC<ShippingInfoSectionProps> = ({
           placeholder=""
           error={errors.trackingNumber}
           onChange={handleChange}
-          icon={<Hash className="w-5 h-5" />}
+          icon={<FiHash className="w-5 h-5" />}
         />
 
         <TextBox

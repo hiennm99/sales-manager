@@ -6,7 +6,7 @@
 
 import { Select } from "@/components/ui/Select";
 import { CURRENCY_OPTIONS_SIMPLE } from "@/constants";
-import { FiActivity, FiDollarSign, FiDownload, FiRefreshCw, FiShoppingCart, FiTrendingUp } from "react-icons/fi";
+import { Activity, DollarSign, Download, Percent, RefreshCw, ShoppingCart, TrendingUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import {
   DateRangeFilter,
@@ -123,7 +123,7 @@ export const DashboardPage: React.FC = () => {
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
-                <FiActivity className="w-4 h-4" />
+                <Activity className="w-4 h-4" />
                 <span>
                   {autoRefresh ? "Tự động cập nhật" : "Cập nhật thủ công"}
                 </span>
@@ -135,7 +135,7 @@ export const DashboardPage: React.FC = () => {
                 disabled={!data}
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
-                <FiDownload className="w-4 h-4" />
+                <Download className="w-4 h-4" />
                 <span>Xuất dữ liệu</span>
               </button>
 
@@ -145,7 +145,7 @@ export const DashboardPage: React.FC = () => {
                 disabled={isLoading}
                 className="flex items-center space-x-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
               >
-                <FiRefreshCw
+                <RefreshCw
                   className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
                 />
                 <span>Làm mới</span>
@@ -305,8 +305,8 @@ export const DashboardPage: React.FC = () => {
           <SummaryCard
             title="Tỷ Lệ Lợi Nhuận"
             value={`${(data?.metrics.profitMargin || 0).toFixed(1)}%`}
-            icon={BarChart3}
-            subtitle="Lợi nhuận / Thu nhập"
+            icon={Percent}
+            subtitle="Lợi nhuận / Thu nhập"
             loading={isLoading}
           />
         </div>
