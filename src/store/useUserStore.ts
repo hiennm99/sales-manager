@@ -44,7 +44,7 @@ export const useUserStore = create<UserStoreState>()(
           const authUser = useAuthStore.getState().user;
           const employee = useEmployeeStore.getState().employee;
 
-          console.log("🔄 UserStore updateCurrentUser:", {
+          console.log(" UserStore updateCurrentUser:", {
             authUser: authUser?.id,
             authEmail: authUser?.email,
             employeeId: employee?.id,
@@ -96,6 +96,9 @@ export const useUserStore = create<UserStoreState>()(
     }),
     {
       name: "user-store", // localStorage key
+      partialize: (state) => ({
+        currentUser: state.currentUser
+      })
     }
   )
 );
@@ -128,4 +131,20 @@ export function useCurrentEmployeeId() {
 export function useCurrentEmployeeName() {
   const currentUser = useCurrentUser();
   return currentUser?.employeeName || "Unknown";
+}
+
+/**
+ * Helper to get current user (ensures store is initialized)
+ * Use this in services/API calls instead of useUserStore.getState()
+ */
+export function getCurrentUserForService() {
+  const store = useUserStore.getState();
+  
+  // Auto-initialize if not yet initialized
+  if (!store.initialized) {
+    console.warn(" UserStore not initialized, initializing now...");
+    store.initialize();
+  }
+  
+  return store.currentUser;
 }

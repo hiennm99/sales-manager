@@ -4,7 +4,8 @@
  * Simple section component for financial information
  */
 
-import { FiAlertCircle, FiCreditCard, FiDollarSign, FiRefreshCw, FiTrendingDown, FiXCircle } from "react-icons/fi";
+import { FiAlertCircle, FiCreditCard, FiDollarSign, FiRefreshCw, FiTrendingDown, FiXCircle, FiGift } from "react-icons/fi";
+import { MdOutlineAccountBalance } from "react-icons/md";
 import React from "react";
 import { SectionCard, TextBox } from "../../../../components/common";
 import { DEFAULTS } from "../../../../constants/app-constants";
@@ -182,7 +183,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
             required
             error={errors.orderEarningsUsd}
             onChange={handleChange}
-            icon={<Wallet className="w-5 h-5" />}
+            icon={<MdOutlineAccountBalance className="w-5 h-5" />}
           />
         </div>
 
@@ -285,7 +286,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
         {/* Bonus Section */}
         <div className="space-y-4 pt-4 border-t-2 border-green-200">
           <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-            <Gift className="w-4 h-4" />
+            <FiGift className="w-4 h-4" />
             Tiền thưởng/Bonus
           </h3>
 
@@ -300,7 +301,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
               editable={true}
               error={errors.otherBonusUsd}
               onChange={handleChange}
-              icon={<Gift className="w-5 h-5" />}
+              icon={<FiGift className="w-5 h-5" />}
             />
 
             {(formData?.otherBonusUsd || 0) > 0 && (

@@ -7,7 +7,7 @@ import {
 } from "../../../lib/supabase";
 import { databaseService } from "../../../services";
 import { notificationService } from "../../../services/notification.service";
-import { useUserStore } from "../../../store/useUserStore";
+import { getCurrentUserForService } from "../../../store/useUserStore";
 import type {
   Order,
   OrderFormData,
@@ -282,7 +282,8 @@ export const orderServiceApi = {
 
     // Track order creation in history
     try {
-      const currentEmployeeId = useUserStore.getState().currentUser?.employeeId || undefined;
+      const currentUser = getCurrentUserForService();
+      const currentEmployeeId = currentUser?.employeeId || undefined;
       await trackOrderCreated(orderData.id, currentEmployeeId);
     } catch (error) {
       console.error("Failed to track order creation:", error);
@@ -474,7 +475,8 @@ export const orderServiceApi = {
 
     // Track order changes in history
     try {
-      const currentEmployeeId = useUserStore.getState().currentUser?.employeeId || undefined;
+      const currentUser = getCurrentUserForService();
+      const currentEmployeeId = currentUser?.employeeId || undefined;
       await trackOrderChanges(
         numericId,
         oldOrder,
@@ -491,13 +493,12 @@ export const orderServiceApi = {
       const changes = orderServiceApi.getOrderChanges(oldOrder, updatedOrder);
       if (changes.length > 0) {
         // Get current logged-in user info
-        const currentUser = useUserStore.getState().currentUser;
+        const currentUser = getCurrentUserForService();
         const employeeName = currentUser?.employeeName || undefined;
         
         console.log("📢 Notification - Current User:", {
           currentUser,
           employeeName,
-          fullState: useUserStore.getState(),
         });
 
         const changeDescription = changes.join("\n");
@@ -572,7 +573,8 @@ export const orderServiceApi = {
 
       // Track order items changes in history
       try {
-        const currentEmployeeId = useUserStore.getState().currentUser?.employeeId || undefined;
+        const currentUser = getCurrentUserForService();
+        const currentEmployeeId = currentUser?.employeeId || undefined;
         await trackOrderItemsUpdate(orderId, oldItems, newItems, currentEmployeeId);
       } catch (error) {
         console.error("Failed to track order items update:", error);
@@ -584,7 +586,8 @@ export const orderServiceApi = {
 
     // Track empty items update
     try {
-      const currentEmployeeId = useUserStore.getState().currentUser?.employeeId || undefined;
+      const currentUser = getCurrentUserForService();
+      const currentEmployeeId = currentUser?.employeeId || undefined;
       await trackOrderItemsUpdate(orderId, oldItems, [], currentEmployeeId);
     } catch (error) {
       console.error("Failed to track order items update:", error);
@@ -671,7 +674,8 @@ export const orderServiceApi = {
 
     // Track status change
     try {
-      const currentEmployeeId = useUserStore.getState().currentUser?.employeeId || undefined;
+      const currentUser = getCurrentUserForService();
+      const currentEmployeeId = currentUser?.employeeId || undefined;
       await trackStatusChange(
         numericId,
         statusType,

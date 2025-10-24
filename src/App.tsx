@@ -4,16 +4,19 @@ import { RouterProvider } from "react-router-dom";
 import { useAuthStore } from "./features/auth/store/useAuthStore";
 import { router } from "./router";
 import { useExchangeRateStore } from "./store/useExchangeRateStore";
+import { useUserStore } from "./store/useUserStore";
 
 function App() {
   const { initialize } = useAuthStore();
+  const { initialize: initializeUser } = useUserStore();
 
-  // Initialize auth and fetch exchange rate on app mount
+  // Initialize auth, user store, and fetch exchange rate on app mount
   useEffect(() => {
-    console.log("[App] Mounting, initializing auth and fetching exchange rate...");
+    console.log("[App] Mounting, initializing auth, user store, and fetching exchange rate...");
     initialize();
+    initializeUser();
     useExchangeRateStore.getState().fetchExchangeRate();
-  }, [initialize]);
+  }, [initialize, initializeUser]);
 
   const exchangeRate = useExchangeRateStore((state) => state.exchangeRate);
   console.log("[App] Current exchange rate:", exchangeRate);
