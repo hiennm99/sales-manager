@@ -7,6 +7,7 @@ import {
 } from "../../../lib/supabase";
 import { databaseService } from "../../../services";
 import { notificationService } from "../../../services/notification.service";
+import { employeeServiceApi } from "../../employees/services/employee.service.api";
 import type {
   Order,
   OrderFormData,
@@ -486,6 +487,17 @@ export const orderServiceApi = {
     try {
       const changes = orderServiceApi.getOrderChanges(oldOrder, updatedOrder);
       if (changes.length > 0) {
+        // Get employee name if available
+        let employeeName: string | undefined;
+        if (formData.employeeId) {
+          try {
+            const employee = await employeeServiceApi.getById(formData.employeeId);
+            employeeName = employee?.name;
+          } catch (err) {
+            console.warn("Failed to fetch employee name:", err);
+          }
+        }
+
         const changeDescription = changes.join("\n");
         await notificationService.sendNotification({
           type: "order_updated",
@@ -497,6 +509,7 @@ export const orderServiceApi = {
             customer: updatedOrder.customer_name,
             amount: updatedOrder.item_total_vnd,
             changes: changes,
+            updatedBy: employeeName,
           },
         });
       }

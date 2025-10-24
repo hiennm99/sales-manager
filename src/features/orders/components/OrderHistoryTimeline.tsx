@@ -1,6 +1,6 @@
 // src/features/orders/components/OrderHistoryTimeline.tsx
 
-import { FiAlertCircle, FiCheckCircle, FiFileText, FiImage, FiPlus, FiTruck } from "react-icons/fi";
+import { FiAlertCircle, FiCheckCircle, FiEdit, FiFileText, FiImage, FiPlus, FiTruck } from "react-icons/fi";
 import React from "react";
 import type { OrderHistory } from "../../../types/orderHistory";
 
@@ -22,7 +22,7 @@ const getActionIcon = (actionType: string) => {
     case "status_changed":
       return <FiAlertCircle className="w-4 h-4" />;
     case "updated":
-      return <Edit3 className="w-4 h-4" />;
+      return <FiEdit className="w-4 h-4" />;
     default:
       return <FiFileText className="w-4 h-4" />;
   }

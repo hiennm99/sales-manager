@@ -1,6 +1,6 @@
 // src/features/orders/components/OrderHistoryTree.tsx
 
-import { FiAlertCircle, FiCalendar, FiCheckCircle, FiChevronDown, FiChevronRight, FiDollarSign, FiFileText, FiImage, FiMapPin, FiPackage, FiPlus, FiTrash2, FiTruck, FiUpload, FiUser } from "react-icons/fi";
+import { FiAlertCircle, FiCalendar, FiCheckCircle, FiChevronDown, FiChevronRight, FiDollarSign, FiEdit3, FiFileText, FiImage, FiMapPin, FiPackage, FiPlus, FiTrash2, FiTruck, FiUpload, FiUser } from "react-icons/fi";
 import React, { useState } from "react";
 import type { OrderHistory } from "../../../types/orderHistory";
 
@@ -82,7 +82,7 @@ const getActionIcon = (actionType: string, fieldName?: string) => {
     case "status_changed":
       return <FiAlertCircle className="w-4 h-4" />;
     case "updated":
-      return <Edit3 className="w-4 h-4" />;
+      return <FiEdit3 className="w-4 h-4" />;
     default:
       return <FiFileText className="w-4 h-4" />;
   }
@@ -210,7 +210,7 @@ const groupHistoryRecords = (
           ) : groupType === "Status" ? (
             <FiAlertCircle className="w-4 h-4" />
           ) : (
-            <Edit3 className="w-4 h-4" />
+            <FiEdit3 className="w-4 h-4" />
           ),
         color:
           groupType === "Financial"

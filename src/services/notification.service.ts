@@ -28,7 +28,7 @@ class NotificationService {
       const timestamp = new Date().toLocaleString("vi-VN");
       
       // Build message with cleaner format - only show changes
-      let message = `📦 <u><b>${payload.orderCode || "N/A"}</b></u> được cập nhật\n\n`;
+      let message = `Đơn hàng 📦 <u><b>${payload.orderCode || "N/A"}</b></u> có cập nhật mới\n\n`;
       
       // Changes section - only if there are changes
       if (Array.isArray(payload.data?.changes) && payload.data.changes.length > 0) {
@@ -38,6 +38,11 @@ class NotificationService {
         });
       } else {
         message += `${payload.description}\n`;
+      }
+      
+      // Add updated by information if available
+      if (payload.data?.updatedBy) {
+        message += `\n👤 <b>Người cập nhật:</b> ${payload.data.updatedBy}`;
       }
       
       message += `\n<i>${timestamp}</i>`;
