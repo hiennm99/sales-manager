@@ -1,11 +1,10 @@
 // src/features/employees/pages/EmployeeSalaryPage.tsx
 
-import { FiCalendar, FiDollarSign, FiEye, FiTrendingUp, FiUsers } from "react-icons/fi";
+import { employeeSalaryService, useEmployeeStore } from "@features/employees";
+import type { EmployeeSalaryPeriod } from "@types";
 import React, { useEffect, useState } from "react";
+import { FiCalendar, FiDollarSign, FiEye, FiTrendingUp, FiUsers } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import type { EmployeeSalaryPeriod } from "../../../types/employee";
-import { employeeSalaryService } from "../services/employeeSalaryService.ts";
-import { useEmployeeStore } from "../store/useEmployeeStore";
 
 export const EmployeeSalaryPage: React.FC = () => {
   const navigate = useNavigate();
@@ -37,7 +36,7 @@ export const EmployeeSalaryPage: React.FC = () => {
       const data = await employeeSalaryService.calculateEmployeeSalary({
         employee_id: selectedEmployeeId,
         year,
-        month: viewMode === "monthly" ? month : undefined,
+        month: viewMode === "monthly" ? month : undefined
       });
       setSalaryData(data);
     } catch (error) {
@@ -50,7 +49,7 @@ export const EmployeeSalaryPage: React.FC = () => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
-      currency: "VND",
+      currency: "VND"
     }).format(amount);
   };
 
@@ -61,14 +60,14 @@ export const EmployeeSalaryPage: React.FC = () => {
   const getTotalArtistCommission = () => {
     return salaryData.reduce(
       (sum, item) => sum + item.artist_commission_total,
-      0,
+      0
     );
   };
 
   const getTotalSalesCommission = () => {
     return salaryData.reduce(
       (sum, item) => sum + item.seller_commission_total,
-      0,
+      0
     );
   };
 
@@ -76,7 +75,7 @@ export const EmployeeSalaryPage: React.FC = () => {
     return salaryData.reduce(
       (sum, item) =>
         sum + (item.artist_orders_count + item.seller_orders_count),
-      0,
+      0
     );
   };
 
@@ -140,7 +139,7 @@ export const EmployeeSalaryPage: React.FC = () => {
                     <option key={y} value={y}>
                       {y}
                     </option>
-                  ),
+                  )
                 )}
               </select>
             </div>
@@ -174,7 +173,7 @@ export const EmployeeSalaryPage: React.FC = () => {
                 value={selectedEmployeeId || ""}
                 onChange={(e) =>
                   setSelectedEmployeeId(
-                    e.target.value ? parseInt(e.target.value) : undefined,
+                    e.target.value ? parseInt(e.target.value) : undefined
                   )
                 }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -262,78 +261,78 @@ export const EmployeeSalaryPage: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Nhân Viên
-                  </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Lương CB
-                  </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    HH Họa Sĩ
-                  </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    HH Bán Hàng
-                  </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Thưởng
-                  </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Chi Phí
-                  </th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Tổng Lương
-                  </th>
-                  <th className="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Đơn Vẽ/Bán
-                  </th>
-                  <th className="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Chi Tiết
-                  </th>
-                </tr>
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Nhân Viên
+                </th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Lương CB
+                </th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  HH Họa Sĩ
+                </th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  HH Bán Hàng
+                </th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Thưởng
+                </th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Chi Phí
+                </th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Tổng Lương
+                </th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Đơn Vẽ/Bán
+                </th>
+                <th className="px-6 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Chi Tiết
+                </th>
+              </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {isLoading ? (
-                  <tr>
-                    <td
-                      colSpan={9}
-                      className="px-6 py-12 text-center text-gray-500"
-                    >
-                      <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                        <span className="ml-3">Đang tải...</span>
+              {isLoading ? (
+                <tr>
+                  <td
+                    colSpan={9}
+                    className="px-6 py-12 text-center text-gray-500"
+                  >
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                      <span className="ml-3">Đang tải...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : salaryData.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={9}
+                    className="px-6 py-12 text-center text-gray-500"
+                  >
+                    Không có dữ liệu lương cho kỳ này
+                  </td>
+                </tr>
+              ) : (
+                salaryData.map((item) => (
+                  <tr
+                    key={item.employee_id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-6 py-4">
+                      <div>
+                        <div className="font-medium text-gray-900">
+                          {item.employee_name}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {item.employee_code}
+                        </div>
                       </div>
                     </td>
-                  </tr>
-                ) : salaryData.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={9}
-                      className="px-6 py-12 text-center text-gray-500"
-                    >
-                      Không có dữ liệu lương cho kỳ này
+                    <td className="px-6 py-4 text-right text-gray-900">
+                      {formatCurrency(item.base_salary)}
                     </td>
-                  </tr>
-                ) : (
-                  salaryData.map((item) => (
-                    <tr
-                      key={item.employee_id}
-                      className="hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="px-6 py-4">
-                        <div>
-                          <div className="font-medium text-gray-900">
-                            {item.employee_name}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {item.employee_code}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-right text-gray-900">
-                        {formatCurrency(item.base_salary)}
-                      </td>
-                      <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 text-right">
                         <span
                           className={
                             item.artist_commission_total > 0
@@ -343,13 +342,13 @@ export const EmployeeSalaryPage: React.FC = () => {
                         >
                           {formatCurrency(item.artist_commission_total)}
                         </span>
-                        {item.artist_orders_count > 0 && (
-                          <div className="text-xs text-gray-500 mt-1">
-                            {item.artist_orders_count} đơn
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-right">
+                      {item.artist_orders_count > 0 && (
+                        <div className="text-xs text-gray-500 mt-1">
+                          {item.artist_orders_count} đơn
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-right">
                         <span
                           className={
                             item.seller_commission_total > 0
@@ -359,16 +358,16 @@ export const EmployeeSalaryPage: React.FC = () => {
                         >
                           {formatCurrency(item.seller_commission_total)}
                         </span>
-                        {item.seller_orders_count > 0 && (
-                          <div className="text-xs text-gray-500 mt-1">
-                            {item.seller_orders_count} đơn
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-right text-blue-600">
-                        {formatCurrency(item.bonus)}
-                      </td>
-                      <td className="px-6 py-4 text-right">
+                      {item.seller_orders_count > 0 && (
+                        <div className="text-xs text-gray-500 mt-1">
+                          {item.seller_orders_count} đơn
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-right text-blue-600">
+                      {formatCurrency(item.bonus)}
+                    </td>
+                    <td className="px-6 py-4 text-right">
                         <span
                           className={
                             item.other_costs > 0
@@ -378,34 +377,34 @@ export const EmployeeSalaryPage: React.FC = () => {
                         >
                           {formatCurrency(item.other_costs)}
                         </span>
-                      </td>
-                      <td className="px-6 py-4 text-right font-bold text-gray-900">
-                        {formatCurrency(item.total_salary)}
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <div className="flex flex-col gap-1">
+                    </td>
+                    <td className="px-6 py-4 text-right font-bold text-gray-900">
+                      {formatCurrency(item.total_salary)}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex flex-col gap-1">
                           <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
                             Vẽ: {item.artist_orders_count}
                           </span>
-                          <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-medium">
+                        <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs font-medium">
                             Bán: {item.seller_orders_count}
                           </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <button
-                          onClick={() =>
-                            navigate(`/employee-salary/${item.employee_id}`)
-                          }
-                          className="inline-flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                        >
-                          <FiEye className="w-4 h-4" />
-                          Xem
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        onClick={() =>
+                          navigate(`/employee-salary/${item.employee_id}`)
+                        }
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                      >
+                        <FiEye className="w-4 h-4" />
+                        Xem
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
               </tbody>
             </table>
           </div>

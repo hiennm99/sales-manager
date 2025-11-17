@@ -1,9 +1,10 @@
+// src/features/reports/components/OverviewTab.tsx
 // components/OverviewTab.tsx
 
-import type { FinancialReportPeriod } from "@/types/financialReport";
-import { formatCurrency } from "@/types/financialReport";
-import { FiFileText, FiTrendingDown, FiTrendingUp, FiArrowDownCircle, FiArrowUpCircle, FiImage } from "react-icons/fi";
+import { type FinancialReportPeriod, formatCurrency } from "@types";
 import React from "react";
+import { FiArrowDownCircle, FiArrowUpCircle, FiFileText, FiImage, FiTrendingDown, FiTrendingUp } from "react-icons/fi";
+
 import { ImageUpload } from "./ImageUpload";
 
 interface OverviewTabProps {
@@ -17,14 +18,14 @@ interface OverviewTabProps {
 }
 
 export const OverviewTab: React.FC<OverviewTabProps> = ({
-  report,
-  totalReceived = 0,
-  totalTransferred = 0,
-  totalExpenses = 0,
-  onUpdateOverviewImage,
-  onDeleteOverviewImage,
-  overviewImageUrl,
-}) => {
+                                                          report,
+                                                          totalReceived = 0,
+                                                          totalTransferred = 0,
+                                                          totalExpenses = 0,
+                                                          onUpdateOverviewImage,
+                                                          onDeleteOverviewImage,
+                                                          overviewImageUrl
+                                                        }) => {
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
@@ -138,12 +139,12 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
               className={`
                             inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                             ${
-                              report.status === "finalized"
-                                ? "bg-green-100 text-green-800"
-                                : report.status === "approved"
-                                  ? "bg-blue-100 text-blue-800"
-                                  : "bg-gray-100 text-gray-800"
-                            }
+                report.status === "finalized"
+                  ? "bg-green-100 text-green-800"
+                  : report.status === "approved"
+                    ? "bg-blue-100 text-blue-800"
+                    : "bg-gray-100 text-gray-800"
+              }
                         `}
             >
               {report.status === "finalized"

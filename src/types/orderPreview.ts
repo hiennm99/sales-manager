@@ -1,6 +1,6 @@
-// types/orderPreview.ts
+// src/types/orderPreview.ts
 
-import type { BaseEntity } from "./common";
+import type { BaseEntity } from "./common.ts";
 
 export interface OrderPreviewPicture extends BaseEntity {
   order_id: number;
@@ -24,7 +24,7 @@ export interface OrderPreviewPictureFormData {
 
 // Helper function to convert OrderPreviewPicture to OrderPreviewPictureFormData
 export const previewPictureToFormData = (
-  picture: OrderPreviewPicture,
+  picture: OrderPreviewPicture
 ): OrderPreviewPictureFormData => {
   return {
     orderId: picture.order_id,
@@ -33,6 +33,6 @@ export const previewPictureToFormData = (
     fileSize: picture.file_size || undefined,
     mimeType: picture.mime_type || undefined,
     uploadedByEmployeeId: picture.uploaded_by_employee_id || undefined,
-    description: picture.description || undefined,
+    description: picture.description || undefined
   };
 };

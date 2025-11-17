@@ -1,19 +1,13 @@
-// src/features/orders/components/OrderItemInput.tsx
+// src/features/orders/components/sections/OrderItemInput.tsx
 /**
  * OrderItemInput - Component for individual product item in order
  * Refactored to use common TextBox and OptionBox components
  */
 
+import { type Option, OptionBox, ProductAutocomplete, TextBox } from "@components/common";
+import { ITEM_TYPES } from "@features/orders";
+import type { OrderItemFormData, Product } from "@types";
 import React from "react";
-import {
-  OptionBox,
-  ProductAutocomplete,
-  TextBox,
-  type Option,
-} from "../../../../components/common";
-import type { OrderItemFormData } from "../../../../types/order.ts";
-import type { Product } from "../../../../types/product.ts";
-import { ITEM_TYPES } from "../../constants/orderDefaults.ts";
 
 interface OrderItemProps {
   item: OrderItemFormData;
@@ -24,37 +18,37 @@ interface OrderItemProps {
   onChange: (
     index: number,
     field: keyof OrderItemFormData,
-    value: string | number,
+    value: string | number
   ) => void;
   onRemove: (index: number) => void;
   onProductSelect: (index: number, product: Product | null) => void;
 }
 
 export const OrderItemInput: React.FC<OrderItemProps> = ({
-  item,
-  index,
-  selectedProduct,
-  canRemove,
-  errors,
-  onChange,
-  onRemove,
-  onProductSelect,
-}) => {
+                                                           item,
+                                                           index,
+                                                           selectedProduct,
+                                                           canRemove,
+                                                           errors,
+                                                           onChange,
+                                                           onRemove,
+                                                           onProductSelect
+                                                         }) => {
   // Convert ITEM_TYPES to Option format
   const typeOptions: Option[] = [
     { value: "", label: "Chọn loại" },
     ...ITEM_TYPES.map((type) => ({
       value: type.value,
-      label: type.label,
-    })),
+      label: type.label
+    }))
   ];
 
   // Handler wrapper for TextBox/OptionBox
   const handleChange =
     (field: keyof OrderItemFormData) =>
-    (_name: string, value: string | number) => {
-      onChange(index, field, value);
-    };
+      (_name: string, value: string | number) => {
+        onChange(index, field, value);
+      };
 
   // Get safe value for unit_price_usd (handle undefined)
   const unitPriceValue =
@@ -63,7 +57,8 @@ export const OrderItemInput: React.FC<OrderItemProps> = ({
   // Calculate item total
 
   return (
-    <div className="p-5 border-2 border-gray-200 rounded-xl hover:border-blue-300 transition-all duration-200 bg-gradient-to-br from-white to-gray-50">
+    <div
+      className="p-5 border-2 border-gray-200 rounded-xl hover:border-blue-300 transition-all duration-200 bg-gradient-to-br from-white to-gray-50">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900 flex items-center gap-2">
           <svg

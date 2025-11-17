@@ -1,11 +1,12 @@
+// src/services/databaseService.ts
 /**
  * General Database Service
  * Handles common database operations like getting latest IDs, sequences, etc.
  */
 
+import { handleSupabaseError, supabase } from "@lib";
 import { PostgrestError } from "@supabase/supabase-js";
-import { handleSupabaseError, supabase } from "../lib/supabase";
-import type { Database } from "../types/supabase";
+import type { Database } from "@types";
 
 // Custom error class for database operations
 class DatabaseError extends Error {
@@ -32,13 +33,13 @@ export interface TableInfo {
 // Helper function to handle Supabase errors
 const handleDatabaseError = (
   error: PostgrestError | null,
-  context: string,
+  context: string
 ): never => {
   if (error) {
     console.error(`Database error in ${context}:`, error);
     throw new DatabaseError(
       error.message || `Database operation failed: ${context}`,
-      error,
+      error
     );
   }
   throw new DatabaseError(`Unexpected error in ${context}`);
@@ -50,7 +51,7 @@ export const databaseService = {
    */
   async getLatestId<T extends TableName>(
     tableName: T,
-    idColumn: string = "id",
+    idColumn: string = "id"
   ): Promise<number | null> {
     try {
       console.log("🔍 Getting latest ID:", { tableName, idColumn });
@@ -85,7 +86,7 @@ export const databaseService = {
    */
   async getNextId<T extends TableName>(
     tableName: T,
-    idColumn: string = "id",
+    idColumn: string = "id"
   ): Promise<number> {
     try {
       const latestId = await this.getLatestId(tableName, idColumn);
@@ -103,7 +104,7 @@ export const databaseService = {
    */
   async getRecordCount<T extends TableName>(
     tableName: T,
-    filter?: Record<string, unknown>,
+    filter?: Record<string, unknown>
   ): Promise<number> {
     try {
       console.log("🔍 Getting record count:", { tableName, filter });
@@ -114,7 +115,7 @@ export const databaseService = {
 
       if (filter) {
         Object.entries(filter).forEach(([key, value]) => {
-          query = query.eq(key as any, value);
+          query = query.eq(key as any, value as any);
         });
       }
 
@@ -137,7 +138,7 @@ export const databaseService = {
    */
   async recordExists<T extends TableName>(
     tableName: T,
-    filter: Record<string, unknown>,
+    filter: Record<string, unknown>
   ): Promise<boolean> {
     try {
       console.log("🔍 Checking if record exists:", { tableName, filter });
@@ -147,7 +148,7 @@ export const databaseService = {
         .select("id", { count: "exact", head: true });
 
       Object.entries(filter).forEach(([key, value]) => {
-        query = query.eq(key as any, value);
+        query = query.eq(key as any, value as any);
       });
 
       const { count, error } = await query;
@@ -174,7 +175,7 @@ export const databaseService = {
   async getMaxColumnValue<T extends TableName>(
     tableName: T,
     columnName: string,
-    filter?: Record<string, unknown>,
+    filter?: Record<string, unknown>
   ): Promise<number | null> {
     try {
       console.log(`🔍 Getting max ${columnName} from ${tableName}`, { filter });
@@ -219,7 +220,7 @@ export const databaseService = {
   async getMinColumnValue<T extends TableName>(
     tableName: T,
     columnName: string,
-    filter?: Record<string, unknown>,
+    filter?: Record<string, unknown>
   ): Promise<number | null> {
     try {
       console.log(`🔍 Getting min ${columnName} from ${tableName}`, { filter });
@@ -261,13 +262,13 @@ export const databaseService = {
   async getDistinctValues<T extends TableName>(
     tableName: T,
     columnName: string,
-    limit?: number,
+    limit?: number
   ): Promise<unknown[]> {
     try {
       console.log("🔍 Getting distinct values:", {
         tableName,
         columnName,
-        limit,
+        limit
       });
 
       let query = supabase
@@ -301,10 +302,10 @@ export const databaseService = {
   /**
    * Batch insert records
    */
-  async batchInsert<T, N extends TableName>(
+  async batchInsert<N extends TableName>(
     tableName: N,
-    records: T[],
-  ): Promise<T[]> {
+    records: Database["public"]["Tables"][N]["Insert"][]
+  ): Promise<Database["public"]["Tables"][N]["Row"][]> {
     try {
       if (records.length === 0) {
         return [];
@@ -312,12 +313,12 @@ export const databaseService = {
 
       console.log("📝 Batch inserting records:", {
         tableName,
-        count: records.length,
+        count: records.length
       });
 
       const { data, error } = await supabase
         .from(tableName)
-        .insert(records)
+        .insert(records as unknown as any)
         .select();
 
       if (error) {
@@ -325,7 +326,7 @@ export const databaseService = {
       }
 
       console.log("✅ Batch insert completed:", data?.length);
-      return (data as T[]) ?? [];
+      return (data as unknown as Database["public"]["Tables"][N]["Row"][]) ?? [];
     } catch (error) {
       console.error("Error in batchInsert:", error);
       throw error;
@@ -335,10 +336,10 @@ export const databaseService = {
   /**
    * Batch update records
    */
-  async batchUpdate<T, N extends TableName>(
+  async batchUpdate<N extends TableName>(
     tableName: N,
-    records: (T & { id: number | string })[],
-  ): Promise<T[]> {
+    records: (Database["public"]["Tables"][N]["Insert"] & { id: number | string })[]
+  ): Promise<Database["public"]["Tables"][N]["Row"][]> {
     try {
       if (records.length === 0) {
         return [];
@@ -346,7 +347,7 @@ export const databaseService = {
 
       console.log("✏️ Batch updating records:", {
         tableName,
-        count: records.length,
+        count: records.length
       });
 
       const updates = records.map((record) => {
@@ -356,7 +357,7 @@ export const databaseService = {
 
       const { data, error } = await supabase
         .from(tableName)
-        .upsert(updates)
+        .upsert(updates as any)
         .select();
 
       if (error) {
@@ -364,7 +365,7 @@ export const databaseService = {
       }
 
       console.log("✅ Batch update completed:", data?.length);
-      return (data as T[]) ?? [];
+      return (data as unknown as Database["public"]["Tables"][N]["Row"][]) ?? [];
     } catch (error) {
       console.error("Error in batchUpdate:", error);
       throw error;
@@ -376,7 +377,7 @@ export const databaseService = {
    */
   async batchDelete<T extends TableName>(
     tableName: T,
-    ids: (number | string)[],
+    ids: number[]
   ): Promise<void> {
     try {
       if (ids.length === 0) {
@@ -385,10 +386,10 @@ export const databaseService = {
 
       console.log("🗑️ Batch deleting records:", {
         tableName,
-        count: ids.length,
+        count: ids.length
       });
 
-      const { error } = await supabase.from(tableName).delete().in("id", ids);
+      const { error } = await supabase.from(tableName).delete().in("id" as any, ids);
 
       if (error) {
         throw new Error(handleSupabaseError(error));
@@ -408,7 +409,7 @@ export const databaseService = {
     try {
       console.log("⚠️ Truncating table:", tableName);
 
-      const { error } = await supabase.from(tableName).delete().neq("id", -1);
+      const { error } = await supabase.from(tableName).delete().gt("id", 0);
 
       if (error) {
         throw new Error(handleSupabaseError(error));
@@ -419,5 +420,5 @@ export const databaseService = {
       console.error("Error in truncateTable:", error);
       throw error;
     }
-  },
+  }
 };

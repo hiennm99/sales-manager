@@ -1,39 +1,19 @@
 // src/features/orders/services/orderService.ts
 
-import {
-  cleanInsertData,
-  handleSupabaseError,
-  supabase,
-} from "@/lib/supabase";
-import { databaseService } from "@/services";
-import { notificationService } from "@/services/notificationService.ts";
-import { getCurrentUserForService } from "@/store/useUserStore.ts";
-import type {
-  Order,
-  OrderFormData,
-  OrderItem,
-  OrderItemFormData,
-} from "@/types/order.ts";
-import type { Database } from "../../../types/supabase.ts";
-import {
-  trackOrderChanges,
-  trackOrderCreated,
-  trackOrderItemsUpdate,
-  trackStatusChange,
-} from "../utils/orderHistoryHelper";
-import {
-  detectOrderChanges,
-  formatChangesForNotification,
-  type LookupData,
-} from "@/utils/changeTracker.ts";
-import { employeeService } from "../../employees/services/employeeService.ts";
-import { statusServiceApi } from "../../statuses/services/statusService.ts";
+import { employeeService } from "@features/employees";
+import { trackOrderChanges, trackOrderCreated, trackOrderItemsUpdate, trackStatusChange } from "@features/orders";
+import { statusServiceApi } from "@features/statuses";
+import { cleanInsertData, handleSupabaseError, supabase } from "@lib";
+import { databaseService, notificationService } from "@services";
+import { getCurrentUserForService } from "@stores";
+import type { Database, Order, OrderFormData, OrderItem, OrderItemFormData } from "@types";
+import { detectOrderChanges, formatChangesForNotification, type LookupData } from "@utils";
 
 /**
  * Helper function to convert camelCase to snake_case for database fields
  */
 const convertToSnakeCase = (
-  data: Record<string, unknown>,
+  data: Record<string, unknown>
 ): Record<string, unknown> => {
   const camelToSnakeMap: Record<string, string> = {
     itemTotalUsd: "item_total_usd",
@@ -57,7 +37,7 @@ const convertToSnakeCase = (
     otherFeeNotes: "other_fee_notes",
     profitUsd: "profit_usd",
     profitVnd: "profit_vnd",
-    artistCommissionRate: "artist_commission_rate",
+    artistCommissionRate: "artist_commission_rate"
   };
 
   const snakeCaseData: Record<string, unknown> = {};
@@ -74,7 +54,7 @@ const convertToSnakeCase = (
  * Helper function to map database row to Order type
  */
 const mapToOrderRow = (
-  data: Database["public"]["Tables"]["orders"]["Row"],
+  data: Database["public"]["Tables"]["orders"]["Row"]
 ): Order => {
   return {
     customer_email: data.customer_email,
@@ -125,7 +105,7 @@ const mapToOrderRow = (
     factory_status_id: data.factory_status_id,
     delivery_status_id: data.delivery_status_id,
     created_at: new Date(data.created_at),
-    updated_at: new Date(data.updated_at),
+    updated_at: new Date(data.updated_at)
   };
 };
 
@@ -133,7 +113,7 @@ const mapToOrderRow = (
  * Helper function to map database row to OrderItemInput type
  */
 const mapToOrderItemRow = (
-  data: Database["public"]["Tables"]["order_items"]["Row"],
+  data: Database["public"]["Tables"]["order_items"]["Row"]
 ): OrderItem => {
   return {
     unit_price_usd: data.unit_price_usd || 0,
@@ -144,7 +124,7 @@ const mapToOrderItemRow = (
     type: data.type,
     quantity: data.quantity,
     created_at: new Date(data.created_at),
-    updated_at: new Date(data.updated_at),
+    updated_at: new Date(data.updated_at)
   };
 };
 
@@ -224,17 +204,17 @@ export const orderService = {
   async createOrder(
     formData: OrderFormData,
     items: OrderItemFormData[],
-    financialData: Partial<Order>,
+    financialData: Partial<Order>
   ): Promise<Order> {
     console.log("🚀 Creating order with data:", {
       formData,
       items,
-      financialData,
+      financialData
     });
 
     // Convert financial data to snake_case
     const snakeCaseFinancialData = convertToSnakeCase(
-      financialData as Record<string, unknown>,
+      financialData as Record<string, unknown>
     );
 
     // Ensure employee IDs are numbers, not strings
@@ -263,7 +243,7 @@ export const orderService = {
       artist_employee_id: employeeIdNum,
       seller_employee_id: sellerEmployeeIdNum,
       artist_commission_rate: formData.artistCommissionRate || 0,
-      ...snakeCaseFinancialData,
+      ...snakeCaseFinancialData
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -303,8 +283,8 @@ export const orderService = {
         orderCode: orderData.order_id,
         data: {
           customer: formData.customerName,
-          amount: orderData.item_total_vnd,
-        },
+          amount: orderData.item_total_vnd
+        }
       });
     } catch (error) {
       console.error("Failed to send notification:", error);
@@ -320,7 +300,7 @@ export const orderService = {
           size: item.size,
           type: item.type,
           quantity: item.quantity,
-          unit_price_usd: item.unit_price_usd || 0,
+          unit_price_usd: item.unit_price_usd || 0
         }));
 
       console.log("📦 Inserting order items:", itemsData);
@@ -346,7 +326,7 @@ export const orderService = {
   async updateOrder(
     id: string,
     formData: Partial<OrderFormData>,
-    financialData?: Partial<Order>,
+    financialData?: Partial<Order>
   ): Promise<Order> {
     const numericId = parseInt(id, 10);
 
@@ -354,7 +334,7 @@ export const orderService = {
     const oldOrder = await this.getOrderById(numericId);
 
     const updateData: Record<string, unknown> = {
-      updated_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
 
     // Update form data
@@ -412,7 +392,7 @@ export const orderService = {
     // Update financial data - convert camelCase to snake_case
     if (financialData) {
       const snakeCaseFinancialData = convertToSnakeCase(
-        financialData as Record<string, unknown>,
+        financialData as Record<string, unknown>
       );
 
       // Remove employee IDs from financial data (they're handled above in formData)
@@ -428,7 +408,7 @@ export const orderService = {
       artist_employee_id: updateData.artist_employee_id,
       artist_type: typeof updateData.artist_employee_id,
       seller_employee_id: updateData.seller_employee_id,
-      seller_type: typeof updateData.seller_employee_id,
+      seller_type: typeof updateData.seller_employee_id
     });
 
     // Ensure numeric fields are actually numbers (Supabase type casting issue workaround)
@@ -452,13 +432,13 @@ export const orderService = {
       artist_employee_id: updateData.artist_employee_id,
       artist_type: typeof updateData.artist_employee_id,
       seller_employee_id: updateData.seller_employee_id,
-      seller_type: typeof updateData.seller_employee_id,
+      seller_type: typeof updateData.seller_employee_id
     });
 
     // Log the full update data as JSON to see exactly what Supabase receives
     console.log(
       "📤 Full update payload (JSON):",
-      JSON.stringify(updateData, null, 2),
+      JSON.stringify(updateData, null, 2)
     );
 
     const { data, error } = await ordersTable()
@@ -484,7 +464,7 @@ export const orderService = {
         numericId,
         oldOrder,
         updatedOrder,
-        currentEmployeeId,
+        currentEmployeeId
       );
     } catch (error) {
       console.error("Failed to track order changes:", error);
@@ -494,13 +474,13 @@ export const orderService = {
     // Send notification with change details
     try {
       // Fetch lookup data for proper display of status and employee names
-      const [employees, generalStatuses, customerStatuses, factoryStatuses, deliveryStatuses] = 
+      const [employees, generalStatuses, customerStatuses, factoryStatuses, deliveryStatuses] =
         await Promise.all([
           employeeService.getAll(),
           statusServiceApi.getGeneralStatuses(),
           statusServiceApi.getCustomerStatuses(),
           statusServiceApi.getFactoryStatuses(),
-          statusServiceApi.getDeliveryStatuses(),
+          statusServiceApi.getDeliveryStatuses()
         ]);
 
       const lookupData: LookupData = {
@@ -508,7 +488,7 @@ export const orderService = {
         generalStatuses,
         customerStatuses,
         factoryStatuses,
-        deliveryStatuses,
+        deliveryStatuses
       };
 
       console.log("📊 Lookup data loaded:", {
@@ -516,7 +496,7 @@ export const orderService = {
         generalStatusesCount: generalStatuses.length,
         customerStatusesCount: customerStatuses.length,
         factoryStatusesCount: factoryStatuses.length,
-        deliveryStatusesCount: deliveryStatuses.length,
+        deliveryStatusesCount: deliveryStatuses.length
       });
 
       const changes = orderService.getOrderChanges(oldOrder, updatedOrder, lookupData);
@@ -525,10 +505,10 @@ export const orderService = {
         // Get current logged-in user info
         const currentUser = getCurrentUserForService();
         const employeeName = currentUser?.employeeName || undefined;
-        
+
         console.log("📢 Notification - Current User:", {
           currentUser,
-          employeeName,
+          employeeName
         });
 
         const changeDescription = changes.join("\n");
@@ -542,8 +522,8 @@ export const orderService = {
             customer: updatedOrder.customer_name,
             amount: updatedOrder.item_total_vnd,
             changes: changes,
-            updatedBy: employeeName,
-          },
+            updatedBy: employeeName
+          }
         });
       }
     } catch (error) {
@@ -559,7 +539,7 @@ export const orderService = {
    */
   async updateOrderItems(
     orderId: number,
-    items: OrderItemFormData[],
+    items: OrderItemFormData[]
   ): Promise<OrderItem[]> {
     console.log("🔄 Updating order items for order:", orderId, items);
 
@@ -584,7 +564,7 @@ export const orderService = {
         size: item.size,
         type: item.type,
         quantity: item.quantity,
-        unit_price_usd: item.unit_price_usd || 0,
+        unit_price_usd: item.unit_price_usd || 0
       }));
 
       console.log("📦 Inserting updated order items:", itemsData);
@@ -657,7 +637,7 @@ export const orderService = {
   async updateOrderStatus(
     id: string,
     statusType: "general" | "customer" | "factory" | "delivery",
-    statusId: number | null,
+    statusId: number | null
   ): Promise<Order> {
     const numericId = parseInt(id, 10);
 
@@ -666,7 +646,7 @@ export const orderService = {
     if (!oldOrder) throw new Error("Order not found");
 
     const updateData: Record<string, unknown> = {
-      updated_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
 
     let oldStatusId: number | null = null;
@@ -711,7 +691,7 @@ export const orderService = {
         statusType,
         oldStatusId,
         statusId,
-        currentEmployeeId,
+        currentEmployeeId
       );
     } catch (error) {
       console.error("Failed to track status change:", error);
@@ -735,13 +715,13 @@ export const orderService = {
       shipping_fee_usd?: number;
       shipping_exchange_rate?: number;
       shipping_fee_vnd?: number;
-    },
+    }
   ): Promise<Order> {
     const numericId = parseInt(id, 10);
 
     const updateData = {
       ...shippingData,
-      updated_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
 
     const { data, error } = await ordersTable()
@@ -767,7 +747,7 @@ export const orderService = {
     const { data, error } = await ordersTable()
       .select("*")
       .or(
-        `order_id.like.%${query}%,customer_name.like.%${query}%,tracking_number.like.%${query}%`,
+        `order_id.like.%${query}%,customer_name.like.%${query}%,tracking_number.like.%${query}%`
       )
       .order("order_date", { ascending: false });
 
@@ -786,7 +766,7 @@ export const orderService = {
    */
   async filterOrdersByDateRange(
     startDate: string,
-    endDate: string,
+    endDate: string
   ): Promise<Order[]> {
     const { data, error } = await ordersTable()
       .select("*")
@@ -932,11 +912,11 @@ export const orderService = {
       "order_earnings_usd",
       "artist_employee_id",
       "seller_employee_id",
-      "delivery_status_id",
+      "delivery_status_id"
     ] as const;
 
     return significantFields.some(
-      (field) => oldOrder[field] !== newOrder[field],
+      (field) => oldOrder[field] !== newOrder[field]
     );
   },
 
@@ -947,5 +927,5 @@ export const orderService = {
   getOrderChanges(oldOrder: Order, newOrder: Order, lookupData?: LookupData): string[] {
     const fieldChanges = detectOrderChanges(oldOrder, newOrder, lookupData);
     return formatChangesForNotification(fieldChanges);
-  },
+  }
 };

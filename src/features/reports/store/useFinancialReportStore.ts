@@ -1,5 +1,13 @@
-// src/features/reports/store/useFinancialReportStore.ts
+// src/features/reports/stores/useFinancialReportStore.ts
 
+import {
+  expensesService,
+  financialReportService,
+  incomingMoneyService,
+  moneyOnEtsyService,
+  receivedMoneyService,
+  transferredMoneyService
+} from "@features/reports";
 import type {
   Expense,
   FinancialReportFilters,
@@ -7,18 +15,10 @@ import type {
   IncomingMoney,
   MoneyOnEtsy,
   ReceivedMoney,
-  TransferredMoney,
-} from "@/types/financialReport";
+  TransferredMoney
+} from "@types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import {
-  expensesServiceApi,
-  financialReportService,
-  incomingMoneyServiceApi,
-  moneyOnEtsyServiceApi,
-  receivedMoneyServiceApi,
-  transferredMoneyServiceApi,
-} from "../services/financialReportService.ts";
 
 interface FinancialReportState {
   // Reports list
@@ -54,7 +54,7 @@ interface FinancialReportState {
   createReport: (
     shopId: number,
     year: number,
-    month: number,
+    month: number
   ) => Promise<FinancialReportPeriod>;
   loadReport: (reportId: number) => Promise<void>;
   updateReport: (updates: Partial<FinancialReportPeriod>) => void;
@@ -89,7 +89,7 @@ const initialState = {
   receivedMoney: [],
   expenses: [],
   transferredMoney: [],
-  csvFiles: [],
+  csvFiles: []
 };
 
 export const useFinancialReportStore = create<FinancialReportState>()(
@@ -108,7 +108,7 @@ export const useFinancialReportStore = create<FinancialReportState>()(
         set({ isLoading: true });
         try {
           const reports = await financialReportService.getReportPeriods(
-            get().filters,
+            get().filters
           );
           set({ reports, isLoading: false });
         } catch (error) {
@@ -136,7 +136,7 @@ export const useFinancialReportStore = create<FinancialReportState>()(
             totalFees: 0,
             netProfit: 0,
             marketingFees: 0,
-            status: "draft",
+            status: "draft"
           });
 
           set({
@@ -147,7 +147,7 @@ export const useFinancialReportStore = create<FinancialReportState>()(
             receivedMoney: [],
             expenses: [],
             transferredMoney: [],
-            csvFiles: [],
+            csvFiles: []
           });
 
           await get().loadReports();
@@ -168,14 +168,14 @@ export const useFinancialReportStore = create<FinancialReportState>()(
             incomingMoney,
             receivedMoney,
             expenses,
-            transferredMoney,
+            transferredMoney
           ] = await Promise.all([
             financialReportService.getReportPeriod(reportId),
-            moneyOnEtsyServiceApi.getByReportPeriod(reportId),
-            incomingMoneyServiceApi.getByReportPeriod(reportId),
-            receivedMoneyServiceApi.getByReportPeriod(reportId),
-            expensesServiceApi.getByReportPeriod(reportId),
-            transferredMoneyServiceApi.getByReportPeriod(reportId),
+            moneyOnEtsyService.getByReportPeriod(reportId),
+            incomingMoneyService.getByReportPeriod(reportId),
+            receivedMoneyService.getByReportPeriod(reportId),
+            expensesService.getByReportPeriod(reportId),
+            transferredMoneyService.getByReportPeriod(reportId)
           ]);
 
           // Load CSV files from notes if exists
@@ -200,7 +200,7 @@ export const useFinancialReportStore = create<FinancialReportState>()(
             expenses,
             transferredMoney,
             csvFiles,
-            isLoading: false,
+            isLoading: false
           });
         } catch (error) {
           console.error("Error loading report:", error);
@@ -215,7 +215,7 @@ export const useFinancialReportStore = create<FinancialReportState>()(
         if (currentReport) {
           set({
             currentReport: { ...currentReport, ...updates },
-            isDraft: true,
+            isDraft: true
           });
         }
       },
@@ -236,13 +236,13 @@ export const useFinancialReportStore = create<FinancialReportState>()(
               totalFees: currentReport.total_fees,
               netProfit: currentReport.net_profit,
               marketingFees: currentReport.marketing_fees,
-              notes: notesData,
-            },
+              notes: notesData
+            }
           );
 
           set({
             currentReport: updated,
-            isDraft: false,
+            isDraft: false
           });
 
           await get().loadReports();
@@ -266,7 +266,7 @@ export const useFinancialReportStore = create<FinancialReportState>()(
               receivedMoney: [],
               expenses: [],
               transferredMoney: [],
-              csvFiles: [],
+              csvFiles: []
             });
           }
 
@@ -315,8 +315,8 @@ export const useFinancialReportStore = create<FinancialReportState>()(
         if (!reportId) return;
 
         try {
-          const saved = await moneyOnEtsyServiceApi.create([
-            { ...item, report_period_id: reportId },
+          const saved = await moneyOnEtsyService.create([
+            { ...item, report_period_id: reportId }
           ]);
           set({ moneyOnEtsy: [...get().moneyOnEtsy, ...saved] });
         } catch (error) {
@@ -330,8 +330,8 @@ export const useFinancialReportStore = create<FinancialReportState>()(
         if (!reportId) return;
 
         try {
-          const saved = await incomingMoneyServiceApi.create([
-            { ...item, report_period_id: reportId },
+          const saved = await incomingMoneyService.create([
+            { ...item, report_period_id: reportId }
           ]);
           set({ incomingMoney: [...get().incomingMoney, ...saved] });
         } catch (error) {
@@ -345,8 +345,8 @@ export const useFinancialReportStore = create<FinancialReportState>()(
         if (!reportId) return;
 
         try {
-          const saved = await receivedMoneyServiceApi.create([
-            { ...item, report_period_id: reportId },
+          const saved = await receivedMoneyService.create([
+            { ...item, report_period_id: reportId }
           ]);
           set({ receivedMoney: [...get().receivedMoney, ...saved] });
         } catch (error) {
@@ -360,8 +360,8 @@ export const useFinancialReportStore = create<FinancialReportState>()(
         if (!reportId) return;
 
         try {
-          const saved = await expensesServiceApi.create([
-            { ...item, report_period_id: reportId },
+          const saved = await expensesService.create([
+            { ...item, report_period_id: reportId }
           ]);
           set({ expenses: [...get().expenses, ...saved] });
         } catch (error) {
@@ -375,8 +375,8 @@ export const useFinancialReportStore = create<FinancialReportState>()(
         if (!reportId) return;
 
         try {
-          const saved = await transferredMoneyServiceApi.create([
-            { ...item, report_period_id: reportId },
+          const saved = await transferredMoneyService.create([
+            { ...item, report_period_id: reportId }
           ]);
           set({ transferredMoney: [...get().transferredMoney, ...saved] });
         } catch (error) {
@@ -400,22 +400,22 @@ export const useFinancialReportStore = create<FinancialReportState>()(
           receivedMoney: [],
           expenses: [],
           transferredMoney: [],
-          csvFiles: [],
+          csvFiles: []
         });
       },
 
       // Reset everything
       reset: () => {
         set(initialState);
-      },
+      }
     }),
     {
       name: "financial-report-storage",
       partialize: (state) => ({
         // Only persist filters and current report ID
         filters: state.filters,
-        currentReportId: state.currentReport?.id,
-      }),
-    },
-  ),
+        currentReportId: state.currentReport?.id
+      })
+    }
+  )
 );

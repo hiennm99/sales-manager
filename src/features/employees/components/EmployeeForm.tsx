@@ -1,10 +1,10 @@
-// features/employees/components/EmployeeForm.tsx
+// src/features/employees/components/EmployeeForm.tsx
 
+import { FormActions, FormField, FormGroup } from "@components/forms";
+import { Input } from "@components/ui";
+import { DEFAULTS } from "@constants";
+import type { Employee, EmployeeFormData } from "@types";
 import React, { useEffect, useState } from "react";
-import { FormActions, FormField, FormGroup } from "../../../components/forms";
-import { Input } from "../../../components/ui/Input";
-import { DEFAULTS } from "../../../constants";
-import type { Employee, EmployeeFormData } from "../../../types/employee";
 
 interface EmployeeFormProps {
   employee?: Employee;
@@ -13,17 +13,18 @@ interface EmployeeFormProps {
 }
 
 export const EmployeeForm: React.FC<EmployeeFormProps> = ({
-  employee,
-  onSubmit,
-  isLoading = false,
-}) => {
+                                                            employee,
+                                                            onSubmit,
+                                                            isLoading = false
+                                                          }) => {
   const [formData, setFormData] = useState<EmployeeFormData>({
     name: "",
     code: "",
     avatar: "",
+    email: "",
     role: "",
     base_salary: 0,
-    sales_commission_rate: DEFAULTS.COMMISSION_RATE,
+    sales_commission_rate: DEFAULTS.COMMISSION_RATE
   });
 
   useEffect(() => {
@@ -32,10 +33,11 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
         name: employee.name,
         code: employee.code,
         avatar: employee.avatar,
+        email: employee.email,
         role: employee.role,
         base_salary: employee.base_salary || 0,
         sales_commission_rate:
-          employee.sales_commission_rate || DEFAULTS.COMMISSION_RATE,
+          employee.sales_commission_rate || DEFAULTS.COMMISSION_RATE
       });
     }
   }, [employee]);
@@ -44,7 +46,7 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
     const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "number" ? Number(value) : value,
+      [name]: type === "number" ? Number(value) : value
     }));
   };
 
@@ -80,6 +82,18 @@ export const EmployeeForm: React.FC<EmployeeFormProps> = ({
             value={formData.code}
             onChange={handleChange}
             placeholder="Nhập mã nhân viên"
+            required
+          />
+        </FormField>
+
+        <FormField label="Email" name="email" required>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Nhập email"
             required
           />
         </FormField>

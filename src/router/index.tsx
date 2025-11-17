@@ -1,81 +1,95 @@
-// router/index.tsx
+// src/router/index.tsx
 
+import { lazyLoad } from "@utils";
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import { ProtectedRoute } from "../components/auth/ProtectedRoute";
-import { MainLayout } from "../layouts/MainLayout";
-import { lazyLoad } from "../utils/lazyLoad";
-
-// Eager load (loaded immediately)
-import { ShopCreate, ShopListAdmin } from "@/features/shops";
-import { LoginPage, SignUpPage, ProfilePage, NotificationSettingsPage } from "@/features/auth";
 
 // Lazy load (code-split) - loaded only when route is accessed
+const ProtectedRoute = lazyLoad(() =>
+  import("@components/auth").then((m) => ({ default: m.ProtectedRoute }))
+);
+const LoginPage = lazyLoad(() =>
+  import("@features/auth").then((m) => ({ default: m.LoginPage }))
+);
+const SignUpPage = lazyLoad(() =>
+  import("@features/auth").then((m) => ({ default: m.SignUpPage }))
+);
+const NotificationSettingsPage = lazyLoad(() =>
+  import("@features/auth").then((m) => ({ default: m.NotificationSettingsPage }))
+);
+const ProfilePage = lazyLoad(() =>
+  import("@features/auth").then((m) => ({ default: m.ProfilePage }))
+);
+const MainLayout = lazyLoad(() =>
+  import("@layout").then((m) => ({ default: m.MainLayout }))
+);
+const ShopCreate = lazyLoad(() =>
+  import("@features/shops").then((m) => ({ default: m.ShopCreate }))
+);
+const ShopListAdmin = lazyLoad(() =>
+  import("@features/shops").then((m) => ({ default: m.ShopListAdmin }))
+);
 const DashboardPage = lazyLoad(() =>
-  import("@/features/dashboard").then((m) => ({ default: m.DashboardPage })),
+  import("@features/dashboard").then((m) => ({ default: m.DashboardPage }))
 );
 const ProductList = lazyLoad(() =>
-  import("@/features/products").then((m) => ({ default: m.ProductList })),
+  import("@features/products").then((m) => ({ default: m.ProductList }))
 );
 const ProductDetail = lazyLoad(() =>
-  import("@/features/products").then((m) => ({ default: m.ProductDetail })),
+  import("@features/products").then((m) => ({ default: m.ProductDetail }))
 );
 const ProductCreate = lazyLoad(() =>
-  import("@/features/products").then((m) => ({ default: m.ProductCreate })),
+  import("@features/products").then((m) => ({ default: m.ProductCreate }))
 );
 const OrderList = lazyLoad(() =>
-  import("@/features/orders").then((m) => ({ default: m.OrderList })),
+  import("@features/orders").then((m) => ({ default: m.OrderList }))
 );
 const OrderDetail = lazyLoad(() =>
-  import("@/features/orders").then((m) => ({ default: m.OrderDetail })),
+  import("@features/orders").then((m) => ({ default: m.OrderDetail }))
 );
 const OrderCreate = lazyLoad(() =>
-  import("@/features/orders").then((m) => ({ default: m.OrderCreate })),
+  import("@features/orders").then((m) => ({ default: m.OrderCreate }))
 );
 const EmployeeListAdmin = lazyLoad(() =>
-  import("@/features/employees/pages/EmployeeList").then((m) => ({ default: m.EmployeeList })),
-);
-const StatusList = lazyLoad(() =>
-  import("@/features/statuses").then((m) => ({ default: m.StatusList })),
-);
-const StatusCreate = lazyLoad(() =>
-  import("@/features/statuses").then((m) => ({ default: m.StatusCreate })),
+  import("@features/employees").then((m) => ({ default: m.EmployeeList }))
 );
 const EmployeeCreate = lazyLoad(() =>
-  import("@/features/employees").then((m) => ({ default: m.EmployeeCreate })),
+  import("@features/employees").then((m) => ({ default: m.EmployeeCreate }))
 );
 const EmployeeDetail = lazyLoad(() =>
-  import("@/features/employees").then((m) => ({ default: m.EmployeeDetail })),
+  import("@features/employees").then((m) => ({ default: m.EmployeeDetail }))
 );
 const EmployeeSalaryList = lazyLoad(() =>
-  import("@/features/employees").then((m) => ({
-    default: m.EmployeeSalaryList,
-  })),
+  import("@features/employees").then((m) => ({ default: m.EmployeeSalaryList }))
+);
+const StatusList = lazyLoad(() =>
+  import("@features/statuses").then((m) => ({ default: m.StatusList }))
+);
+const StatusCreate = lazyLoad(() =>
+  import("@features/statuses").then((m) => ({ default: m.StatusCreate }))
 );
 const SettingsPage = lazyLoad(() =>
-  import("@/features/settings").then((m) => ({ default: m.SettingsPage })),
+  import("@features/settings/").then((m) => ({ default: m.SettingsPage }))
 );
 const FinancialReportsPage = lazyLoad(() =>
-  import("@/features/reports").then((m) => ({
-    default: m.FinancialReportsPage,
-  })),
+  import("@features/reports").then((m) => ({ default: m.FinancialReportsPage }))
 );
 
 export const router = createBrowserRouter([
   {
     path: "/login",
-    element: <LoginPage />,
+    element: <LoginPage />
   },
   {
     path: "/signup",
-    element: <SignUpPage />,
+    element: <SignUpPage />
   },
   {
     path: "/profile",
-    element: <ProtectedRoute><ProfilePage /></ProtectedRoute>,
+    element: <ProtectedRoute><ProfilePage /></ProtectedRoute>
   },
   {
     path: "/notification-settings",
-    element: <ProtectedRoute><NotificationSettingsPage /></ProtectedRoute>,
+    element: <ProtectedRoute><NotificationSettingsPage /></ProtectedRoute>
   },
   {
     path: "/",
@@ -87,130 +101,130 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Navigate to="/dashboard" replace />,
+        element: <Navigate to="/dashboard" replace />
       },
       {
         path: "dashboard",
-        element: <DashboardPage />,
+        element: <DashboardPage />
       },
       {
         path: "shops",
         children: [
           {
             index: true,
-            element: <ShopListAdmin />,
+            element: <ShopListAdmin />
           },
           {
             path: "create",
-            element: <ShopCreate />,
+            element: <ShopCreate />
           },
           {
             path: ":shopId/edit",
-            element: <ShopCreate />,
-          },
-        ],
+            element: <ShopCreate />
+          }
+        ]
       },
       {
         path: "products",
         children: [
           {
             index: true,
-            element: <ProductList />,
+            element: <ProductList />
           },
           {
             path: "create",
-            element: <ProductCreate />,
+            element: <ProductCreate />
           },
           {
             path: ":productId",
-            element: <ProductDetail />,
+            element: <ProductDetail />
           },
           {
             path: ":productId/edit",
-            element: <ProductCreate />,
-          },
-        ],
+            element: <ProductCreate />
+          }
+        ]
       },
       {
         path: "orders",
         children: [
           {
             index: true,
-            element: <OrderList />,
+            element: <OrderList />
           },
           {
             path: "create",
-            element: <OrderCreate />,
+            element: <OrderCreate />
           },
           {
             path: ":orderId",
-            element: <OrderDetail />,
+            element: <OrderDetail />
           },
           {
             path: ":orderId/edit",
-            element: <OrderDetail />,
-          },
-        ],
+            element: <OrderDetail />
+          }
+        ]
       },
       {
         path: "employees",
         children: [
           {
             index: true,
-            element: <EmployeeListAdmin />,
+            element: <EmployeeListAdmin />
           },
           {
             path: "create",
-            element: <EmployeeCreate />,
+            element: <EmployeeCreate />
           },
           {
             path: ":employeeId",
-            element: <EmployeeDetail />,
+            element: <EmployeeDetail />
           },
           {
             path: ":employeeId/edit",
-            element: <EmployeeCreate />,
-          },
-        ],
+            element: <EmployeeCreate />
+          }
+        ]
       },
       {
         path: "statuses",
         children: [
           {
             index: true,
-            element: <StatusList />,
+            element: <StatusList />
           },
           {
             path: "create",
-            element: <StatusCreate />,
+            element: <StatusCreate />
           },
           {
             path: ":statusId/edit",
-            element: <StatusCreate />,
-          },
-        ],
+            element: <StatusCreate />
+          }
+        ]
       },
       {
         path: "settings",
-        element: <SettingsPage />,
+        element: <SettingsPage />
       },
       {
         path: "salaries",
         children: [
           {
             index: true,
-            element: <EmployeeSalaryList />,
-          },
-        ],
+            element: <EmployeeSalaryList />
+          }
+        ]
       },
       {
         path: "financial-reports",
-        element: <FinancialReportsPage />,
-      },
-    ],
+        element: <FinancialReportsPage />
+      }
+    ]
   },
   {
     path: "*",
-    element: <Navigate to="/login" replace />,
-  },
+    element: <Navigate to="/login" replace />
+  }
 ]);

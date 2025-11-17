@@ -1,9 +1,9 @@
+// src/features/reports/components/ImageUpload.tsx
 // components/ImageUpload.tsx
 
-import { imageService } from "@/services/imageService.ts";
-import { storageService } from "@/services/storageService.ts";
-import { FiAlertCircle, FiCheckCircle, FiEye, FiTrash2, FiUpload, FiX } from "react-icons/fi";
+import { imageService, storageService } from "@services";
 import React, { useRef, useState } from "react";
+import { FiAlertCircle, FiCheckCircle, FiEye, FiImage, FiTrash2, FiUpload, FiX } from "react-icons/fi";
 
 interface ImageUploadProps {
   label: string;
@@ -18,22 +18,22 @@ interface ImageUploadProps {
 }
 
 export const ImageUpload: React.FC<ImageUploadProps> = ({
-  label,
-  description,
-  currentImageUrl,
-  onUploadSuccess,
-  onDelete,
-  bucket,
-  pathPrefix,
-  maxSize = 10,
-  disabled = false,
-}) => {
+                                                          label,
+                                                          description,
+                                                          currentImageUrl,
+                                                          onUploadSuccess,
+                                                          onDelete,
+                                                          bucket,
+                                                          pathPrefix,
+                                                          maxSize = 10,
+                                                          disabled = false
+                                                        }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(
-    currentImageUrl || null,
+    currentImageUrl || null
   );
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -81,8 +81,8 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         "image/png",
         "image/webp",
         "image/gif",
-        "application/pdf",
-      ],
+        "application/pdf"
+      ]
     });
 
     if (!validation.valid) {
@@ -108,7 +108,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       const result = await storageService.uploadFile(file, {
         bucket,
         path,
-        upsert: true,
+        upsert: true
       });
 
       setSuccess(`Đã tải lên thành công: ${file.name}`);
@@ -170,7 +170,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           <div className="border-2 border-gray-200 rounded-lg overflow-hidden bg-gray-50">
             {preview.endsWith(".pdf") || currentImageUrl?.endsWith(".pdf") ? (
               <div className="p-8 text-center">
-                <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+                <FiImage className="w-16 h-16 text-gray-400 mx-auto mb-2" />
                 <p className="text-sm text-gray-600">PDF Document</p>
               </div>
             ) : (
@@ -213,10 +213,10 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                         relative border-2 border-dashed rounded-lg p-6 text-center cursor-pointer
                         transition-all duration-200
                         ${
-                          isDragging
-                            ? "border-indigo-500 bg-indigo-50"
-                            : "border-gray-300 hover:border-indigo-400 hover:bg-gray-50"
-                        }
+            isDragging
+              ? "border-indigo-500 bg-indigo-50"
+              : "border-gray-300 hover:border-indigo-400 hover:bg-gray-50"
+          }
                         ${isUploading || disabled ? "opacity-50 pointer-events-none" : ""}
                     `}
         >
@@ -234,7 +234,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               <>
                 <div className="p-3 bg-indigo-100 rounded-full">
                   <div className="animate-spin">
-                    <ImageIcon className="w-6 h-6 text-indigo-600" />
+                    <FiImage className="w-6 h-6 text-indigo-600" />
                   </div>
                 </div>
                 <p className="text-sm font-medium text-gray-900">
@@ -255,7 +255,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                   </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <ImageIcon className="w-3 h-3" />
+                  <FiImage className="w-3 h-3" />
                   <span>PNG, JPG, WebP, PDF (tối đa {maxSize}MB)</span>
                 </div>
               </>

@@ -1,9 +1,9 @@
-// src/features/shops/store/useShopStore.ts
+// src/features/shops/stores/useShopStore.ts
 
+import { shopService } from "@features/shops";
+import type { Shop, ShopFormData } from "@types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Shop, ShopFormData } from "../../../types/shop";
-import { shopService } from "../services/shopService.ts";
 
 interface ShopStore {
   shops: Shop[];
@@ -62,7 +62,7 @@ const useShopStoreBase = create<ShopStore>()(
           set((state) => ({
             shops: [newShop, ...state.shops],
             selectedShop: newShop,
-            isLoading: false,
+            isLoading: false
           }));
 
           return newShop;
@@ -83,7 +83,7 @@ const useShopStoreBase = create<ShopStore>()(
 
           set((state) => ({
             shops: state.shops.map((s) => (s.id === id ? updatedShop : s)),
-            isLoading: false,
+            isLoading: false
           }));
 
           // Update selected shop if it's the one being updated
@@ -111,7 +111,7 @@ const useShopStoreBase = create<ShopStore>()(
             shops: state.shops.filter((s) => s.id !== id),
             selectedShop:
               state.selectedShop?.id === id ? null : state.selectedShop,
-            isLoading: false,
+            isLoading: false
           }));
         } catch (error) {
           const errorMessage =
@@ -130,7 +130,7 @@ const useShopStoreBase = create<ShopStore>()(
 
           set((state) => ({
             shops: state.shops.map((s) => (s.id === id ? toggledShop : s)),
-            isLoading: false,
+            isLoading: false
           }));
 
           // Update selected shop if it's the one being toggled
@@ -173,7 +173,7 @@ const useShopStoreBase = create<ShopStore>()(
               state.selectedShop && ids.includes(state.selectedShop.id)
                 ? null
                 : state.selectedShop,
-            isLoading: false,
+            isLoading: false
           }));
         } catch (error) {
           const errorMessage =
@@ -190,21 +190,21 @@ const useShopStoreBase = create<ShopStore>()(
 
           const updatedSelectedShop = get().selectedShop
             ? {
-                ...get().selectedShop!,
-                is_active: ids.includes(get().selectedShop!.id)
-                  ? is_active
-                  : get().selectedShop!.is_active,
-              }
+              ...get().selectedShop!,
+              is_active: ids.includes(get().selectedShop!.id)
+                ? is_active
+                : get().selectedShop!.is_active
+            }
             : null;
 
           set((state) => ({
             shops: state.shops.map((s) =>
               ids.includes(s.id)
                 ? { ...s, is_active, updated_at: new Date() }
-                : s,
+                : s
             ),
             selectedShop: updatedSelectedShop,
-            isLoading: false,
+            isLoading: false
           }));
         } catch (error) {
           const errorMessage =
@@ -214,18 +214,18 @@ const useShopStoreBase = create<ShopStore>()(
         }
       },
 
-      clearError: () => set({ error: null }),
+      clearError: () => set({ error: null })
     }),
     {
       name: "shop-storage",
       partialize: (state) => ({
-        selectedShop: state.selectedShop,
-      }),
-    },
-  ),
+        selectedShop: state.selectedShop
+      })
+    }
+  )
 );
 
-// Export base store
+// Export base stores
 export const useShopStore = useShopStoreBase;
 
 /**
@@ -257,6 +257,6 @@ export const useShopSelectors = {
     bulkDeleteShops: useShopStoreBase.getState().bulkDeleteShops,
     bulkUpdateStatus: useShopStoreBase.getState().bulkUpdateStatus,
     setSelectedShop: useShopStoreBase.getState().setSelectedShop,
-    clearError: useShopStoreBase.getState().clearError,
-  }),
+    clearError: useShopStoreBase.getState().clearError
+  })
 };

@@ -1,8 +1,8 @@
 // src/features/orders/components/shared/OrderHeader.tsx
 
+import { Breadcrumbs } from "@components/layout";
 import React from "react";
 import { useParams } from "react-router-dom";
-import { Breadcrumbs } from "../../../../components/layout/Breadcrumbs.tsx";
 
 interface OrderHeaderProps {
   title: string;
@@ -14,11 +14,11 @@ interface OrderHeaderProps {
 }
 
 export const OrderHeader: React.FC<OrderHeaderProps> = ({
-  title,
-  subtitle,
-  isEdit = false,
-  actions,
-}) => {
+                                                          title,
+                                                          subtitle,
+                                                          isEdit = false,
+                                                          actions
+                                                        }) => {
   const iconPath = isEdit
     ? "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
     : "M12 4v16m8-8H4";
@@ -30,7 +30,7 @@ export const OrderHeader: React.FC<OrderHeaderProps> = ({
         items={[
           { label: "Trang chủ", path: "/dashboard" },
           { label: "Đơn hàng", path: "/orders" },
-          { label: "Đơn hàng mới", path: `/orders/${orderId}` },
+          { label: "Đơn hàng mới", path: `/orders/${orderId}` }
         ]}
       />
       <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
@@ -53,7 +53,8 @@ export const OrderHeader: React.FC<OrderHeaderProps> = ({
                 </svg>
               </div>
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                <h1
+                  className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                   {title}
                 </h1>
                 <p className="text-gray-600 mt-1 flex items-center gap-2">

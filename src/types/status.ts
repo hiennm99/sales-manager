@@ -1,6 +1,6 @@
-// types/status.ts
+// src/types/status.ts
 
-import type { BaseEntity } from "./common";
+import type { BaseEntity } from "./common.ts";
 
 // ============================================
 // BASE STATUS TYPE
@@ -116,7 +116,7 @@ export interface DeliveryStatus extends BaseEntity {
 
 // Get badge color classes
 export const getStatusColorClasses = (
-  color: string,
+  color: string
 ): { bg: string; text: string } => {
   const colorMap: Record<string, { bg: string; text: string }> = {
     gray: { bg: "bg-gray-100", text: "text-gray-800" },
@@ -125,7 +125,7 @@ export const getStatusColorClasses = (
     green: { bg: "bg-green-100", text: "text-green-800" },
     blue: { bg: "bg-blue-100", text: "text-blue-800" },
     indigo: { bg: "bg-indigo-100", text: "text-indigo-800" },
-    purple: { bg: "bg-purple-100", text: "text-purple-800" },
+    purple: { bg: "bg-purple-100", text: "text-purple-800" }
   };
   return colorMap[color] || colorMap.gray;
 };

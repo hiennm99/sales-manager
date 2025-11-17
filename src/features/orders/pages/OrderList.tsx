@@ -4,34 +4,30 @@
  * Optimized to reduce unnecessary re-renders
  */
 
-import { FiDollarSign, FiPackage } from "react-icons/fi";
+import { ConfirmModal } from "@components";
+import { FilterBar, SearchInput, StatCard, StatGrid } from "@components/ui";
+import { SelectFilter } from "@components/ui/SelectFilter";
+import { getStatusColorClasses } from "@types";
 import React, { useEffect, useMemo, useState } from "react";
+import { FiDollarSign, FiPackage } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { ConfirmModal } from "../../../components/modals";
-import { FilterBar } from "../../../components/ui/FilterBar";
-import { SearchInput } from "../../../components/ui/SearchInput";
-import { SelectFilter } from "../../../components/ui/SelectFilter";
-import { StatCard, StatGrid } from "../../../components/ui/StatCard";
+
 import { formatUSD, formatVND } from "../../../lib/utils.ts";
-import { getStatusColorClasses } from "../../../types/status";
 import { useShopStore } from "../../shops/store/useShopStore";
-import {
-  useStatusSelectors,
-  useStatusStore,
-} from "../../statuses/store/useStatusStore";
+import { useStatusSelectors, useStatusStore } from "../../statuses/store/useStatusStore";
 import { OrderCardView, OrderTable } from "../components";
 import { useOrderStore } from "../store/useOrderStore";
 
 export const OrderList: React.FC = () => {
   const navigate = useNavigate();
 
-  // ✅ OPTIMIZED: Use selective subscriptions instead of whole store
+  // ✅ OPTIMIZED: Use selective subscriptions instead of whole stores
   // Old: const { orders, deleteOrder, fetchOrders, initializeDraftForCreate } = useOrderStore();
   const orders = useOrderStore((state) => state.orders);
   const deleteOrder = useOrderStore((state) => state.deleteOrder);
   const fetchOrders = useOrderStore((state) => state.fetchOrders);
   const initializeDraftForCreate = useOrderStore(
-    (state) => state.initializeDraftForCreate,
+    (state) => state.initializeDraftForCreate
   );
 
   // ✅ OPTIMIZED: Only subscribe to selectedShop
@@ -45,7 +41,7 @@ export const OrderList: React.FC = () => {
   const factoryStatuses = useStatusSelectors.useFactoryStatuses();
   const deliveryStatuses = useStatusSelectors.useDeliveryStatuses();
   const getGeneralStatusById = useStatusStore(
-    (state) => state.getGeneralStatusById,
+    (state) => state.getGeneralStatusById
   );
   const fetchAllStatuses = useStatusStore((state) => state.fetchAllStatuses);
 
@@ -71,7 +67,7 @@ export const OrderList: React.FC = () => {
   useEffect(() => {
     fetchAllStatuses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // fetchAllStatuses is stable from Zustand store
+  }, []); // fetchAllStatuses is stable from Zustand stores
 
   useEffect(() => {
     if (selectedShop) {
@@ -80,7 +76,7 @@ export const OrderList: React.FC = () => {
       initializeDraftForCreate(selectedShop.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedShop]); // fetchOrders and initializeDraftForCreate are stable from Zustand store
+  }, [selectedShop]); // fetchOrders and initializeDraftForCreate are stable from Zustand stores
 
   // Filter and sort orders
   const filteredOrders = useMemo(() => {
@@ -99,35 +95,35 @@ export const OrderList: React.FC = () => {
           order.order_id.toLowerCase().includes(term) ||
           order.customer_name.toLowerCase().includes(term) ||
           (order.customer_phone &&
-            order.customer_phone.toLowerCase().includes(term)),
+            order.customer_phone.toLowerCase().includes(term))
       );
     }
 
     // Filter by general status
     if (filterGeneralStatus !== "all") {
       filtered = filtered.filter(
-        (order) => order.general_status_id === filterGeneralStatus,
+        (order) => order.general_status_id === filterGeneralStatus
       );
     }
 
     // Filter by customer status
     if (filterCustomerStatus !== "all") {
       filtered = filtered.filter(
-        (order) => order.customer_status_id === filterCustomerStatus,
+        (order) => order.customer_status_id === filterCustomerStatus
       );
     }
 
     // Filter by factory status
     if (filterFactoryStatus !== "all") {
       filtered = filtered.filter(
-        (order) => order.factory_status_id === filterFactoryStatus,
+        (order) => order.factory_status_id === filterFactoryStatus
       );
     }
 
     // Filter by delivery status
     if (filterDeliveryStatus !== "all") {
       filtered = filtered.filter(
-        (order) => order.delivery_status_id === filterDeliveryStatus,
+        (order) => order.delivery_status_id === filterDeliveryStatus
       );
     }
 
@@ -162,7 +158,7 @@ export const OrderList: React.FC = () => {
     filterFactoryStatus,
     filterDeliveryStatus,
     sortBy,
-    selectedShop,
+    selectedShop
   ]);
 
   const sortOptions = [
@@ -170,7 +166,7 @@ export const OrderList: React.FC = () => {
     { value: "date-asc", label: "Cũ nhất" },
     { value: "total-desc", label: "Doanh thu cao" },
     { value: "total-asc", label: "Doanh thu thấp" },
-    { value: "earnings-desc", label: "Thu nhập cao" },
+    { value: "earnings-desc", label: "Thu nhập cao" }
   ];
 
   // Calculate totals
@@ -179,12 +175,12 @@ export const OrderList: React.FC = () => {
       orders: filteredOrders.length,
       earnings_usd: filteredOrders.reduce(
         (sum, o) => sum + (o.order_earnings_usd || 0),
-        0,
+        0
       ),
       earnings_vnd: filteredOrders.reduce(
         (sum, o) => sum + (o.order_earnings_vnd || 0),
-        0,
-      ),
+        0
+      )
     };
   }, [filteredOrders]);
 
@@ -192,7 +188,7 @@ export const OrderList: React.FC = () => {
     setSelectedOrders((prev) =>
       prev.includes(orderId)
         ? prev.filter((id) => id !== orderId)
-        : [...prev, orderId],
+        : [...prev, orderId]
     );
   };
 
@@ -236,7 +232,8 @@ export const OrderList: React.FC = () => {
     const status = getGeneralStatusById(statusId || null);
     if (!status) {
       return (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+        <span
+          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
           Không xác định
         </span>
       );
@@ -322,12 +319,12 @@ export const OrderList: React.FC = () => {
           value={filterGeneralStatus}
           onChange={(val) =>
             setFilterGeneralStatus(
-              val === "all" ? "all" : parseInt(val as string),
+              val === "all" ? "all" : parseInt(val as string)
             )
           }
           options={generalStatuses.map((s) => ({
             value: s.id,
-            label: s.name_vi,
+            label: s.name_vi
           }))}
         />
 
@@ -336,12 +333,12 @@ export const OrderList: React.FC = () => {
           value={filterCustomerStatus}
           onChange={(val) =>
             setFilterCustomerStatus(
-              val === "all" ? "all" : parseInt(val as string),
+              val === "all" ? "all" : parseInt(val as string)
             )
           }
           options={customerStatuses.map((s) => ({
             value: s.id,
-            label: s.name_vi,
+            label: s.name_vi
           }))}
         />
 
@@ -350,12 +347,12 @@ export const OrderList: React.FC = () => {
           value={filterFactoryStatus}
           onChange={(val) =>
             setFilterFactoryStatus(
-              val === "all" ? "all" : parseInt(val as string),
+              val === "all" ? "all" : parseInt(val as string)
             )
           }
           options={factoryStatuses.map((s) => ({
             value: s.id,
-            label: s.name_vi,
+            label: s.name_vi
           }))}
         />
 
@@ -364,12 +361,12 @@ export const OrderList: React.FC = () => {
           value={filterDeliveryStatus}
           onChange={(val) =>
             setFilterDeliveryStatus(
-              val === "all" ? "all" : parseInt(val as string),
+              val === "all" ? "all" : parseInt(val as string)
             )
           }
           options={deliveryStatuses.map((s) => ({
             value: s.id,
-            label: s.name_vi,
+            label: s.name_vi
           }))}
         />
 

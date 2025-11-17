@@ -1,9 +1,10 @@
+// src/features/reports/components/ExcelUpload.tsx
 // components/ExcelUpload.tsx
 
-import type { ExcelUploadData } from "@/types/financialReport";
-import { FiAlertCircle, FiCheckCircle, FiUpload, FiX } from "react-icons/fi";
+import { excelParserService } from "@features/reports";
+import type { ExcelUploadData } from "@types";
 import React, { useRef, useState } from "react";
-import { excelParserService } from "../services/financialReportService.ts";
+import { FiAlertCircle, FiCheckCircle, FiFileText, FiUpload, FiX } from "react-icons/fi";
 
 interface ExcelUploadProps {
   onUploadSuccess: (data: ExcelUploadData) => void;
@@ -11,8 +12,8 @@ interface ExcelUploadProps {
 }
 
 export const ExcelUpload: React.FC<ExcelUploadProps> = ({
-  onUploadSuccess,
-}) => {
+                                                          onUploadSuccess
+                                                        }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +55,7 @@ export const ExcelUpload: React.FC<ExcelUploadProps> = ({
     const validTypes = [
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "application/vnd.ms-excel",
-      "application/vnd.oasis.opendocument.spreadsheet",
+      "application/vnd.oasis.opendocument.spreadsheet"
     ];
 
     if (
@@ -106,10 +107,10 @@ export const ExcelUpload: React.FC<ExcelUploadProps> = ({
                     relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer
                     transition-all duration-200
                     ${
-                      isDragging
-                        ? "border-indigo-500 bg-indigo-50"
-                        : "border-gray-300 hover:border-indigo-400 hover:bg-gray-50"
-                    }
+          isDragging
+            ? "border-indigo-500 bg-indigo-50"
+            : "border-gray-300 hover:border-indigo-400 hover:bg-gray-50"
+        }
                     ${isUploading ? "opacity-50 pointer-events-none" : ""}
                 `}
       >
@@ -126,7 +127,7 @@ export const ExcelUpload: React.FC<ExcelUploadProps> = ({
             <>
               <div className="p-4 bg-indigo-100 rounded-full">
                 <div className="animate-spin">
-                  <FileSpreadsheet className="w-8 h-8 text-indigo-600" />
+                  <FiFileText className="w-8 h-8 text-indigo-600" />
                 </div>
               </div>
               <div>
@@ -152,7 +153,7 @@ export const ExcelUpload: React.FC<ExcelUploadProps> = ({
                 </p>
               </div>
               <div className="flex items-center gap-2 text-xs text-gray-500">
-                <FileSpreadsheet className="w-4 h-4" />
+                <FiFileText className="w-4 h-4" />
                 <span>Hỗ trợ: .xlsx, .xls, .ods (tối đa 10MB)</span>
               </div>
             </>

@@ -1,6 +1,6 @@
-// types/product.ts
+// src/types/product.ts
 
-import type { BaseEntity } from "./common";
+import type { BaseEntity } from "./common.ts";
 
 export interface Product extends BaseEntity {
   shop_code: string;

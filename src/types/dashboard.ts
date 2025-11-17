@@ -1,4 +1,4 @@
-// types/dashboard.ts
+// src/types/dashboard.ts
 
 export interface DashboardMetrics {
   // Summary metrics
@@ -83,6 +83,7 @@ export interface OrderStatusDistribution {
   status_name?: string;
   count: number;
   percentage: number;
+
   [key: string]: any; // Allow additional properties for chart compatibility
 }
 

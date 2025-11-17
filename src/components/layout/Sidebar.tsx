@@ -1,10 +1,12 @@
+// src/components/layout/Sidebar.tsx
 // components/layout/Sidebar.tsx
 
-import { FiDollarSign, FiFileText, FiPackage, FiSettings, FiGrid, FiClipboard } from "react-icons/fi";
+import { useAppStore } from "@stores/useAppStore";
 import React from "react";
+import { FiClipboard, FiDollarSign, FiFileText, FiGrid, FiPackage, FiSettings } from "react-icons/fi";
 import { Link, useLocation } from "react-router-dom";
+
 import { cn } from "../../lib/utils";
-import { useAppStore } from "../../store/useAppStore";
 import { ShopSelector } from "./ShopSelector";
 
 interface MenuItem {
@@ -18,33 +20,33 @@ const menuItems: MenuItem[] = [
   {
     icon: <FiGrid size={20} />,
     label: "Dashboard",
-    path: "/dashboard",
+    path: "/dashboard"
   },
   {
     icon: <FiPackage size={20} />,
     label: "Sản phẩm",
-    path: "/products",
+    path: "/products"
   },
   {
     icon: <FiClipboard size={20} />,
     label: "Đơn hàng",
-    path: "/orders",
+    path: "/orders"
   },
   {
     icon: <FiDollarSign size={20} />,
     label: "Lương",
-    path: "/salaries",
+    path: "/salaries"
   },
   {
     icon: <FiFileText size={20} />,
     label: "Báo cáo",
-    path: "/financial-reports",
+    path: "/financial-reports"
   },
   {
     icon: <FiSettings size={20} />,
     label: "Cài đặt",
-    path: "/settings",
-  },
+    path: "/settings"
+  }
 ];
 
 export const Sidebar: React.FC = () => {
@@ -54,7 +56,7 @@ export const Sidebar: React.FC = () => {
     <aside
       className={cn(
         "fixed left-0 top-0 h-screen bg-gray-900 text-white transition-all duration-300 z-40",
-        isSidebarCollapsed ? "w-20" : "w-64",
+        isSidebarCollapsed ? "w-20" : "w-64"
       )}
     >
       {/* Logo */}
@@ -84,7 +86,7 @@ export const Sidebar: React.FC = () => {
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
                 "hover:bg-gray-800",
                 isActive ? "bg-blue-600 text-white" : "text-gray-300",
-                isSidebarCollapsed && "justify-center",
+                isSidebarCollapsed && "justify-center"
               )}
               title={isSidebarCollapsed ? item.label : undefined}
             >

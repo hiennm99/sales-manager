@@ -1,13 +1,8 @@
-// src/features/statuses/store/useStatusStore.ts
+// src/features/statuses/stores/useStatusStore.ts
 
+import { statusServiceApi } from "@features/statuses";
+import type { CustomerStatus, DeliveryStatus, FactoryStatus, GeneralStatus } from "@types";
 import { create } from "zustand";
-import type {
-  CustomerStatus,
-  DeliveryStatus,
-  FactoryStatus,
-  GeneralStatus,
-} from "../../../types/status";
-import { statusServiceApi } from "../services/statusService.ts";
 
 interface StatusStore {
   // Data
@@ -53,7 +48,7 @@ const useStatusStoreBase = create<StatusStore>((set, get) => ({
         statusServiceApi.getGeneralStatuses(),
         statusServiceApi.getCustomerStatuses(),
         statusServiceApi.getFactoryStatuses(),
-        statusServiceApi.getDeliveryStatuses(),
+        statusServiceApi.getDeliveryStatuses()
       ]);
 
       set({
@@ -61,7 +56,7 @@ const useStatusStoreBase = create<StatusStore>((set, get) => ({
         customerStatuses: customer,
         factoryStatuses: factory,
         deliveryStatuses: delivery,
-        isLoading: false,
+        isLoading: false
       });
     } catch (error) {
       const errorMessage =
@@ -148,10 +143,10 @@ const useStatusStoreBase = create<StatusStore>((set, get) => ({
     return get().deliveryStatuses.find((s) => s.id === id) || null;
   },
 
-  clearError: () => set({ error: null }),
+  clearError: () => set({ error: null })
 }));
 
-// Export base store
+// Export base stores
 export const useStatusStore = useStatusStoreBase;
 
 /**
@@ -192,6 +187,6 @@ export const useStatusSelectors = {
     getCustomerStatusById: useStatusStoreBase.getState().getCustomerStatusById,
     getFactoryStatusById: useStatusStoreBase.getState().getFactoryStatusById,
     getDeliveryStatusById: useStatusStoreBase.getState().getDeliveryStatusById,
-    clearError: useStatusStoreBase.getState().clearError,
-  }),
+    clearError: useStatusStoreBase.getState().clearError
+  })
 };

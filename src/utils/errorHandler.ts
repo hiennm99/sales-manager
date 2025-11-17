@@ -4,13 +4,8 @@
  * Provides centralized error handling and formatting
  */
 
+import { DEFAULT_LANGUAGE, ERROR_MESSAGES, type ErrorMessageParams, type Language } from "@constants";
 import type { PostgrestError } from "@supabase/supabase-js";
-import {
-  DEFAULT_LANGUAGE,
-  ERROR_MESSAGES,
-  type ErrorMessageParams,
-  type Language,
-} from "../constants/error-messages";
 
 /**
  * Get error message by key
@@ -22,7 +17,7 @@ import {
 export function getErrorMessage(
   errorKey: string,
   params?: ErrorMessageParams,
-  lang: Language = DEFAULT_LANGUAGE,
+  lang: Language = DEFAULT_LANGUAGE
 ): string {
   // Navigate through nested object using dot notation
   const keys = errorKey.split(".");
@@ -57,7 +52,7 @@ export function getErrorMessage(
  */
 export function formatSupabaseError(
   error: PostgrestError | Error | unknown,
-  lang: Language = DEFAULT_LANGUAGE,
+  lang: Language = DEFAULT_LANGUAGE
 ): string {
   // Handle PostgrestError from Supabase
   if (error && typeof error === "object" && "code" in error) {
@@ -111,7 +106,7 @@ export function formatValidationError(
   field: string,
   rule: string,
   params?: ErrorMessageParams,
-  lang: Language = DEFAULT_LANGUAGE,
+  lang: Language = DEFAULT_LANGUAGE
 ): string {
   const message = getErrorMessage(`VALIDATION.${rule}`, params, lang);
 
@@ -129,7 +124,7 @@ export function formatValidationError(
 export function getEntityError(
   entity: string,
   operation: string,
-  lang: Language = DEFAULT_LANGUAGE,
+  lang: Language = DEFAULT_LANGUAGE
 ): string {
   return getErrorMessage(`${entity}.${operation}`, undefined, lang);
 }
@@ -144,7 +139,7 @@ export function getEntityError(
 export function handleError(
   error: unknown,
   context?: string,
-  lang: Language = DEFAULT_LANGUAGE,
+  lang: Language = DEFAULT_LANGUAGE
 ): string {
   const errorMessage = formatSupabaseError(error, lang);
 
@@ -168,7 +163,7 @@ export function handleError(
 export function createErrorToast(
   error: unknown,
   title?: string,
-  lang: Language = DEFAULT_LANGUAGE,
+  lang: Language = DEFAULT_LANGUAGE
 ) {
   const message =
     typeof error === "string" ? error : formatSupabaseError(error, lang);
@@ -177,7 +172,7 @@ export function createErrorToast(
     title: title || (lang === "vi" ? "Lỗi" : "Error"),
     message,
     variant: "error" as const,
-    duration: 5000,
+    duration: 5000
   };
 }
 
@@ -199,7 +194,7 @@ export function isSupabaseError(error: unknown): error is PostgrestError {
  */
 export function extractErrorMessage(
   error: unknown,
-  lang: Language = DEFAULT_LANGUAGE,
+  lang: Language = DEFAULT_LANGUAGE
 ): string {
   if (typeof error === "string") {
     return error;

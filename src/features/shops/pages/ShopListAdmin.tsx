@@ -1,13 +1,13 @@
-// features/shops/pages/ShopListAdmin.tsx
+// src/features/shops/pages/ShopListAdmin.tsx
 /**
  * ShopList - Admin Table View
  * Modern admin interface for managing shops
  */
 
-import { FiEdit2, FiPlus, FiSearch, FiTrash2 } from "react-icons/fi";
+import { useShopStore } from "@features/shops";
 import React, { useEffect, useState } from "react";
+import { FiEdit2, FiPlus, FiSearch, FiTrash2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { useShopStore } from "../store/useShopStore";
 
 export const ShopListAdmin: React.FC = () => {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ export const ShopListAdmin: React.FC = () => {
   const stats = {
     total: shops.length,
     active: shops.filter((s) => s.is_active).length,
-    inactive: shops.filter((s) => !s.is_active).length,
+    inactive: shops.filter((s) => !s.is_active).length
   };
 
   return (
@@ -142,78 +142,81 @@ export const ShopListAdmin: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gradient-to-r from-slate-50 to-blue-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                    Mã cửa hàng
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                    Tên cửa hàng
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                    Trạng thái
-                  </th>
-                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
-                    Hành động
-                  </th>
-                </tr>
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  Mã cửa hàng
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  Tên cửa hàng
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  Trạng thái
+                </th>
+                <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  Hành động
+                </th>
+              </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {filteredShops.map((shop, index) => (
-                  <tr
-                    key={shop.id}
-                    className="hover:bg-blue-50/50 transition-colors duration-150"
-                    style={{ animationDelay: `${index * 50}ms` }}
-                  >
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 text-sm font-semibold rounded-full">
+              {filteredShops.map((shop, index) => (
+                <tr
+                  key={shop.id}
+                  className="hover:bg-blue-50/50 transition-colors duration-150"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <td className="px-6 py-4">
+                      <span
+                        className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 text-sm font-semibold rounded-full">
                         {shop.code}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <p className="font-semibold text-gray-900">{shop.name}</p>
-                    </td>
-                    <td className="px-6 py-4">
-                      {shop.is_active ? (
-                        <span className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">
+                  </td>
+                  <td className="px-6 py-4">
+                    <p className="font-semibold text-gray-900">{shop.name}</p>
+                  </td>
+                  <td className="px-6 py-4">
+                    {shop.is_active ? (
+                      <span
+                        className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">
                           <span className="w-2 h-2 rounded-full bg-green-600"></span>
                           Hoạt động
                         </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-2 px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">
+                    ) : (
+                      <span
+                        className="inline-flex items-center gap-2 px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">
                           <span className="w-2 h-2 rounded-full bg-red-600"></span>
                           Tạm ngưng
                         </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => navigate(`/shops/${shop.id}/edit`)}
-                          className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
-                          title="Chỉnh sửa"
-                        >
-                          <FiEdit2 size={18} />
-                        </button>
-                        <button
-                          onClick={() => {
-                            if (
-                              confirm(
-                                `Bạn có chắc muốn xóa cửa hàng "${shop.name}"?`,
-                              )
-                            ) {
-                              // TODO: Implement delete
-                              console.log("Delete shop:", shop.id);
-                            }
-                          }}
-                          className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
-                          title="Xóa"
-                        >
-                          <FiTrash2 size={18} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => navigate(`/shops/${shop.id}/edit`)}
+                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                        title="Chỉnh sửa"
+                      >
+                        <FiEdit2 size={18} />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (
+                            confirm(
+                              `Bạn có chắc muốn xóa cửa hàng "${shop.name}"?`
+                            )
+                          ) {
+                            // TODO: Implement delete
+                            console.log("Delete shop:", shop.id);
+                          }
+                        }}
+                        className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                        title="Xóa"
+                      >
+                        <FiTrash2 size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
               </tbody>
             </table>
           </div>

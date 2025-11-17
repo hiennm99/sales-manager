@@ -1,24 +1,25 @@
-// types/employee.ts
+// src/types/employee.ts
 
-import type { BaseEntity } from "./common";
+import type { BaseEntity } from "./common.ts";
 
 export interface Employee extends BaseEntity {
   name: string;
   code: string;
   avatar: string;
-  email: string;
   is_active: boolean;
-  is_admin: boolean;
   role: string;
   base_salary: number; // Monthly base salary in VND
   sales_commission_rate: number; // Monthly sales commission rate (%) - default 3%
+  email: string;
   user_id?: string | null; // Linked Supabase Auth user ID
+  is_admin?: boolean;
 }
 
 export interface EmployeeFormData {
   name: string;
   code: string;
   avatar: string;
+  email: string;
   role: string;
   base_salary?: number;
   sales_commission_rate?: number;
@@ -124,7 +125,7 @@ export interface EmployeeSalaryFilters {
 
 // Helper function to get status string from is_active
 export const getEmployeeStatus = (
-  is_active: boolean,
+  is_active: boolean
 ): "active" | "inactive" => {
   return is_active ? "active" : "inactive";
 };

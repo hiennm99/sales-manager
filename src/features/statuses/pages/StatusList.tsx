@@ -1,19 +1,19 @@
-// features/statuses/pages/StatusList.tsx
+// src/features/statuses/pages/StatusList.tsx
 /**
  * StatusList - Admin Table View
  * Modern admin interface for managing order statuses
  */
 
-import { FiEdit2, FiPlus, FiSearch, FiTag, FiTrash2 } from "react-icons/fi";
+import { useStatusStore } from "@features/statuses";
 import React, { useEffect, useState } from "react";
+import { FiEdit2, FiPlus, FiSearch, FiTag, FiTrash2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { useStatusStore } from "../store/useStatusStore";
 
 const STATUS_CATEGORIES = [
   { value: "general", label: "Trạng thái chung", color: "blue" },
   { value: "customer", label: "Trạng thái khách hàng", color: "purple" },
   { value: "factory", label: "Trạng thái nhà máy", color: "orange" },
-  { value: "delivery", label: "Trạng thái giao hàng", color: "green" },
+  { value: "delivery", label: "Trạng thái giao hàng", color: "green" }
 ];
 
 export const StatusList: React.FC = () => {
@@ -38,7 +38,7 @@ export const StatusList: React.FC = () => {
     ...generalStatuses.map((s) => ({ ...s, category: "general" })),
     ...customerStatuses.map((s) => ({ ...s, category: "customer" })),
     ...factoryStatuses.map((s) => ({ ...s, category: "factory" })),
-    ...deliveryStatuses.map((s) => ({ ...s, category: "delivery" })),
+    ...deliveryStatuses.map((s) => ({ ...s, category: "delivery" }))
   ];
 
   // Filter statuses
@@ -57,7 +57,7 @@ export const StatusList: React.FC = () => {
     general: generalStatuses.length,
     customer: customerStatuses.length,
     factory: factoryStatuses.length,
-    delivery: deliveryStatuses.length,
+    delivery: deliveryStatuses.length
   };
 
   const getCategoryColor = (category: string) => {
@@ -65,7 +65,7 @@ export const StatusList: React.FC = () => {
       general: "blue",
       customer: "purple",
       factory: "orange",
-      delivery: "green",
+      delivery: "green"
     };
     return colors[category] || "gray";
   };
@@ -75,7 +75,7 @@ export const StatusList: React.FC = () => {
       general: "Trạng thái chung",
       customer: "Khách hàng",
       factory: "Nhà máy",
-      delivery: "Giao hàng",
+      delivery: "Giao hàng"
     };
     return labels[category] || category;
   };
@@ -179,94 +179,94 @@ export const StatusList: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gradient-to-r from-slate-50 to-emerald-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                    Tên trạng thái
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                    Danh mục
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                    Mô tả
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                    Màu sắc
-                  </th>
-                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
-                    Hành động
-                  </th>
-                </tr>
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  Tên trạng thái
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  Danh mục
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  Mô tả
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  Màu sắc
+                </th>
+                <th className="px-6 py-4 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+                  Hành động
+                </th>
+              </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {filteredStatuses.map((status, index) => {
-                  const colorClass = getCategoryColor(status.category);
-                  return (
-                    <tr
-                      key={status.id}
-                      className="hover:bg-emerald-50/50 transition-colors duration-150"
-                      style={{ animationDelay: `${index * 50}ms` }}
-                    >
-                      <td className="px-6 py-4">
-                        <p className="font-semibold text-gray-900">
-                          {status.name_vi}
-                        </p>
-                      </td>
-                      <td className="px-6 py-4">
+              {filteredStatuses.map((status, index) => {
+                const colorClass = getCategoryColor(status.category);
+                return (
+                  <tr
+                    key={status.id}
+                    className="hover:bg-emerald-50/50 transition-colors duration-150"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <td className="px-6 py-4">
+                      <p className="font-semibold text-gray-900">
+                        {status.name_vi}
+                      </p>
+                    </td>
+                    <td className="px-6 py-4">
                         <span
                           className={`inline-flex items-center gap-2 px-3 py-1 bg-${colorClass}-100 text-${colorClass}-700 text-xs font-bold rounded-full`}
                         >
                           {getCategoryLabel(status.category)}
                         </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <p className="text-gray-600 text-sm">
-                          {status.description || "-"}
-                        </p>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="w-6 h-6 rounded-full border-2 border-gray-300"
-                            style={{
-                              backgroundColor: status.color || "#6B7280",
-                            }}
-                          ></div>
-                          <span className="text-sm text-gray-600">
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-gray-600 text-sm">
+                        {status.description || "-"}
+                      </p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="w-6 h-6 rounded-full border-2 border-gray-300"
+                          style={{
+                            backgroundColor: status.color || "#6B7280"
+                          }}
+                        ></div>
+                        <span className="text-sm text-gray-600">
                             {status.color || "#6B7280"}
                           </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            onClick={() =>
-                              navigate(`/statuses/${status.id}/edit`)
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={() =>
+                            navigate(`/statuses/${status.id}/edit`)
+                          }
+                          className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                          title="Chỉnh sửa"
+                        >
+                          <FiEdit2 size={18} />
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (
+                              confirm(
+                                `Bạn có chắc muốn xóa trạng thái "${status.name_vi}"?`
+                              )
+                            ) {
+                              console.log("Delete status:", status.id);
                             }
-                            className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
-                            title="Chỉnh sửa"
-                          >
-                            <FiEdit2 size={18} />
-                          </button>
-                          <button
-                            onClick={() => {
-                              if (
-                                confirm(
-                                  `Bạn có chắc muốn xóa trạng thái "${status.name_vi}"?`,
-                                )
-                              ) {
-                                console.log("Delete status:", status.id);
-                              }
-                            }}
-                            className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
-                            title="Xóa"
-                          >
-                            <FiTrash2 size={18} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
+                          }}
+                          className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                          title="Xóa"
+                        >
+                          <FiTrash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
               </tbody>
             </table>
           </div>

@@ -1,16 +1,8 @@
 // src/features/orders/services/orderPreviewService.ts
-import { handleSupabaseError, supabase } from "../../../lib/supabase";
-import { databaseService, imageService } from "../../../services";
-import type {
-  OrderPreviewPicture,
-  OrderPreviewPictureFormData,
-} from "../../../types/orderPreview";
-import type { Database } from "../../../types/supabase.ts";
-import {
-  trackPictureDelete,
-  trackPictureUpload,
-} from "../utils/orderHistoryHelper";
-import { orderHistoryService } from "./orderHistoryService.ts";
+import { orderHistoryService, trackPictureDelete, trackPictureUpload } from "@features/orders";
+import { handleSupabaseError, supabase } from "@lib";
+import { databaseService, imageService } from "@services";
+import type { Database, OrderPreviewPicture, OrderPreviewPictureFormData } from "@types";
 
 /**
  * Storage configuration
@@ -22,7 +14,7 @@ const IMAGE_STORAGE_PATH = "previews";
  * Helper function to map database row to OrderPreviewPicture type
  */
 const mapToPreviewPictureRow = (
-  data: Database["public"]["Tables"]["order_preview_pictures"]["Row"],
+  data: Database["public"]["Tables"]["order_preview_pictures"]["Row"]
 ): OrderPreviewPicture => {
   return {
     id: data.id,
@@ -34,7 +26,7 @@ const mapToPreviewPictureRow = (
     uploaded_by_employee_id: data.uploaded_by_employee_id,
     description: data.description,
     created_at: new Date(data.created_at),
-    updated_at: new Date(data.updated_at),
+    updated_at: new Date(data.updated_at)
   };
 };
 
@@ -50,14 +42,14 @@ export const orderPreviewService = {
     orderId: number,
     file: File,
     employeeId?: number,
-    description?: string,
+    description?: string
   ): Promise<OrderPreviewPicture> {
     try {
       // Convert image to WebP with optimization
       const optimizedImage = await imageService.convertToWebP(file, {
         quality: 0.85, // Higher quality for preview pictures
         maxWidth: 1920, // Full HD max width
-        maxHeight: 1920, // Full HD max height
+        maxHeight: 1920 // Full HD max height
       });
 
       // Generate unique file path with .webp extension
@@ -71,7 +63,7 @@ export const orderPreviewService = {
         .from(STORAGE_BUCKET)
         .upload(filePath, optimizedImage, {
           cacheControl: "3600",
-          upsert: false,
+          upsert: false
         });
 
       if (uploadError) {
@@ -98,7 +90,7 @@ export const orderPreviewService = {
         file_size: optimizedImage.size, // Store optimized size
         mime_type: "image/webp", // Always WebP after conversion
         uploaded_by_employee_id: employeeId || null,
-        description: description || null,
+        description: description || null
       };
 
       const { data: recordData, error: recordError } = await supabase
@@ -136,7 +128,7 @@ export const orderPreviewService = {
    * Get all preview pictures for an order
    */
   async getPreviewPicturesByOrderId(
-    orderId: number,
+    orderId: number
   ): Promise<OrderPreviewPicture[]> {
     const { data, error } = await supabase
       .from("order_preview_pictures")
@@ -182,10 +174,10 @@ export const orderPreviewService = {
    */
   async updatePreviewPicture(
     id: number,
-    updates: Partial<OrderPreviewPictureFormData>,
+    updates: Partial<OrderPreviewPictureFormData>
   ): Promise<OrderPreviewPicture> {
     const updateData: Record<string, unknown> = {
-      updated_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
 
     if (updates.description !== undefined)
@@ -245,7 +237,7 @@ export const orderPreviewService = {
       await trackPictureDelete(
         picture.order_id,
         picture.picture_name,
-        employeeId,
+        employeeId
       );
     } catch (error) {
       console.error("Failed to track picture deletion:", error);
@@ -258,7 +250,7 @@ export const orderPreviewService = {
    */
   async deletePreviewPicturesByOrderId(
     orderId: number,
-    employeeId?: number,
+    employeeId?: number
   ): Promise<void> {
     const pictures = await this.getPreviewPicturesByOrderId(orderId);
 
@@ -296,7 +288,7 @@ export const orderPreviewService = {
         await orderHistoryService.createHistoryRecord(orderId, "updated", {
           fieldName: "Preview Pictures",
           description: `Bulk deleted ${pictures.length} preview pictures`,
-          changedByEmployeeId: employeeId,
+          changedByEmployeeId: employeeId
         });
       } catch (error) {
         console.error("Failed to track bulk picture deletion:", error);
@@ -343,13 +335,13 @@ export const orderPreviewService = {
    */
   async bulkDeletePreviewPictures(
     ids: number[],
-    employeeId?: number,
+    employeeId?: number
   ): Promise<void> {
     if (!ids || ids.length === 0) return;
 
     // Get all pictures to retrieve file paths
     const pictures = await Promise.all(
-      ids.map((id) => this.getPreviewPictureById(id).catch(() => null)),
+      ids.map((id) => this.getPreviewPictureById(id).catch(() => null))
     );
 
     // Delete files from storage
@@ -376,7 +368,7 @@ export const orderPreviewService = {
 
     // Track bulk picture deletion in order history
     const validPictures = pictures.filter(
-      (pic): pic is OrderPreviewPicture => pic !== null,
+      (pic): pic is OrderPreviewPicture => pic !== null
     );
     if (validPictures.length > 0) {
       // Group by order_id to create separate history entries for each order
@@ -388,7 +380,7 @@ export const orderPreviewService = {
           acc[pic.order_id].push(pic);
           return acc;
         },
-        {} as Record<number, OrderPreviewPicture[]>,
+        {} as Record<number, OrderPreviewPicture[]>
       );
 
       // Create history entries for each order
@@ -400,18 +392,18 @@ export const orderPreviewService = {
             {
               fieldName: "Preview Pictures",
               description: `Bulk deleted ${orderPictures.length} preview pictures: ${orderPictures.map((p) => p.picture_name).join(", ")}`,
-              changedByEmployeeId: employeeId,
-            },
+              changedByEmployeeId: employeeId
+            }
           );
         } catch (error) {
           console.error(
             "Failed to track bulk picture deletion for order",
             orderId,
-            error,
+            error
           );
           // Don't fail the deletion if history tracking fails
         }
       }
     }
-  },
+  }
 };

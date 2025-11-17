@@ -1,10 +1,10 @@
 // src/features/orders/components/cards/FinancialSummaryCard.tsx
 
-import { FiTrendingDown, FiTrendingUp } from "react-icons/fi";
+import { DEFAULTS } from "@constants";
+import { formatUSD, formatVND } from "@lib";
+import { useExchangeRateStore } from "@stores";
 import React from "react";
-import { DEFAULTS } from "../../../../constants/app-constants";
-import { formatUSD, formatVND } from "../../../../lib/utils";
-import { useExchangeRateStore } from "../../../../store/useExchangeRateStore";
+import { FiTrendingDown, FiTrendingUp } from "react-icons/fi";
 
 interface FinancialSummaryCardProps {
   itemTotal: number;
@@ -28,25 +28,25 @@ interface FinancialSummaryCardProps {
 }
 
 export const FinancialSummaryCard: React.FC<FinancialSummaryCardProps> = ({
-  itemTotal,
-  itemTotalVND,
-  discountRate,
-  buyerPaidUSD,
-  buyerPaidVND,
-  orderEarnings,
-  orderEarningsVND,
-  exchangeRate,
-  shippingFeeUsd = 0,
-  shippingExchangeRate = 0,
-  refundFeeUsd = 0,
-  refundFeeExchangeRate = 0,
-  otherFeeUsd = 0,
-  otherFeeExchangeRate = 0,
-  otherBonusUsd = 0,
-  otherBonusExchangeRate = 0,
-}) => {
+                                                                            itemTotal,
+                                                                            itemTotalVND,
+                                                                            discountRate,
+                                                                            buyerPaidUSD,
+                                                                            buyerPaidVND,
+                                                                            orderEarnings,
+                                                                            orderEarningsVND,
+                                                                            exchangeRate,
+                                                                            shippingFeeUsd = 0,
+                                                                            shippingExchangeRate = 0,
+                                                                            refundFeeUsd = 0,
+                                                                            refundFeeExchangeRate = 0,
+                                                                            otherFeeUsd = 0,
+                                                                            otherFeeExchangeRate = 0,
+                                                                            otherBonusUsd = 0,
+                                                                            otherBonusExchangeRate = 0
+                                                                          }) => {
   const globalExchangeRate = useExchangeRateStore(
-    (state) => state.exchangeRate,
+    (state) => state.exchangeRate
   );
 
   // Use effective exchange rates (prefer prop, fallback to global)

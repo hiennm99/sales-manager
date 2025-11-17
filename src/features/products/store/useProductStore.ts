@@ -1,9 +1,9 @@
-// src/features/products/store/useProductStore.ts
+// src/features/products/stores/useProductStore.ts
 
+import { productService } from "@features/products";
+import type { Product, ProductFormData } from "@types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Product, ProductFormData } from "../../../types/product";
-import { productService } from "../services/productService.ts";
 
 interface ProductStore {
   products: Product[];
@@ -22,7 +22,7 @@ interface ProductStore {
   updateProduct: (
     id: string,
     data: Partial<ProductFormData>,
-    imageFile?: File,
+    imageFile?: File
   ) => Promise<Product>;
   deleteProduct: (id: string) => Promise<void>;
   toggleProductStatus: (id: string) => Promise<void>;
@@ -69,13 +69,13 @@ export const useProductStore = create<ProductStore>()(
         try {
           const newProduct = await productService.createProduct(
             data,
-            imageFile,
+            imageFile
           );
 
           set((state) => ({
             products: [newProduct, ...state.products],
             selectedProduct: newProduct,
-            isLoading: false,
+            isLoading: false
           }));
 
           return newProduct;
@@ -90,22 +90,22 @@ export const useProductStore = create<ProductStore>()(
       updateProduct: async (
         id: string,
         data: Partial<ProductFormData>,
-        imageFile?: File,
+        imageFile?: File
       ) => {
         set({ isLoading: true, error: null });
         try {
           const updatedProduct = await productService.updateProduct(
             id,
             data,
-            imageFile,
+            imageFile
           );
           const numericId = parseInt(id, 10);
 
           set((state) => ({
             products: state.products.map((p) =>
-              p.id === numericId ? updatedProduct : p,
+              p.id === numericId ? updatedProduct : p
             ),
-            isLoading: false,
+            isLoading: false
           }));
 
           // Update selected product if it's the one being updated
@@ -134,7 +134,7 @@ export const useProductStore = create<ProductStore>()(
               state.selectedProduct?.id === numericId
                 ? null
                 : state.selectedProduct,
-            isLoading: false,
+            isLoading: false
           }));
         } catch (error) {
           const errorMessage =
@@ -153,9 +153,9 @@ export const useProductStore = create<ProductStore>()(
 
           set((state) => ({
             products: state.products.map((p) =>
-              p.id === numericId ? toggledProduct : p,
+              p.id === numericId ? toggledProduct : p
             ),
-            isLoading: false,
+            isLoading: false
           }));
 
           // Update selected product if it's the one being toggled
@@ -199,7 +199,7 @@ export const useProductStore = create<ProductStore>()(
             selectedProduct: ids.includes(state.selectedProduct?.id ?? -1)
               ? null
               : state.selectedProduct,
-            isLoading: false,
+            isLoading: false
           }));
         } catch (error) {
           const errorMessage =
@@ -218,21 +218,21 @@ export const useProductStore = create<ProductStore>()(
 
           const updatedSelectedProduct = get().selectedProduct
             ? {
-                ...get().selectedProduct!,
-                is_active: ids.includes(get().selectedProduct!.id)
-                  ? is_active
-                  : get().selectedProduct!.is_active,
-              }
+              ...get().selectedProduct!,
+              is_active: ids.includes(get().selectedProduct!.id)
+                ? is_active
+                : get().selectedProduct!.is_active
+            }
             : null;
 
           set((state) => ({
             products: state.products.map((p) =>
               ids.includes(p.id)
                 ? { ...p, is_active, updated_at: new Date() }
-                : p,
+                : p
             ),
             selectedProduct: updatedSelectedProduct,
-            isLoading: false,
+            isLoading: false
           }));
         } catch (error) {
           const errorMessage =
@@ -242,13 +242,13 @@ export const useProductStore = create<ProductStore>()(
         }
       },
 
-      clearError: () => set({ error: null }),
+      clearError: () => set({ error: null })
     }),
     {
       name: "product-storage",
       partialize: (state) => ({
-        selectedProduct: state.selectedProduct,
-      }),
-    },
-  ),
+        selectedProduct: state.selectedProduct
+      })
+    }
+  )
 );

@@ -1,20 +1,11 @@
-// src/features/orders/store/useOrderStore.ts
+// src/features/orders/stores/useOrderStore.ts
 
+import { orderService } from "@features/orders";
+import { INITIAL_ORDER, INITIAL_ORDER_ITEM, INITIAL_STATUS_VALUES } from "@features/orders/constants";
+import type { Order, OrderFormData, OrderItem, OrderItemFormData } from "@types";
+import { orderToFormData } from "@types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type {
-  Order,
-  OrderFormData,
-  OrderItem,
-  OrderItemFormData,
-} from "../../../types/order";
-import { orderToFormData } from "../../../types/order";
-import {
-  INITIAL_ORDER,
-  INITIAL_ORDER_ITEM,
-  INITIAL_STATUS_VALUES,
-} from "../constants/orderDefaults";
-import { orderService } from "../services/orderService.ts";
 
 type ShippingData = {
   carrier_unit?: string;
@@ -54,7 +45,7 @@ interface OrderStore {
   updateDraftItems: (items: OrderItemFormData[]) => void;
   updateDraftStatus: (
     type: "general" | "customer" | "factory" | "delivery",
-    value: number,
+    value: number
   ) => void;
   resetDraft: () => void;
 
@@ -65,30 +56,30 @@ interface OrderStore {
   createOrder: (
     formData: OrderFormData,
     items: OrderItemFormData[],
-    financialData: Partial<Order>,
+    financialData: Partial<Order>
   ) => Promise<Order>;
   updateOrderItems: (
     orderId: number,
-    updatedItems: OrderItem[],
+    updatedItems: OrderItem[]
   ) => Promise<OrderItem[]>;
 
   // ĐỊNH NGHĨA updateOrder THEO YÊU CẦU: Nhận 3 tham số
   updateOrder: (
     id: string,
     updatedOrder: Partial<Order>,
-    updatedOrderItems: OrderItem[],
+    updatedOrderItems: OrderItem[]
   ) => Promise<Order>;
   updateOrderStatus: (
     id: string,
     statusType: "general" | "customer" | "factory" | "delivery",
-    statusId: number | null,
+    statusId: number | null
   ) => Promise<void>;
   updateShippingInfo: (id: string, shippingData: ShippingData) => Promise<void>;
   deleteOrder: (id: string) => Promise<void>;
   searchOrders: (query: string) => Promise<void>;
   filterOrdersByDateRange: (
     startDate: string,
-    endDate: string,
+    endDate: string
   ) => Promise<void>;
   getOrdersByShop: (shopId: number) => Promise<void>;
   getOrdersByEmployee: (employeeId: number) => Promise<void>;
@@ -120,10 +111,10 @@ export const useOrderStore = create<OrderStore>()(
           draftOrder: {
             ...INITIAL_ORDER,
             shopId: shopId || 0,
-            orderDate: new Date().toISOString().split("T")[0],
+            orderDate: new Date().toISOString().split("T")[0]
           },
           draftItems: [{ ...INITIAL_ORDER_ITEM }],
-          draftStatusValues: { ...INITIAL_STATUS_VALUES },
+          draftStatusValues: { ...INITIAL_STATUS_VALUES }
         });
       },
 
@@ -143,7 +134,7 @@ export const useOrderStore = create<OrderStore>()(
               size: item.size,
               type: item.type,
               quantity: item.quantity,
-              unit_price_usd: item.unit_price_usd,
+              unit_price_usd: item.unit_price_usd
             })),
             draftStatusValues: {
               general: order.general_status_id || INITIAL_STATUS_VALUES.general,
@@ -151,8 +142,8 @@ export const useOrderStore = create<OrderStore>()(
                 order.customer_status_id || INITIAL_STATUS_VALUES.customer,
               factory: order.factory_status_id || INITIAL_STATUS_VALUES.factory,
               delivery:
-                order.delivery_status_id || INITIAL_STATUS_VALUES.delivery,
-            },
+                order.delivery_status_id || INITIAL_STATUS_VALUES.delivery
+            }
           });
         } catch (error) {
           console.error("Failed to initialize draft for edit:", error);
@@ -163,7 +154,7 @@ export const useOrderStore = create<OrderStore>()(
       // Update draft order fields
       updateDraftOrder: (updates) => {
         set((state) => ({
-          draftOrder: { ...state.draftOrder, ...updates },
+          draftOrder: { ...state.draftOrder, ...updates }
         }));
       },
 
@@ -175,7 +166,7 @@ export const useOrderStore = create<OrderStore>()(
       // Update draft status
       updateDraftStatus: (type, value) => {
         set((state) => ({
-          draftStatusValues: { ...state.draftStatusValues, [type]: value },
+          draftStatusValues: { ...state.draftStatusValues, [type]: value }
         }));
       },
 
@@ -184,7 +175,7 @@ export const useOrderStore = create<OrderStore>()(
         set({
           draftOrder: { ...INITIAL_ORDER },
           draftItems: [{ ...INITIAL_ORDER_ITEM }],
-          draftStatusValues: { ...INITIAL_STATUS_VALUES },
+          draftStatusValues: { ...INITIAL_STATUS_VALUES }
         });
       },
 
@@ -216,9 +207,9 @@ export const useOrderStore = create<OrderStore>()(
           set((state) => ({
             orderItems: {
               ...state.orderItems,
-              [orderId]: items,
+              [orderId]: items
             },
-            isLoading: false,
+            isLoading: false
           }));
           return items;
         } catch (error) {
@@ -234,20 +225,20 @@ export const useOrderStore = create<OrderStore>()(
       createOrder: async (
         formData: OrderFormData,
         items: OrderItemFormData[],
-        financialData: Partial<Order>,
+        financialData: Partial<Order>
       ) => {
         set({ isLoading: true, error: null });
         try {
           const newOrder = await orderService.createOrder(
             formData,
             items,
-            financialData,
+            financialData
           );
 
           set((state) => ({
             orders: [newOrder, ...state.orders],
             selectedOrder: newOrder,
-            isLoading: false,
+            isLoading: false
           }));
 
           return newOrder;
@@ -265,16 +256,16 @@ export const useOrderStore = create<OrderStore>()(
           // GỌI API: Giả định có service API để cập nhật danh sách items cho một order
           const updatedItemsFromApi = await orderService.updateOrderItems(
             orderId,
-            updatedItems,
+            updatedItems
           );
 
           // Cập nhật state orderItems cục bộ
           set((state) => ({
             orderItems: {
               ...state.orderItems,
-              [orderId]: updatedItemsFromApi || updatedItems,
+              [orderId]: updatedItemsFromApi || updatedItems
             },
-            isLoading: false,
+            isLoading: false
           }));
 
           return updatedItemsFromApi;
@@ -292,7 +283,7 @@ export const useOrderStore = create<OrderStore>()(
       updateOrder: async (
         id: string,
         updatedOrder: Partial<Order>,
-        updatedOrderItems: OrderItem[],
+        updatedOrderItems: OrderItem[]
       ) => {
         set({ isLoading: true, error: null });
         const numericId = parseInt(id, 10);
@@ -397,7 +388,7 @@ export const useOrderStore = create<OrderStore>()(
           const updatedOrderFromApi = await orderService.updateOrder(
             id,
             formData,
-            financialData,
+            financialData
           );
 
           // 2. Cập nhật Order Items
@@ -406,9 +397,9 @@ export const useOrderStore = create<OrderStore>()(
           // 3. Cập nhật state Orders (thông tin chính)
           set((state) => ({
             orders: state.orders.map((o) =>
-              o.id === numericId ? updatedOrderFromApi : o,
+              o.id === numericId ? updatedOrderFromApi : o
             ),
-            isLoading: false,
+            isLoading: false
           }));
 
           if (get().selectedOrder?.id === numericId) {
@@ -441,7 +432,7 @@ export const useOrderStore = create<OrderStore>()(
                 state.selectedOrder?.id === numericId
                   ? null
                   : state.selectedOrder,
-              isLoading: false,
+              isLoading: false
             };
           });
         } catch (error) {
@@ -455,22 +446,22 @@ export const useOrderStore = create<OrderStore>()(
       updateOrderStatus: async (
         id: string,
         statusType: "general" | "customer" | "factory" | "delivery",
-        statusId: number | null,
+        statusId: number | null
       ) => {
         set({ isLoading: true, error: null });
         try {
           const updatedOrder = await orderService.updateOrderStatus(
             id,
             statusType,
-            statusId,
+            statusId
           );
           const numericId = parseInt(id, 10);
 
           set((state) => ({
             orders: state.orders.map((o) =>
-              o.id === numericId ? updatedOrder : o,
+              o.id === numericId ? updatedOrder : o
             ),
-            isLoading: false,
+            isLoading: false
           }));
 
           // Update selected order if it's the one being updated
@@ -492,15 +483,15 @@ export const useOrderStore = create<OrderStore>()(
         try {
           const updatedOrder = await orderService.updateShippingInfo(
             id,
-            shippingData,
+            shippingData
           );
           const numericId = parseInt(id, 10);
 
           set((state) => ({
             orders: state.orders.map((o) =>
-              o.id === numericId ? updatedOrder : o,
+              o.id === numericId ? updatedOrder : o
             ),
-            isLoading: false,
+            isLoading: false
           }));
 
           // Update selected order if it's the one being updated
@@ -539,7 +530,7 @@ export const useOrderStore = create<OrderStore>()(
         try {
           const orders = await orderService.filterOrdersByDateRange(
             startDate,
-            endDate,
+            endDate
           );
           set({ orders, isLoading: false });
         } catch (error) {
@@ -592,7 +583,7 @@ export const useOrderStore = create<OrderStore>()(
               selectedOrder: ids.includes(state.selectedOrder?.id ?? -1)
                 ? null
                 : state.selectedOrder,
-              isLoading: false,
+              isLoading: false
             };
           });
         } catch (error) {
@@ -616,13 +607,13 @@ export const useOrderStore = create<OrderStore>()(
         }
       },
 
-      clearError: () => set({ error: null }),
+      clearError: () => set({ error: null })
     }),
     {
       name: "order-storage",
       partialize: (state) => ({
-        selectedOrder: state.selectedOrder,
-      }),
-    },
-  ),
+        selectedOrder: state.selectedOrder
+      })
+    }
+  )
 );

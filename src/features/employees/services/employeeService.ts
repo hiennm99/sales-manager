@@ -1,9 +1,8 @@
 // src/features/employees/services/employeeService.ts
 
-import { DEFAULTS } from "../../../constants";
-import { handleSupabaseError, supabase } from "../../../lib/supabase";
-import type { Employee, EmployeeFormData } from "../../../types/employee";
-import type { Database } from "../../../types/supabase.ts";
+import { DEFAULTS } from "@constants";
+import { handleSupabaseError, supabase } from "@lib";
+import type { Database, Employee, EmployeeFormData } from "@types";
 
 /**
  * Table reference for reusability
@@ -14,7 +13,7 @@ const employeesTable = () => supabase.from("employees");
  * Helper function to map database row to Employee type
  */
 const mapToRow = (
-  data: Database["public"]["Tables"]["employees"]["Row"],
+  data: Database["public"]["Tables"]["employees"]["Row"]
 ): Employee => {
   return {
     id: data.id,
@@ -26,8 +25,11 @@ const mapToRow = (
     base_salary: data.base_salary || 0,
     sales_commission_rate:
       data.sales_commission_rate || DEFAULTS.COMMISSION_RATE,
+    email: data.email || "",
+    user_id: data.user_id || null,
+    is_admin: data.is_admin || false,
     created_at: new Date(data.created_at),
-    updated_at: new Date(data.updated_at),
+    updated_at: new Date(data.updated_at)
   };
 };
 
@@ -84,10 +86,11 @@ export const employeeService = {
       name: formData.name,
       code: formData.code,
       avatar: formData.avatar,
+      email: formData.email,
       role: formData.role,
       base_salary: formData.base_salary || 0,
       sales_commission_rate:
-        formData.sales_commission_rate || DEFAULTS.COMMISSION_RATE,
+        formData.sales_commission_rate || DEFAULTS.COMMISSION_RATE
     };
 
     const { data, error } = await employeesTable()
@@ -110,15 +113,16 @@ export const employeeService = {
    */
   async update(
     id: number,
-    formData: Partial<EmployeeFormData>,
+    formData: Partial<EmployeeFormData>
   ): Promise<Employee | undefined> {
     const updateData: Record<string, unknown> = {
-      updated_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
 
     if (formData.name !== undefined) updateData.name = formData.name;
     if (formData.code !== undefined) updateData.code = formData.code;
     if (formData.avatar !== undefined) updateData.avatar = formData.avatar;
+    if (formData.email !== undefined) updateData.email = formData.email;
     if (formData.role !== undefined) updateData.role = formData.role;
     if (formData.base_salary !== undefined)
       updateData.base_salary = formData.base_salary;
@@ -181,7 +185,7 @@ export const employeeService = {
     const { data, error } = await employeesTable()
       .update({
         is_active: newStatus,
-        updated_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       })
       .eq("id", id)
       .select()
@@ -239,7 +243,7 @@ export const employeeService = {
     const { error } = await employeesTable()
       .update({
         is_active,
-        updated_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       })
       .in("id", ids);
 
@@ -247,5 +251,5 @@ export const employeeService = {
       console.error("Error bulk updating status:", error);
       throw new Error(handleSupabaseError(error));
     }
-  },
+  }
 };

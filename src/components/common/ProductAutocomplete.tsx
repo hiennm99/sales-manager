@@ -1,8 +1,8 @@
 // src/components/common/ProductAutocomplete.tsx
 
+import { useProductStore } from "@features/products";
+import type { Product } from "@types";
 import React, { useEffect, useRef, useState } from "react";
-import { useProductStore } from "../../features/products/store/useProductStore";
-import type { Product } from "../../types/product";
 
 interface ProductAutocompleteProps {
   value: string;
@@ -14,13 +14,13 @@ interface ProductAutocompleteProps {
 }
 
 export const ProductAutocomplete: React.FC<ProductAutocompleteProps> = ({
-  value,
-  onChange,
-  onSelect,
-  placeholder = "Nhập SKU hoặc tên sản phẩm...",
-  className = "",
-  error,
-}) => {
+                                                                          value,
+                                                                          onChange,
+                                                                          onSelect,
+                                                                          placeholder = "Nhập SKU hoặc tên sản phẩm...",
+                                                                          className = "",
+                                                                          error
+                                                                        }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
@@ -42,7 +42,7 @@ export const ProductAutocomplete: React.FC<ProductAutocompleteProps> = ({
     if (value.trim() !== "" && products.length > 0) {
       // Check if the value matches an existing product SKU
       const matchingProduct = products.find(
-        (prod) => prod.sku === value.trim(),
+        (prod) => prod.sku === value.trim()
       );
       if (matchingProduct) {
         setIsProductSelected(true);
@@ -64,7 +64,7 @@ export const ProductAutocomplete: React.FC<ProductAutocompleteProps> = ({
         (product) =>
           product.is_active &&
           (product.sku.toLowerCase().includes(searchTerm) ||
-            product.title.toLowerCase().includes(searchTerm)),
+            product.title.toLowerCase().includes(searchTerm))
       )
       .slice(0, 10); // Limit to 10 results
 
@@ -115,7 +115,7 @@ export const ProductAutocomplete: React.FC<ProductAutocompleteProps> = ({
       case "ArrowDown":
         e.preventDefault();
         setHighlightedIndex((prev) =>
-          prev < filteredProducts.length - 1 ? prev + 1 : prev,
+          prev < filteredProducts.length - 1 ? prev + 1 : prev
         );
         break;
       case "ArrowUp":
@@ -165,10 +165,10 @@ export const ProductAutocomplete: React.FC<ProductAutocompleteProps> = ({
               className={`
                                 flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors
                                 ${
-                                  index === highlightedIndex
-                                    ? "bg-blue-50 border-l-4 border-blue-500"
-                                    : "hover:bg-gray-50 border-l-4 border-transparent"
-                                }
+                index === highlightedIndex
+                  ? "bg-blue-50 border-l-4 border-blue-500"
+                  : "hover:bg-gray-50 border-l-4 border-transparent"
+              }
                                 ${index !== filteredProducts.length - 1 ? "border-b border-gray-100" : ""}
                             `}
             >

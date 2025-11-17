@@ -1,8 +1,9 @@
+// src/components/layout/Breadcrumbs.tsx
 // components/layout/Breadcrumbs.tsx
 
+import type { BreadcrumbItem } from "@types";
 import React from "react";
 import { Link } from "react-router-dom";
-import type { BreadcrumbItem } from "../../types/common";
 
 interface BreadcrumbsProps {
   items: BreadcrumbItem[];

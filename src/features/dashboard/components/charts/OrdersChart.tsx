@@ -4,16 +4,9 @@
  * Reduced from ~327 lines to ~110 lines
  */
 
+import { type ChartType, type DataKey, SharedChart } from "@components/charts";
+import type { ChartDataPoint, OrderStatusDistribution } from "@types";
 import React, { useMemo, useState } from "react";
-import {
-  SharedChart,
-  type ChartType,
-  type DataKey,
-} from "../../../../components/charts/SharedChart";
-import type {
-  ChartDataPoint,
-  OrderStatusDistribution,
-} from "../../../../types/dashboard";
 
 interface OrdersChartProps {
   data: ChartDataPoint[];
@@ -32,17 +25,17 @@ const STATUS_COLORS = [
   "#8b5cf6",
   "#06b6d4",
   "#84cc16",
-  "#f97316",
+  "#f97316"
 ];
 
 export const OrdersChart: React.FC<OrdersChartProps> = ({
-  data,
-  statusData = [],
-  chartType = "bar",
-  height = 400,
-  showTrend = true,
-  loading = false,
-}) => {
+                                                          data,
+                                                          statusData = [],
+                                                          chartType = "bar",
+                                                          height = 400,
+                                                          showTrend = true,
+                                                          loading = false
+                                                        }) => {
   const [activeTab, setActiveTab] = useState<ChartType>(chartType);
 
   // Configure data keys based on chart type
@@ -55,8 +48,8 @@ export const OrdersChart: React.FC<OrdersChartProps> = ({
       {
         key: "orders_count",
         name: "Số đơn hàng",
-        color: "#3b82f6",
-      },
+        color: "#3b82f6"
+      }
     ];
 
     if (showTrend && activeTab === "line") {
@@ -64,7 +57,7 @@ export const OrdersChart: React.FC<OrdersChartProps> = ({
         key: "average_order_value_usd",
         name: "Giá trị TB ($)",
         color: "#10b981",
-        yAxisId: "right",
+        yAxisId: "right"
       });
     }
 
@@ -198,7 +191,7 @@ export const OrdersChart: React.FC<OrdersChartProps> = ({
               <div className="font-medium">
                 {Math.round(
                   data.reduce((sum, d) => sum + d.orders_count, 0) /
-                    data.length,
+                  data.length
                 ).toLocaleString()}
               </div>
             </div>

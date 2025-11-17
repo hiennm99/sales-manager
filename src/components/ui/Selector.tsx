@@ -1,8 +1,9 @@
+// src/components/ui/Selector.tsx
 // components/ui/Selector.tsx
 
+import { cn } from "@lib";
+import type { SelectOption } from "@types";
 import React, { forwardRef } from "react";
-import { cn } from "../../lib/utils";
-import type { SelectOption } from "../../types/common";
 
 interface SelectorProps
   extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "onChange"> {
@@ -26,7 +27,7 @@ export const Selector = forwardRef<HTMLSelectElement, SelectorProps>(
       className,
       ...props
     },
-    ref,
+    ref
   ) => {
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       onChange?.(e.target.value);
@@ -49,7 +50,7 @@ export const Selector = forwardRef<HTMLSelectElement, SelectorProps>(
             "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
             "disabled:bg-gray-100 disabled:cursor-not-allowed",
             error ? "border-red-500" : "border-gray-300",
-            className,
+            className
           )}
           {...props}
         >
@@ -69,7 +70,7 @@ export const Selector = forwardRef<HTMLSelectElement, SelectorProps>(
           <p
             className={cn(
               "mt-1 text-sm",
-              error ? "text-red-500" : "text-gray-500",
+              error ? "text-red-500" : "text-gray-500"
             )}
           >
             {error || helperText}
@@ -77,7 +78,7 @@ export const Selector = forwardRef<HTMLSelectElement, SelectorProps>(
         )}
       </div>
     );
-  },
+  }
 );
 
 Selector.displayName = "Selector";

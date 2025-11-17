@@ -1,12 +1,11 @@
 // src/features/products/pages/ProductList.tsx
 
-import { Select } from "@/components/ui/Select";
+import { Breadcrumbs } from "@components/layout";
+import { Select } from "@components/ui";
+import { ProductCard, useProductStore } from "@features/products";
+import { useShopStore } from "@features/shops";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Breadcrumbs } from "../../../components/layout/Breadcrumbs";
-import { useShopStore } from "../../shops/store/useShopStore";
-import { ProductCard } from "../components/ProductCard";
-import { useProductStore } from "../store/useProductStore";
 
 export const ProductList: React.FC = () => {
   const { products, isLoading, fetchProducts } = useProductStore();
@@ -45,7 +44,7 @@ export const ProductList: React.FC = () => {
   const stats = {
     total: filteredProducts.length,
     active: filteredProducts.filter((p) => p.is_active === true).length,
-    inactive: filteredProducts.filter((p) => p.is_active === false).length,
+    inactive: filteredProducts.filter((p) => p.is_active === false).length
   };
 
   if (isLoading && products.length === 0) {
@@ -64,7 +63,7 @@ export const ProductList: React.FC = () => {
       <Breadcrumbs
         items={[
           { label: "Trang chủ", path: "/dashboard" },
-          { label: "Sản phẩm" },
+          { label: "Sản phẩm" }
         ]}
       />
       {/* Header */}
@@ -216,7 +215,7 @@ export const ProductList: React.FC = () => {
               options={[
                 { value: "all", label: "Tất cả" },
                 { value: "active", label: "Đang hoạt động" },
-                { value: "inactive", label: "Ngưng hoạt động" },
+                { value: "inactive", label: "Ngưng hoạt động" }
               ]}
             />
 

@@ -1,8 +1,8 @@
-// src/features/orders/store/useOrderPreviewStore.ts
+// src/features/orders/stores/useOrderPreviewStore.ts
 
+import { orderPreviewService } from "@features/orders";
+import type { OrderPreviewPicture } from "@types";
 import { create } from "zustand";
-import type { OrderPreviewPicture } from "../../../types/orderPreview";
-import { orderPreviewService } from "../services/orderPreviewService.ts";
 
 interface OrderPreviewState {
   // State
@@ -16,7 +16,7 @@ interface OrderPreviewState {
     orderId: number,
     file: File,
     employeeId?: number,
-    description?: string,
+    description?: string
   ) => Promise<OrderPreviewPicture>;
   deletePreviewPicture: (orderId: number, pictureId: number) => Promise<void>;
   clearError: () => void;
@@ -36,9 +36,9 @@ export const useOrderPreviewStore = create<OrderPreviewState>((set) => ({
       set((state) => ({
         pictures: {
           ...state.pictures,
-          [orderId]: data,
+          [orderId]: data
         },
-        isLoading: false,
+        isLoading: false
       }));
     } catch (error) {
       const errorMsg =
@@ -54,7 +54,7 @@ export const useOrderPreviewStore = create<OrderPreviewState>((set) => ({
     orderId: number,
     file: File,
     employeeId?: number,
-    description?: string,
+    description?: string
   ) => {
     set({ isLoading: true, error: null });
     try {
@@ -62,15 +62,15 @@ export const useOrderPreviewStore = create<OrderPreviewState>((set) => ({
         orderId,
         file,
         employeeId,
-        description,
+        description
       );
 
       set((state) => ({
         pictures: {
           ...state.pictures,
-          [orderId]: [picture, ...(state.pictures[orderId] || [])],
+          [orderId]: [picture, ...(state.pictures[orderId] || [])]
         },
-        isLoading: false,
+        isLoading: false
       }));
 
       return picture;
@@ -93,10 +93,10 @@ export const useOrderPreviewStore = create<OrderPreviewState>((set) => ({
         pictures: {
           ...state.pictures,
           [orderId]: (state.pictures[orderId] || []).filter(
-            (p) => p.id !== pictureId,
-          ),
+            (p) => p.id !== pictureId
+          )
         },
-        isLoading: false,
+        isLoading: false
       }));
     } catch (error) {
       const errorMsg =
@@ -116,5 +116,5 @@ export const useOrderPreviewStore = create<OrderPreviewState>((set) => ({
       delete newPictures[orderId];
       return { pictures: newPictures };
     });
-  },
+  }
 }));

@@ -1,10 +1,10 @@
 // src/features/products/components/ProductCard.tsx
 
+import { useProductStore } from "@features/products";
+import { cn } from "@lib";
+import type { Product } from "@types";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { cn } from "../../../lib/utils";
-import type { Product } from "../../../types/product";
-import { useProductStore } from "../store/useProductStore";
 
 interface ProductCardProps {
   product: Product;
@@ -83,7 +83,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 "px-2 py-1 text-xs font-medium rounded-full",
                 product.is_active
                   ? "bg-green-100 text-green-800"
-                  : "bg-gray-100 text-gray-800",
+                  : "bg-gray-100 text-gray-800"
               )}
             >
               {product.is_active ? "Hoạt động" : "Tạm ngưng"}
@@ -124,7 +124,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                       setShowMenu(false);
                     }}
                   />
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
+                  <div
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
                     <button
                       onClick={handleEdit}
                       className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"

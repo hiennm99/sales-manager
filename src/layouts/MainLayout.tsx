@@ -1,12 +1,12 @@
+// src/layouts/MainLayout.tsx
 // layouts/MainLayout.tsx
 
+import { Navbar, Sidebar } from "@components/layout";
+import { THEME } from "@constants";
+import { cn } from "@lib";
+import { useAppStore } from "@stores";
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { Navbar } from "../components/layout/Navbar";
-import { Sidebar } from "../components/layout/Sidebar";
-import { THEME } from "../constants/theme";
-import { cn } from "../lib/utils";
-import { useAppStore } from "../store/useAppStore";
 
 export const MainLayout: React.FC = () => {
   const { isSidebarCollapsed } = useAppStore();
@@ -19,7 +19,7 @@ export const MainLayout: React.FC = () => {
       <main
         className={cn(
           "pt-16 transition-all duration-300",
-          isSidebarCollapsed ? "ml-20" : "ml-64",
+          isSidebarCollapsed ? "ml-20" : "ml-64"
         )}
       >
         <div className="p-6">

@@ -1,67 +1,49 @@
-// eslint.config.js
-import js from "@eslint/js";
-import importPlugin from "eslint-plugin-import";
-import reactHooks from "eslint-plugin-react-hooks";
-import reactRefresh from "eslint-plugin-react-refresh";
-import simpleImportSort from "eslint-plugin-simple-import-sort";
-import { globalIgnores } from "eslint/config";
-import globals from "globals";
-import tseslint from "typescript-eslint";
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import tseslint from 'typescript-eslint'
+import { globalIgnores } from 'eslint/config'
+import importPlugin from 'eslint-plugin-import'
+import simpleImportSort from 'eslint-plugin-simple-import-sort'
 
 export default tseslint.config([
-  // Bỏ qua thư mục build
-  globalIgnores(["dist", "node_modules"]),
-
+  globalIgnores(['dist']),
   {
-    files: ["**/*.{ts,tsx,js,jsx}"],
-    ignores: ["dist/**", "node_modules/**"],
-
+    files: ['**/*.{ts,tsx}'],
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
-      reactHooks.configs["recommended-latest"],
+      reactHooks.configs['recommended-latest'],
       reactRefresh.configs.vite,
     ],
-
+    plugins: {
+      'import': importPlugin,
+      'simple-import-sort': simpleImportSort,
+    },
+    rules: {
+      // Auto-fixable import sorting
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
+      'import/first': 'error',
+      'import/newline-after-import': 'error',
+      'import/no-duplicates': 'error',
+      // Auto-remove unused imports
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+      // Allow 'any' type but with a warning
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
     },
-
-    plugins: {
-      import: importPlugin,
-      "simple-import-sort": simpleImportSort,
-    },
-
-    rules: {
-      // --- React & TS Base ---
-      "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn",
-      "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": [
-        "warn",
-        { argsIgnorePattern: "^_" },
-      ],
-
-      // --- Import Rules ---
-      "import/no-duplicates": "error",
-      "import/first": "error",
-      "import/newline-after-import": ["warn", { count: 1 }],
-      "import/no-unresolved": "off", // vì Vite xử lý alias @/
-      "simple-import-sort/imports": [
-        "warn",
-        {
-          groups: [
-            // Nhóm 1: React + core libs
-            ["^react", "^@?\\w"],
-            // Nhóm 2: alias nội bộ (@/something)
-            ["^@/"],
-            // Nhóm 3: import tương đối
-            ["^\\./", "^\\.\\./"],
-          ],
-        },
-      ],
-      "simple-import-sort/exports": "warn",
-    },
   },
-]);
+])

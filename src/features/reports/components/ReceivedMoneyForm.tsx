@@ -1,12 +1,11 @@
-// components/ReceivedMoneyForm.tsx
+// src/features/reports/components/ReceivedMoneyForm.tsx
 
-import { DatePicker } from "@/components/ui/DatePicker";
-import { Select } from "@/components/ui/Select";
-import { CURRENCY_OPTIONS_SIMPLE } from "@/constants";
-import type { ReceivedMoney } from "@/types/financialReport";
-import { FiCheckCircle, FiImage, FiPlus, FiX } from "react-icons/fi";
+import { DatePicker, Select } from "@components/ui";
+import { CURRENCY_OPTIONS_SIMPLE } from "@constants";
+import { ImageUpload } from "@features/reports";
+import type { ReceivedMoney } from "@types";
 import React, { useState } from "react";
-import { ImageUpload } from "./ImageUpload";
+import { FiCheckCircle, FiImage, FiPlus, FiX } from "react-icons/fi";
 
 interface ReceivedMoneyFormProps {
   reportPeriodId: number;
@@ -17,12 +16,12 @@ interface ReceivedMoneyFormProps {
 }
 
 export const ReceivedMoneyForm: React.FC<ReceivedMoneyFormProps> = ({
-  reportPeriodId,
-  shopId,
-  year,
-  month,
-  onAdd,
-}) => {
+                                                                      reportPeriodId,
+                                                                      shopId,
+                                                                      year,
+                                                                      month,
+                                                                      onAdd
+                                                                    }) => {
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split("T")[0],
     order_id: "",
@@ -31,7 +30,7 @@ export const ReceivedMoneyForm: React.FC<ReceivedMoneyFormProps> = ({
     currency: "VND",
     received_date: new Date().toISOString().split("T")[0],
     payment_method: "",
-    screenshot_url: null as string | null,
+    screenshot_url: null as string | null
   });
 
   const [showForm, setShowForm] = useState(false);
@@ -47,7 +46,7 @@ export const ReceivedMoneyForm: React.FC<ReceivedMoneyFormProps> = ({
       amount: formData.amount,
       currency: formData.currency,
       received_date: formData.received_date,
-      payment_method: formData.payment_method || null,
+      payment_method: formData.payment_method || null
     });
 
     // Reset form
@@ -59,7 +58,7 @@ export const ReceivedMoneyForm: React.FC<ReceivedMoneyFormProps> = ({
       currency: "USD",
       received_date: new Date().toISOString().split("T")[0],
       payment_method: "",
-      screenshot_url: null,
+      screenshot_url: null
     });
     setShowForm(false);
   };
@@ -148,7 +147,7 @@ export const ReceivedMoneyForm: React.FC<ReceivedMoneyFormProps> = ({
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      amount: parseFloat(e.target.value),
+                      amount: parseFloat(e.target.value)
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"

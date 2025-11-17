@@ -1,3 +1,4 @@
+// src/styles/theme.ts
 /**
  * Centralized Theme System
  * Single source of truth for colors, shadows, spacing, and typography

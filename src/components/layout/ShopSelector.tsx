@@ -1,14 +1,11 @@
 // src/components/layout/ShopSelector.tsx
 
+import { useShopSelectors, useShopStore } from "@features";
+import { cn } from "@lib";
+import { useAppStore } from "@stores";
+import type { Shop } from "@types";
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  useShopSelectors,
-  useShopStore,
-} from "../../features/shops/store/useShopStore";
-import { cn } from "../../lib/utils";
-import { useAppStore } from "../../store/useAppStore";
-import type { Shop } from "../../types/shop";
 
 export const ShopSelector: React.FC = () => {
   const { isSidebarCollapsed } = useAppStore();
@@ -24,7 +21,7 @@ export const ShopSelector: React.FC = () => {
   useEffect(() => {
     fetchShops();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // fetchShops is stable from Zustand store
+  }, []); // fetchShops is stable from Zustand stores
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -50,7 +47,7 @@ export const ShopSelector: React.FC = () => {
   const filteredShops = shops.filter(
     (shop) =>
       shop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      shop.code.toLowerCase().includes(searchQuery.toLowerCase()),
+      shop.code.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleSelectShop = (shop: Shop) => {
@@ -68,7 +65,8 @@ export const ShopSelector: React.FC = () => {
           title={selectedShop?.name || "Chọn cửa hàng"}
         >
           {selectedShop ? (
-            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+            <div
+              className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
               {selectedShop.name.charAt(0)}
             </div>
           ) : (
@@ -99,7 +97,7 @@ export const ShopSelector: React.FC = () => {
         className={cn(
           "w-full flex items-center gap-3 p-2.5 rounded-lg transition-colors",
           "hover:bg-gray-800",
-          isOpen && "bg-gray-800",
+          isOpen && "bg-gray-800"
         )}
       >
         {selectedShop ? (
@@ -111,7 +109,8 @@ export const ShopSelector: React.FC = () => {
                 className="w-8 h-8 rounded-full flex-shrink-0"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+              <div
+                className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                 {selectedShop.name.charAt(0)}
               </div>
             )}
@@ -149,7 +148,7 @@ export const ShopSelector: React.FC = () => {
         <svg
           className={cn(
             "w-4 h-4 text-gray-400 transition-transform flex-shrink-0",
-            isOpen && "transform rotate-180",
+            isOpen && "transform rotate-180"
           )}
           fill="none"
           stroke="currentColor"
@@ -166,7 +165,8 @@ export const ShopSelector: React.FC = () => {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute left-4 right-4 mt-2 bg-gray-800 rounded-lg shadow-lg border border-gray-700 z-50 max-h-96 flex flex-col">
+        <div
+          className="absolute left-4 right-4 mt-2 bg-gray-800 rounded-lg shadow-lg border border-gray-700 z-50 max-h-96 flex flex-col">
           {/* Search */}
           <div className="p-3 border-b border-gray-700">
             <div className="relative">
@@ -207,7 +207,7 @@ export const ShopSelector: React.FC = () => {
                   onClick={() => handleSelectShop(shop)}
                   className={cn(
                     "w-full flex items-center gap-3 p-3 hover:bg-gray-700 transition-colors",
-                    selectedShop?.id === shop.id && "bg-gray-700",
+                    selectedShop?.id === shop.id && "bg-gray-700"
                   )}
                 >
                   {shop.logo ? (
@@ -217,7 +217,8 @@ export const ShopSelector: React.FC = () => {
                       className="w-8 h-8 rounded-full flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                    <div
+                      className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                       {shop.name.charAt(0)}
                     </div>
                   )}

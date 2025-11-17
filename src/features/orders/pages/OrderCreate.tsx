@@ -1,13 +1,12 @@
 // src/features/orders/pages/OrderCreate.tsx
 
+import { DEFAULTS } from "@constants";
+import { OrderForm, useOrderStore } from "@features/orders";
+import { useShopStore } from "@features/shops";
+import { useExchangeRateStore } from "@stores/useExchangeRateStore";
+import type { Order, OrderItem } from "@types";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { DEFAULTS } from "../../../constants/app-constants";
-import { useExchangeRateStore } from "../../../store/useExchangeRateStore";
-import type { Order, OrderItem } from "../../../types/order";
-import { useShopStore } from "../../shops/store/useShopStore";
-import { OrderForm } from "../components/OrderForm";
-import { useOrderStore } from "../store/useOrderStore";
 
 /**
  * Component for creating a new order
@@ -25,7 +24,7 @@ export const OrderCreate: React.FC = () => {
 
   const handleSubmit = async (
     updatedOrder: Partial<Order>,
-    updatedOrderItems: OrderItem[],
+    updatedOrderItems: OrderItem[]
   ) => {
     try {
       // Extract required form fields
@@ -37,7 +36,7 @@ export const OrderCreate: React.FC = () => {
         size: item.size,
         type: item.type,
         quantity: item.quantity,
-        unit_price_usd: item.unit_price_usd || 0,
+        unit_price_usd: item.unit_price_usd || 0
       }));
 
       // Extract financial and status data (everything not in formData)
@@ -102,7 +101,7 @@ function extractFormData(order: Partial<Order>) {
     otherFeeExchangeRate: getRate(order.other_fee_exchange_rate),
     otherBonusUsd: order.other_bonus_usd || 0,
     otherBonusExchangeRate: getRate(order.other_bonus_exchange_rate),
-    otherBonusNotes: order.other_bonus_notes || "",
+    otherBonusNotes: order.other_bonus_notes || ""
   };
 }
 
@@ -150,6 +149,6 @@ function extractFinancialData(order: Partial<Order>) {
     // Additional notes
     refund_fee_notes: order.refund_fee_notes,
     other_fee_notes: order.other_fee_notes,
-    other_bonus_notes: order.other_bonus_notes,
+    other_bonus_notes: order.other_bonus_notes
   };
 }

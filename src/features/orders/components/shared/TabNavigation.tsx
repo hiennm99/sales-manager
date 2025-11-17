@@ -1,4 +1,4 @@
-// src/features/orders/components/TabNavigation.tsx
+// src/features/orders/components/shared/TabNavigation.tsx
 
 import React from "react";
 

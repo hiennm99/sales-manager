@@ -1,11 +1,12 @@
+// src/services/crudService.ts
 /**
  * CRUD Service Factory
  * Generic factory for creating CRUD services with consistent patterns
  * Reduces code duplication across feature services
  */
 
+import { supabase } from "@lib";
 import { PostgrestError } from "@supabase/supabase-js";
-import { supabase } from "../lib/supabase";
 
 export interface CRUDServiceOptions {
   tableName: string;
@@ -28,7 +29,7 @@ export interface CRUDService<T, FormData> {
   bulkDelete: (ids: (string | number)[]) => Promise<void>;
   bulkUpdateStatus: (
     ids: (string | number)[],
-    is_active: boolean,
+    is_active: boolean
   ) => Promise<void>;
   exists: (id: string | number) => Promise<boolean>;
   count: () => Promise<number>;
@@ -42,14 +43,13 @@ export interface CRUDService<T, FormData> {
  */
 export function createCRUDService<T extends { id: string | number }, FormData>(
   options: CRUDServiceOptions,
-  mappers: CRUDServiceMappers<T, FormData>,
+  mappers: CRUDServiceMappers<T, FormData>
 ): CRUDService<T, FormData> {
   const { tableName, idColumn = "id", searchColumns = [] } = options;
-  const table = tableName as const;
 
   const handleError = (
     error: PostgrestError | null,
-    context: string,
+    context: string
   ): never => {
     if (error) {
       console.error(`CRUD Service error in ${context}:`, error);
@@ -66,16 +66,16 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
       try {
         console.log(`📖 Fetching all records from ${tableName}`);
         const { data, error } = await supabase
-          .from(table)
+          .from(tableName as any)
           .select("*")
           .order(idColumn, { ascending: true });
 
         if (error) handleError(error, `${tableName}.getAll()`);
 
         console.log(
-          `✅ Fetched ${data?.length || 0} records from ${tableName}`,
+          `✅ Fetched ${data?.length || 0} records from ${tableName}`
         );
-        return data || [];
+        return (data || []) as unknown as T[];
       } catch (error) {
         console.error(`Error in getAll:`, error);
         throw error;
@@ -89,7 +89,7 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
       try {
         console.log(`🔍 Fetching ${tableName} with ${idColumn}=${id}`);
         const { data, error } = await supabase
-          .from(table)
+          .from(tableName as any)
           .select("*")
           .eq(idColumn, id)
           .single();
@@ -104,7 +104,7 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
         }
 
         console.log(`✅ Record found:`, data);
-        return data || null;
+        return (data || null) as unknown as T | null;
       } catch (error) {
         console.error(`Error in getById:`, error);
         throw error;
@@ -120,7 +120,7 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
         const row = mappers.toRow(data);
 
         const { data: created, error } = await supabase
-          .from(table)
+          .from(tableName as any)
           .insert([row])
           .select()
           .single();
@@ -128,7 +128,7 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
         if (error) handleError(error, `${tableName}.create()`);
 
         console.log(`✅ Record created:`, created);
-        return created;
+        return created as unknown as T;
       } catch (error) {
         console.error(`Error in create:`, error);
         throw error;
@@ -144,7 +144,7 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
         const row = mappers.toRow(data as FormData);
 
         const { data: updated, error } = await supabase
-          .from(table)
+          .from(tableName as any)
           .update(row)
           .eq(idColumn, id)
           .select()
@@ -153,7 +153,7 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
         if (error) handleError(error, `${tableName}.update(${id})`);
 
         console.log(`✅ Record updated:`, updated);
-        return updated;
+        return updated as unknown as T;
       } catch (error) {
         console.error(`Error in update:`, error);
         throw error;
@@ -166,7 +166,7 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
     async delete(id: string | number): Promise<void> {
       try {
         console.log(`🗑️ Deleting ${tableName} with ${idColumn}=${id}`);
-        const { error } = await supabase.from(table).delete().eq(idColumn, id);
+        const { error } = await supabase.from(tableName as any).delete().eq(idColumn, id);
 
         if (error) handleError(error, `${tableName}.delete(${id})`);
 
@@ -190,7 +190,7 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
         console.log(`🔎 Searching ${tableName} for: "${query}"`);
 
         // Build OR conditions for all search columns
-        let queryBuilder = supabase.from(table).select("*");
+        let queryBuilder = supabase.from(tableName as any).select("*");
 
         // Use the first search column for filtering
         const firstColumn = searchColumns[0];
@@ -199,7 +199,7 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
         // Add OR conditions for other columns
         for (let i = 1; i < searchColumns.length; i++) {
           queryBuilder = queryBuilder.or(
-            `${searchColumns[i]}.ilike.%${query}%`,
+            `${searchColumns[i]}.ilike.%${query}%`
           );
         }
 
@@ -208,7 +208,7 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
         if (error) handleError(error, `${tableName}.search("${query}")`);
 
         console.log(`✅ Found ${data?.length || 0} records`);
-        return data || [];
+        return (data || []) as unknown as T[];
       } catch (error) {
         console.error(`Error in search:`, error);
         throw error;
@@ -221,7 +221,7 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
     async bulkDelete(ids: (string | number)[]): Promise<void> {
       try {
         console.log(`🗑️ Bulk deleting ${ids.length} records from ${tableName}`);
-        const { error } = await supabase.from(table).delete().in(idColumn, ids);
+        const { error } = await supabase.from(tableName as any).delete().in(idColumn, ids);
 
         if (error) handleError(error, `${tableName}.bulkDelete()`);
 
@@ -237,14 +237,14 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
      */
     async bulkUpdateStatus(
       ids: (string | number)[],
-      is_active: boolean,
+      is_active: boolean
     ): Promise<void> {
       try {
         console.log(
-          `🔄 Bulk updating status for ${ids.length} records in ${tableName}`,
+          `🔄 Bulk updating status for ${ids.length} records in ${tableName}`
         );
         const { error } = await supabase
-          .from(table)
+          .from(tableName as any)
           .update({ is_active })
           .in(idColumn, ids);
 
@@ -263,7 +263,7 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
     async exists(id: string | number): Promise<boolean> {
       try {
         const { data, error } = await supabase
-          .from(table)
+          .from(tableName as any)
           .select(idColumn)
           .eq(idColumn, id)
           .single();
@@ -286,7 +286,7 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
       try {
         console.log(`📊 Counting records in ${tableName}`);
         const { count, error } = await supabase
-          .from(table)
+          .from(tableName as any)
           .select("*", { count: "exact", head: true });
 
         if (error) handleError(error, `${tableName}.count()`);
@@ -297,6 +297,6 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
         console.error(`Error in count:`, error);
         throw error;
       }
-    },
+    }
   };
 }

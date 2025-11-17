@@ -52,17 +52,17 @@ export function shallowEqual<T>(objA: T, objB: T): boolean {
  */
 export function createShallowSelector<TState, TSelected>(
   useStore: UseBoundStore<StoreApi<TState>>,
-  selector: (state: TState) => TSelected,
+  selector: (state: TState) => TSelected
 ): () => TSelected {
   return () => useStore(selector);
 }
 
 /**
- * Create multiple predefined selectors for a store
+ * Create multiple predefined selectors for a stores
  * Returns an object with common selector hooks
  */
 export function createStoreSelectors<TState extends Record<string, any>>(
-  useStore: UseBoundStore<StoreApi<TState>>,
+  useStore: UseBoundStore<StoreApi<TState>>
 ) {
   return {
     // Select single field
@@ -81,17 +81,17 @@ export function createStoreSelectors<TState extends Record<string, any>>(
             });
             return result;
           },
-          [fields.join(",")],
-        ),
+          [fields.join(",")]
+        )
       );
     },
 
     // Select with custom selector
     useSelector: <TSelected>(
-      selector: (state: TState) => TSelected,
+      selector: (state: TState) => TSelected
     ) => {
       return useStore(selector);
-    },
+    }
   };
 }
 
@@ -100,7 +100,7 @@ export function createStoreSelectors<TState extends Record<string, any>>(
  * Common pattern: only re-render when items array changes
  */
 export function useItems<T extends { items: any[] }>(
-  useStore: UseBoundStore<StoreApi<T>>,
+  useStore: UseBoundStore<StoreApi<T>>
 ) {
   return useStore((state) => state.items);
 }
@@ -115,8 +115,8 @@ export function useItemsWithLoading<
   return useStore(
     (state) => ({
       items: state.items,
-      isLoading: state.isLoading,
-    }),
+      isLoading: state.isLoading
+    })
   );
 }
 
@@ -125,18 +125,18 @@ export function useItemsWithLoading<
  * Common pattern: selectedItem only
  */
 export function useSelectedItem<T extends { selectedItem: any }>(
-  useStore: UseBoundStore<StoreApi<T>>,
+  useStore: UseBoundStore<StoreApi<T>>
 ) {
   return useStore((state) => state.selectedItem);
 }
 
 /**
  * Hook for selecting actions only (never changes)
- * Common pattern: only need store actions, not state
+ * Common pattern: only need stores actions, not state
  */
 export function useActions<TState, TActions extends Partial<TState>>(
   useStore: UseBoundStore<StoreApi<TState>>,
-  actionKeys: Array<keyof TActions>,
+  actionKeys: Array<keyof TActions>
 ) {
   return useStore(
     useCallback(
@@ -147,7 +147,7 @@ export function useActions<TState, TActions extends Partial<TState>>(
         });
         return actions;
       },
-      [actionKeys.join(",")],
-    ),
+      [actionKeys.join(",")]
+    )
   );
 }

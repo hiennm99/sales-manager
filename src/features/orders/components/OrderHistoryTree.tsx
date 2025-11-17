@@ -1,8 +1,25 @@
 // src/features/orders/components/OrderHistoryTree.tsx
 
-import { FiAlertCircle, FiCalendar, FiCheckCircle, FiChevronDown, FiChevronRight, FiDollarSign, FiEdit3, FiFileText, FiImage, FiMapPin, FiPackage, FiPlus, FiTrash2, FiTruck, FiUpload, FiUser } from "react-icons/fi";
+import type { OrderHistory } from "@types";
 import React, { useState } from "react";
-import type { OrderHistory } from "../../../types/orderHistory";
+import {
+  FiAlertCircle,
+  FiCalendar,
+  FiCheckCircle,
+  FiChevronDown,
+  FiChevronRight,
+  FiDollarSign,
+  FiEdit3,
+  FiFileText,
+  FiImage,
+  FiMapPin,
+  FiPackage,
+  FiPlus,
+  FiTrash2,
+  FiTruck,
+  FiUpload,
+  FiUser
+} from "react-icons/fi";
 
 interface OrderHistoryTreeProps {
   history: OrderHistory[];
@@ -133,7 +150,7 @@ const getActionColor = (actionType: string, fieldName?: string): string => {
 
 const groupHistoryRecords = (
   history: OrderHistory[],
-  employeeNames: Record<number, string>,
+  employeeNames: Record<number, string>
 ): HistoryGroup[] => {
   const groups: HistoryGroup[] = [];
   const processedIds = new Set<number>();
@@ -141,7 +158,7 @@ const groupHistoryRecords = (
   // Sort by timestamp (newest first)
   const sortedHistory = [...history].sort(
     (a, b) =>
-      new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
   for (const record of sortedHistory) {
@@ -158,28 +175,28 @@ const groupHistoryRecords = (
         r.changed_by_employee_id === record.changed_by_employee_id &&
         Math.abs(
           new Date(r.created_at).getTime() -
-            new Date(record.created_at).getTime(),
+          new Date(record.created_at).getTime()
         ) < 60000 && // Within 1 minute
         // Group financial updates
         (((record.field_name?.includes("usd") ||
-          record.field_name?.includes("vnd") ||
-          record.field_name?.includes("rate")) &&
-          (r.field_name?.includes("usd") ||
-            r.field_name?.includes("vnd") ||
-            r.field_name?.includes("rate"))) ||
+              record.field_name?.includes("vnd") ||
+              record.field_name?.includes("rate")) &&
+            (r.field_name?.includes("usd") ||
+              r.field_name?.includes("vnd") ||
+              r.field_name?.includes("rate"))) ||
           // Group customer info updates
           (record.field_name?.includes("Customer") &&
             r.field_name?.includes("Customer")) ||
           // Group shipping updates
           ((record.field_name?.includes("carrier") ||
-            record.field_name?.includes("tracking") ||
-            record.field_name?.includes("shipping")) &&
+              record.field_name?.includes("tracking") ||
+              record.field_name?.includes("shipping")) &&
             (r.field_name?.includes("carrier") ||
               r.field_name?.includes("tracking") ||
               r.field_name?.includes("shipping"))) ||
           // Group status changes
           (record.field_name?.includes("Status") &&
-            r.field_name?.includes("Status"))),
+            r.field_name?.includes("Status")))
     );
 
     if (relatedRecords.length > 1) {
@@ -190,7 +207,7 @@ const groupHistoryRecords = (
           : record.field_name?.includes("Customer")
             ? "Customer Info"
             : record.field_name?.includes("carrier") ||
-                record.field_name?.includes("tracking")
+            record.field_name?.includes("tracking")
               ? "Shipping"
               : record.field_name?.includes("Status")
                 ? "Status"
@@ -224,7 +241,7 @@ const groupHistoryRecords = (
                   : "bg-gray-100 text-gray-700",
         timestamp: new Date(record.created_at),
         employee: employeeName,
-        items: relatedRecords,
+        items: relatedRecords
       };
 
       groups.push(group);
@@ -240,11 +257,11 @@ const groupHistoryRecords = (
         icon: getActionIcon(record.action_type, record.field_name || undefined),
         color: getActionColor(
           record.action_type,
-          record.field_name || undefined,
+          record.field_name || undefined
         ),
         timestamp: new Date(record.created_at),
         employee: employeeName,
-        items: [record],
+        items: [record]
       };
 
       groups.push(singleGroup);
@@ -395,9 +412,9 @@ const TreeNode: React.FC<{
 };
 
 export const OrderHistoryTree: React.FC<OrderHistoryTreeProps> = ({
-  history,
-  employeeNames = {},
-}) => {
+                                                                    history,
+                                                                    employeeNames = {}
+                                                                  }) => {
   if (history.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">

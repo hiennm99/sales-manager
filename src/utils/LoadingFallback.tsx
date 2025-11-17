@@ -1,3 +1,4 @@
+// src/utils/LoadingFallback.tsx
 /**
  * Simple loading fallback UI for lazy-loaded components
  */

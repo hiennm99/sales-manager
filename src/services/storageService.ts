@@ -1,10 +1,11 @@
+// src/services/storageService.ts
 /**
  * General Storage Service
  * Handles all file upload, download, and storage operations
  */
 
-import { CACHE } from "../constants";
-import { supabase } from "../lib/supabase";
+import { CACHE } from "@constants";
+import { supabase } from "@lib";
 
 export interface UploadOptions {
   bucket: string;
@@ -33,14 +34,14 @@ export const storageService = {
         bucket,
         path,
         cacheControl = CACHE.STORAGE_CACHE_CONTROL,
-        upsert = false,
+        upsert = false
       } = options;
 
       console.log("📤 Uploading file:", {
         bucket,
         path,
         size: file.size,
-        type: file.type,
+        type: file.type
       });
 
       // Upload file to Supabase Storage
@@ -48,7 +49,7 @@ export const storageService = {
         .from(bucket)
         .upload(path, file, {
           cacheControl,
-          upsert,
+          upsert
         });
 
       if (uploadError) {
@@ -66,14 +67,14 @@ export const storageService = {
         .getPublicUrl(path);
 
       console.log("✅ File uploaded successfully:", {
-        publicUrl: urlData.publicUrl,
+        publicUrl: urlData.publicUrl
       });
 
       return {
         path: uploadData.path,
         publicUrl: urlData.publicUrl,
         size: file.size,
-        mimeType: file.type || "application/octet-stream",
+        mimeType: file.type || "application/octet-stream"
       };
     } catch (error) {
       console.error("Error in uploadFile:", error);
@@ -88,7 +89,7 @@ export const storageService = {
     files: File[],
     options: Omit<UploadOptions, "path"> & {
       pathGenerator: (file: File, index: number) => string;
-    },
+    }
   ): Promise<UploadResult[]> {
     const results: UploadResult[] = [];
 
@@ -101,7 +102,7 @@ export const storageService = {
           bucket: options.bucket,
           path,
           cacheControl: options.cacheControl,
-          upsert: options.upsert,
+          upsert: options.upsert
         });
         results.push(result);
       } catch (error) {
@@ -143,7 +144,7 @@ export const storageService = {
     try {
       console.log("🗑️ Deleting multiple files:", {
         bucket,
-        count: paths.length,
+        count: paths.length
       });
 
       const { error } = await supabase.storage.from(bucket).remove(paths);
@@ -209,5 +210,5 @@ export const storageService = {
       console.error("Error in fileExists:", error);
       return false;
     }
-  },
+  }
 };

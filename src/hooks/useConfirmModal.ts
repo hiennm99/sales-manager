@@ -4,8 +4,8 @@
  * Provides easy-to-use interface for showing confirmation dialogs
  */
 
+import type { ConfirmModalVariant } from "@components";
 import { useCallback, useState } from "react";
-import type { ConfirmModalVariant } from "../components/modals/ConfirmModal";
 
 interface ConfirmModalConfig {
   title: string;

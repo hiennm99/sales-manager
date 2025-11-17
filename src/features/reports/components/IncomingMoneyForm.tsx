@@ -1,14 +1,14 @@
-// components/IncomingMoneyForm.tsx
+// src/features/reports/components/IncomingMoneyForm.tsx
 
-import { DatePicker } from "@/components/ui/DatePicker";
-import { Select } from "@/components/ui/Select";
+import { DatePicker, Select } from "@components/ui";
 import {
   CURRENCY_OPTIONS_SIMPLE,
-  INCOMING_MONEY_STATUS_OPTIONS,
-} from "@/constants";
-import type { IncomingMoney } from "@/types/financialReport";
-import { FiImage, FiPackage, FiPlus, FiX } from "react-icons/fi";
+  INCOMING_MONEY_STATUS_OPTIONS
+} from "@constants";
+import type { IncomingMoney } from "@types";
 import React, { useState } from "react";
+import { FiImage, FiPackage, FiPlus, FiX } from "react-icons/fi";
+
 import { ImageUpload } from "./ImageUpload";
 
 interface IncomingMoneyFormProps {
@@ -20,12 +20,12 @@ interface IncomingMoneyFormProps {
 }
 
 export const IncomingMoneyForm: React.FC<IncomingMoneyFormProps> = ({
-  reportPeriodId,
-  shopId,
-  year,
-  month,
-  onAdd,
-}) => {
+                                                                      reportPeriodId,
+                                                                      shopId,
+                                                                      year,
+                                                                      month,
+                                                                      onAdd
+                                                                    }) => {
   const [formData, setFormData] = useState<{
     date: string;
     order_id: string;
@@ -43,7 +43,7 @@ export const IncomingMoneyForm: React.FC<IncomingMoneyFormProps> = ({
     currency: "VND",
     expected_date: "",
     status: "pending",
-    screenshot_url: null,
+    screenshot_url: null
   });
 
   const [showForm, setShowForm] = useState(false);
@@ -59,7 +59,7 @@ export const IncomingMoneyForm: React.FC<IncomingMoneyFormProps> = ({
       amount: formData.amount,
       currency: formData.currency,
       expected_date: formData.expected_date || null,
-      status: formData.status,
+      status: formData.status
     });
 
     // Reset form
@@ -71,7 +71,7 @@ export const IncomingMoneyForm: React.FC<IncomingMoneyFormProps> = ({
       currency: "USD",
       expected_date: "",
       status: "pending",
-      screenshot_url: null,
+      screenshot_url: null
     });
     setShowForm(false);
   };
@@ -127,7 +127,7 @@ export const IncomingMoneyForm: React.FC<IncomingMoneyFormProps> = ({
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      amount: parseFloat(e.target.value),
+                      amount: parseFloat(e.target.value)
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -189,7 +189,7 @@ export const IncomingMoneyForm: React.FC<IncomingMoneyFormProps> = ({
                   onChange={(value) =>
                     setFormData({
                       ...formData,
-                      status: value as "pending" | "processing" | "received",
+                      status: value as "pending" | "processing" | "received"
                     })
                   }
                   disabled

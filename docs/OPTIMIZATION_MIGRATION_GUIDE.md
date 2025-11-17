@@ -1,20 +1,27 @@
 # Project Optimization - Migration Guide
 
-This guide explains the new optimized architecture and how to migrate existing code to use the new reusable components and factories.
+This guide explains the new optimized architecture and how to migrate existing code to use the new reusable components
+and factories.
 
 ## Overview of Changes
 
 ### Phase 1: Foundation ✅ COMPLETED
+
 - **Theme System** (`src/styles/theme.ts`) - Centralized color, shadow, and component presets
 - **CRUD Service Factory** (`src/services/crudService.ts`) - Generic CRUD service creator
 - **CRUD Store Factory** (`src/store/crudStore.ts`) - Generic Zustand store creator
 
 ### Phase 2: Components ✅ COMPLETED
-- **FormInput** (`src/components/ui/forms/FormInput.tsx`) - Unified input component (replaces Input, InputField, TextBox, SearchInput)
-- **FormSelect** (`src/components/ui/forms/FormSelect.tsx`) - Unified select component (replaces OptionBox, Selector, SelectFilter)
-- **FormAutocomplete** (`src/components/ui/forms/FormAutocomplete.tsx`) - Generic autocomplete (replaces EmployeeAutocomplete, ProductAutocomplete)
+
+- **FormInput** (`src/components/ui/forms/FormInput.tsx`) - Unified input component (replaces Input, InputField,
+  TextBox, SearchInput)
+- **FormSelect** (`src/components/ui/forms/FormSelect.tsx`) - Unified select component (replaces OptionBox, Selector,
+  SelectFilter)
+- **FormAutocomplete** (`src/components/ui/forms/FormAutocomplete.tsx`) - Generic autocomplete (replaces
+  EmployeeAutocomplete, ProductAutocomplete)
 
 ### Phase 3: Refactoring (IN PROGRESS)
+
 - Reorganize component directories
 - Update all components to use theme system
 - Migrate existing components to use new unified versions
@@ -24,6 +31,7 @@ This guide explains the new optimized architecture and how to migrate existing c
 ## 1. Using the Theme System
 
 ### Before (Hardcoded Colors)
+
 ```typescript
 // Old approach - colors hardcoded everywhere
 className="bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
@@ -31,6 +39,7 @@ className="shadow-xl border border-gray-100"
 ```
 
 ### After (Using Theme)
+
 ```typescript
 import { theme } from '@/styles/theme';
 
@@ -47,6 +56,7 @@ className={theme.components.card.base}
 ```
 
 ### Available Theme Properties
+
 ```typescript
 theme.colors          // Color palette (primary, secondary, success, warning, danger, info)
 theme.shadows         // Shadow levels (sm, md, lg, xl, 2xl)
@@ -63,6 +73,7 @@ theme.components      // Component-specific presets (button, input, card, sectio
 ## 2. Creating CRUD Services
 
 ### Before (Repetitive Code)
+
 ```typescript
 // Old approach - repeated in every service
 export const employeeService = {
@@ -71,7 +82,7 @@ export const employeeService = {
     if (error) throw error;
     return data || [];
   },
-  
+
   async getById(id: number): Promise<Employee | null> {
     const { data, error } = await supabase
       .from('employees')
@@ -81,12 +92,13 @@ export const employeeService = {
     if (error) throw error;
     return data || null;
   },
-  
+
   // ... more methods repeated
 };
 ```
 
 ### After (Using Factory)
+
 ```typescript
 import { createCRUDService } from '@/services/crud.service.factory';
 import type { Employee, EmployeeFormData } from '@/types/employee';
@@ -129,6 +141,7 @@ export const employeeService = createCRUDService<Employee, EmployeeFormData>(
 ```
 
 ### Service Factory Benefits
+
 - ✅ 80% less code
 - ✅ Consistent error handling
 - ✅ Built-in logging
@@ -140,19 +153,31 @@ export const employeeService = createCRUDService<Employee, EmployeeFormData>(
 ## 3. Creating CRUD Stores
 
 ### Before (Repetitive Code)
+
 ```typescript
-// Old approach - repeated in every store
+// Old approach - repeated in every stores
 interface EmployeeStore {
   employees: Employee[];
   isLoading: boolean;
   error: string | null;
   selectedEmployee: Employee | null;
   setSelectedEmployee: (employee) => void;
-  fetchEmployees: async () => { /* ... */ };
-  createEmployee: async (data) => { /* ... */ };
-  updateEmployee: async (id, data) => { /* ... */ };
-  deleteEmployee: async (id) => { /* ... */ };
-  // ... more methods
+  fetchEmployees: async
+
+  ()
+
+  =>
+
+{ /* ... */
+}
+;
+createEmployee: async (data) => { /* ... */
+};
+updateEmployee: async (id, data) => { /* ... */
+};
+deleteEmployee: async (id) => { /* ... */
+};
+// ... more methods
 }
 
 export const useEmployeeStore = create<EmployeeStore>()(
@@ -163,8 +188,9 @@ export const useEmployeeStore = create<EmployeeStore>()(
 ```
 
 ### After (Using Factory)
+
 ```typescript
-import { createCRUDStore } from '@/store/crud.store.factory';
+import { createCRUDStore } from '@/stores/crud.stores.factory';
 import { employeeService } from './employee.service.api';
 import type { Employee, EmployeeFormData } from '@/types/employee';
 
@@ -172,7 +198,7 @@ export const useEmployeeStore = createCRUDStore<Employee, EmployeeFormData>(
   employeeService,
   {
     storeName: 'employees',
-    persistKey: 'employee-store',
+    persistKey: 'employee-stores',
   }
 );
 
@@ -194,6 +220,7 @@ export const useEmployeeStore = createCRUDStore<Employee, EmployeeFormData>(
 ```
 
 ### Store Factory Benefits
+
 - ✅ 75% less code
 - ✅ Automatic persistence
 - ✅ Consistent state management
@@ -306,60 +333,76 @@ import { FormSelect } from '@/components/ui/forms';
 
 ```typescript
 import { FormAutocomplete } from '@/components/ui/forms';
-import { useEmployeeStore } from '@/features/employees/store';
+import { useEmployeeStore } from '@/features/employees/stores';
 
 // Generic autocomplete for employees
 <FormAutocomplete
-  label="Select Employee"
-  value={formData.employeeId}
-  name="employeeId"
-  placeholder="Search by name or code..."
-  required
-  error={errors.employeeId}
-  fetchOptions={async (query) => {
-    const results = await employeeService.search(query);
-    return results.map(emp => ({
-      id: emp.id,
-      label: emp.name,
-      code: emp.code,
-      avatar: emp.avatar,
-    }));
-  }}
-  getInitialLabel={async (id) => {
-    const emp = await employeeService.getById(id);
-    return emp?.name || '';
-  }}
-  onChange={(name, value, option) => {
-    setFormData({
-      ...formData,
-      [name]: value,
-      employeeName: option?.label,
-    });
-  }}
+  label = "Select Employee"
+value = { formData.employeeId }
+name = "employeeId"
+placeholder = "Search by name or code..."
+required
+error = { errors.employeeId }
+fetchOptions = { async(query)
+=>
+{
+  const results = await employeeService.search(query);
+  return results.map(emp => ({
+    id: emp.id,
+    label: emp.name,
+    code: emp.code,
+    avatar: emp.avatar,
+  }));
+}
+}
+getInitialLabel = { async(id)
+=>
+{
+  const emp = await employeeService.getById(id);
+  return emp?.name || '';
+}
+}
+onChange = {(name, value, option)
+=>
+{
+  setFormData({
+    ...formData,
+    [name]: value,
+    employeeName: option?.label,
+  });
+}
+}
 />
 
 // Generic autocomplete for products
-<FormAutocomplete
-  label="Select Product"
-  value={formData.productId}
-  name="productId"
-  placeholder="Search by name or SKU..."
-  fetchOptions={async (query) => {
-    const results = await productService.search(query);
-    return results.map(prod => ({
-      id: prod.id,
-      label: prod.name,
-      code: prod.sku,
-      icon: <PackageIcon />,
-    }));
-  }}
-  onChange={(name, value, option) => {
-    setFormData({ ...formData, [name]: value });
-  }}
+< FormAutocomplete
+label = "Select Product"
+value = { formData.productId }
+name = "productId"
+placeholder = "Search by name or SKU..."
+fetchOptions = { async(query)
+=>
+{
+  const results = await productService.search(query);
+  return results.map(prod => ({
+    id: prod.id,
+    label: prod.name,
+    code: prod.sku,
+    icon: <PackageIcon / >,
+  }));
+}
+}
+onChange = {(name, value, option)
+=>
+{
+  setFormData({ ...formData, [name]: value });
+}
+}
 />
 ```
 
 ### Form Components Benefits
+
 - ✅ Single unified API
 - ✅ Multiple modes (view, edit, search, inline)
 - ✅ Consistent styling
@@ -372,6 +415,7 @@ import { useEmployeeStore } from '@/features/employees/store';
 ## 5. Implemented Hooks
 
 ### useDebounce
+
 ```typescript
 import { useDebounce } from '@/hooks';
 
@@ -389,6 +433,7 @@ function SearchComponent() {
 ```
 
 ### useFetch
+
 ```typescript
 import { useFetch } from '@/hooks';
 
@@ -415,6 +460,7 @@ function EmployeeList() {
 ```
 
 ### useModal
+
 ```typescript
 import { useModal } from '@/hooks';
 
@@ -435,6 +481,7 @@ function EmployeeForm() {
 ```
 
 ### usePagination
+
 ```typescript
 import { usePagination } from '@/hooks';
 
@@ -471,6 +518,7 @@ function EmployeeTable() {
 ## 6. Migration Checklist
 
 ### For Each Feature Service
+
 - [ ] Replace service with `createCRUDService()` factory
 - [ ] Define mappers (toRow, toFormData)
 - [ ] Configure search columns
@@ -478,12 +526,14 @@ function EmployeeTable() {
 - [ ] Remove old service file
 
 ### For Each Feature Store
+
 - [ ] Replace store with `createCRUDStore()` factory
 - [ ] Update component imports
 - [ ] Test all store actions
 - [ ] Remove old store file
 
 ### For Each Form Component
+
 - [ ] Replace Input/InputField/TextBox with FormInput
 - [ ] Replace OptionBox/Selector with FormSelect
 - [ ] Replace EmployeeAutocomplete/ProductAutocomplete with FormAutocomplete
@@ -492,6 +542,7 @@ function EmployeeTable() {
 - [ ] Remove old component files
 
 ### For All Components
+
 - [ ] Import theme system
 - [ ] Replace hardcoded colors with theme colors
 - [ ] Replace hardcoded shadows with theme shadows
@@ -552,6 +603,7 @@ src/
 ## 8. Performance Impact
 
 ### Bundle Size Reduction
+
 - Input components: 32KB → 8KB (75% reduction)
 - Select components: 5KB → 2KB (60% reduction)
 - Store files: 1200 lines → 300 lines (75% reduction)
@@ -559,6 +611,7 @@ src/
 - **Total: ~18% reduction (~400KB)**
 
 ### Runtime Performance
+
 - Fewer re-renders with optimized stores
 - Better tree-shaking with factory functions
 - Consistent error handling reduces bugs
@@ -569,36 +622,37 @@ src/
 ## 9. Next Steps
 
 1. **Migrate Services** (Week 1)
-   - Update all feature services to use factory
-   - Test CRUD operations
-   - Remove old service files
+    - Update all feature services to use factory
+    - Test CRUD operations
+    - Remove old service files
 
 2. **Migrate Stores** (Week 1-2)
-   - Update all feature stores to use factory
-   - Update component imports
-   - Test store actions
+    - Update all feature stores to use factory
+    - Update component imports
+    - Test store actions
 
 3. **Migrate Components** (Week 2-3)
-   - Replace old form components with new ones
-   - Update all component imports
-   - Test all modes
+    - Replace old form components with new ones
+    - Update all component imports
+    - Test all modes
 
 4. **Apply Theme System** (Week 3-4)
-   - Update all components to use theme
-   - Remove hardcoded colors
-   - Test visual consistency
+    - Update all components to use theme
+    - Remove hardcoded colors
+    - Test visual consistency
 
 5. **Testing & Cleanup** (Week 4)
-   - Comprehensive testing
-   - Remove old files
-   - Performance testing
-   - Documentation updates
+    - Comprehensive testing
+    - Remove old files
+    - Performance testing
+    - Documentation updates
 
 ---
 
 ## 10. Support & Questions
 
 For questions about the new architecture:
+
 - Check `PROJECT_OPTIMIZATION_ANALYSIS.md` for detailed analysis
 - Review component examples in this guide
 - Check factory implementations for advanced usage

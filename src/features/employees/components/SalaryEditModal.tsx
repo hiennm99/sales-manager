@@ -1,8 +1,8 @@
 // src/features/employees/components/SalaryEditModal.tsx
 
-import { FiSave, FiX } from "react-icons/fi";
+import type { EmployeeSalary } from "@types";
 import { useEffect, useState } from "react";
-import type { EmployeeSalary } from "../../../types/employee";
+import { FiSave, FiX } from "react-icons/fi";
 
 interface SalaryEditModalProps {
   salary: EmployeeSalary;
@@ -13,18 +13,18 @@ interface SalaryEditModalProps {
 }
 
 export const SalaryEditModal = ({
-  salary,
-  employeeName,
-  isOpen,
-  onClose,
-  onSave,
-}: SalaryEditModalProps) => {
+                                  salary,
+                                  employeeName,
+                                  isOpen,
+                                  onClose,
+                                  onSave
+                                }: SalaryEditModalProps) => {
   const [formData, setFormData] = useState({
     base_salary: salary.base_salary,
     bonus: salary.bonus,
     other_costs: salary.other_costs,
     deduction: salary.deduction,
-    notes: salary.notes || "",
+    notes: salary.notes || ""
   });
   const [isSaving, setIsSaving] = useState(false);
 
@@ -35,7 +35,7 @@ export const SalaryEditModal = ({
         bonus: salary.bonus,
         other_costs: salary.other_costs,
         deduction: salary.deduction,
-        notes: salary.notes || "",
+        notes: salary.notes || ""
       });
     }
   }, [isOpen, salary]);
@@ -58,7 +58,7 @@ export const SalaryEditModal = ({
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
-      currency: "VND",
+      currency: "VND"
     }).format(amount);
   };
 
@@ -128,7 +128,7 @@ export const SalaryEditModal = ({
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    base_salary: Number(e.target.value),
+                    base_salary: Number(e.target.value)
                   })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -165,7 +165,7 @@ export const SalaryEditModal = ({
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    other_costs: Number(e.target.value),
+                    other_costs: Number(e.target.value)
                   })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -185,7 +185,7 @@ export const SalaryEditModal = ({
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    deduction: Number(e.target.value),
+                    deduction: Number(e.target.value)
                   })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

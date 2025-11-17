@@ -5,9 +5,9 @@
  * Works consistently for both Create and Edit modes
  */
 
+import { ORDER_DEFAULT_VALUES } from "@features/orders";
+import type { OrderFormData, OrderItemFormData } from "@types";
 import { useMemo } from "react";
-import type { OrderFormData, OrderItemFormData } from "../../../types/order";
-import { ORDER_DEFAULT_VALUES } from "../constants/orderDefaults";
 
 interface UseOrderCalculationsProps {
   draftOrder: OrderFormData;
@@ -44,9 +44,9 @@ interface OrderCalculations {
 }
 
 export const useOrderCalculations = ({
-  draftOrder,
-  draftItems,
-}: UseOrderCalculationsProps): OrderCalculations => {
+                                       draftOrder,
+                                       draftItems
+                                     }: UseOrderCalculationsProps): OrderCalculations => {
   return useMemo(() => {
     const exchangeRate =
       draftOrder.exchangeRate || ORDER_DEFAULT_VALUES.EXCHANGE_RATE;
@@ -54,7 +54,7 @@ export const useOrderCalculations = ({
     // 1. Calculate item total from current items (ALWAYS realtime)
     const itemTotalUsd = draftItems.reduce(
       (sum, item) => sum + item.quantity * (item.unit_price_usd || 0),
-      0,
+      0
     );
 
     // 2. Apply discount
@@ -113,7 +113,7 @@ export const useOrderCalculations = ({
       otherFeeVnd,
       otherBonusVnd,
       profitUsd,
-      profitVnd,
+      profitVnd
     };
   }, [draftOrder, draftItems]);
 };

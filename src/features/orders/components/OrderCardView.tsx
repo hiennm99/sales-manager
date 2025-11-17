@@ -1,10 +1,10 @@
 // src/features/orders/components/OrderCardView.tsx
 
-import { FiCalendar, FiEye, FiPhone, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { formatUSD, formatVND } from "@lib";
+import type { Order } from "@types";
 import React from "react";
+import { FiCalendar, FiEdit2, FiEye, FiPhone, FiTrash2 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { formatUSD, formatVND } from "../../../lib/utils";
-import type { Order } from "../../../types/order.ts";
 
 interface OrderCardViewProps {
   orders: Order[];
@@ -16,13 +16,13 @@ interface OrderCardViewProps {
 }
 
 export const OrderCardView: React.FC<OrderCardViewProps> = ({
-  orders,
-  selectedOrders,
-  onSelectOrder,
-  onSelectAll,
-  onDeleteOrder,
-  getStatusBadge,
-}) => {
+                                                              orders,
+                                                              selectedOrders,
+                                                              onSelectOrder,
+                                                              onSelectAll,
+                                                              onDeleteOrder,
+                                                              getStatusBadge
+                                                            }) => {
   const navigate = useNavigate();
 
   if (orders.length === 0) {
@@ -54,7 +54,8 @@ export const OrderCardView: React.FC<OrderCardViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Select All Header */}
-      <div className="flex items-center justify-between p-6 bg-gradient-to-r from-indigo-100 via-purple-100 to-pink-100 rounded-2xl border-2 border-purple-200 shadow-lg shadow-purple-200/50">
+      <div
+        className="flex items-center justify-between p-6 bg-gradient-to-r from-indigo-100 via-purple-100 to-pink-100 rounded-2xl border-2 border-purple-200 shadow-lg shadow-purple-200/50">
         <div className="flex items-center gap-4">
           <input
             type="checkbox"
@@ -69,7 +70,8 @@ export const OrderCardView: React.FC<OrderCardViewProps> = ({
           </span>
         </div>
         {selectedOrders.length > 0 && (
-          <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl shadow-lg animate-pulse">
+          <div
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl shadow-lg animate-pulse">
             <span className="font-bold">
               🎯 Đã chọn {selectedOrders.length} đơn hàng
             </span>
@@ -89,11 +91,12 @@ export const OrderCardView: React.FC<OrderCardViewProps> = ({
             }`}
             style={{
               animationDelay: `${index * 100}ms`,
-              animation: "fadeInUp 0.6s ease-out forwards",
+              animation: "fadeInUp 0.6s ease-out forwards"
             }}
           >
             {/* Animated background gradient */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500 -skew-x-12 transform translate-x-[-100%] hover:translate-x-[100%]"></div>
+            <div
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500 -skew-x-12 transform translate-x-[-100%] hover:translate-x-[100%]"></div>
             {/* Card Header */}
             <div className="p-6 bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-600 relative z-10">
               <div className="flex items-start justify-between">
@@ -145,12 +148,15 @@ export const OrderCardView: React.FC<OrderCardViewProps> = ({
             {/* Card Body */}
             <div className="p-6 space-y-6 relative z-10">
               {/* Customer Info */}
-              <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-2xl border-2 border-blue-200 transform hover:scale-105 transition-transform">
+              <div
+                className="flex items-center gap-4 p-4 bg-gradient-to-r from-cyan-50 to-blue-50 rounded-2xl border-2 border-blue-200 transform hover:scale-105 transition-transform">
                 <div className="relative">
-                  <div className="w-16 h-16 bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-black text-xl shadow-2xl shadow-purple-300/50 animate-pulse">
+                  <div
+                    className="w-16 h-16 bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-black text-xl shadow-2xl shadow-purple-300/50 animate-pulse">
                     {order.customer_name?.charAt(0)?.toUpperCase() || "N"}
                   </div>
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-bounce flex items-center justify-center">
+                  <div
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-bounce flex items-center justify-center">
                     <span className="text-white text-xs font-bold">✓</span>
                   </div>
                 </div>
@@ -169,7 +175,8 @@ export const OrderCardView: React.FC<OrderCardViewProps> = ({
 
               {/* Dates */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-2xl border-2 border-blue-200 transform hover:scale-105 transition-transform">
+                <div
+                  className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-2xl border-2 border-blue-200 transform hover:scale-105 transition-transform">
                   <FiCalendar className="w-8 h-8 text-blue-600 animate-bounce" />
                   <div>
                     <p className="text-blue-600 font-bold text-sm">
@@ -180,7 +187,8 @@ export const OrderCardView: React.FC<OrderCardViewProps> = ({
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-orange-100 to-red-100 rounded-2xl border-2 border-orange-200 transform hover:scale-105 transition-transform">
+                <div
+                  className="flex items-center gap-3 p-4 bg-gradient-to-r from-orange-100 to-red-100 rounded-2xl border-2 border-orange-200 transform hover:scale-105 transition-transform">
                   <FiCalendar className="w-8 h-8 text-orange-600 animate-bounce" />
                   <div>
                     <p className="text-orange-600 font-bold text-sm">
@@ -194,12 +202,14 @@ export const OrderCardView: React.FC<OrderCardViewProps> = ({
               </div>
 
               {/* Earnings */}
-              <div className="bg-gradient-to-r from-emerald-100 via-green-100 to-lime-100 rounded-2xl p-6 border-4 border-green-200 shadow-lg shadow-green-200/50 transform hover:scale-105 transition-transform">
+              <div
+                className="bg-gradient-to-r from-emerald-100 via-green-100 to-lime-100 rounded-2xl p-6 border-4 border-green-200 shadow-lg shadow-green-200/50 transform hover:scale-105 transition-transform">
                 <h4 className="text-center text-green-800 font-black text-lg mb-4">
                   💰 Thu Nhập 💰
                 </h4>
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="text-center p-4 bg-gradient-to-r from-emerald-200 to-green-200 rounded-xl border-2 border-emerald-300 transform hover:scale-110 transition-transform">
+                  <div
+                    className="text-center p-4 bg-gradient-to-r from-emerald-200 to-green-200 rounded-xl border-2 border-emerald-300 transform hover:scale-110 transition-transform">
                     <p className="text-emerald-700 font-bold text-sm mb-2">
                       💵 USD
                     </p>
@@ -207,7 +217,8 @@ export const OrderCardView: React.FC<OrderCardViewProps> = ({
                       {formatUSD(order.order_earnings_usd)}
                     </p>
                   </div>
-                  <div className="text-center p-4 bg-gradient-to-r from-green-200 to-lime-200 rounded-xl border-2 border-green-300 transform hover:scale-110 transition-transform">
+                  <div
+                    className="text-center p-4 bg-gradient-to-r from-green-200 to-lime-200 rounded-xl border-2 border-green-300 transform hover:scale-110 transition-transform">
                     <p className="text-green-700 font-bold text-sm mb-2">
                       💴 VNĐ
                     </p>
@@ -223,10 +234,12 @@ export const OrderCardView: React.FC<OrderCardViewProps> = ({
       </div>
 
       {/* Summary Footer */}
-      <div className="mt-8 p-8 bg-gradient-to-r from-purple-100 via-pink-100 to-blue-100 rounded-3xl border-4 border-gradient-to-r from-purple-300 to-pink-300 shadow-2xl shadow-purple-200/50">
+      <div
+        className="mt-8 p-8 bg-gradient-to-r from-purple-100 via-pink-100 to-blue-100 rounded-3xl border-4 border-gradient-to-r from-purple-300 to-pink-300 shadow-2xl shadow-purple-200/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center animate-pulse">
+            <div
+              className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center animate-pulse">
               <span className="text-white font-black text-2xl">📊</span>
             </div>
             <div>
@@ -239,13 +252,14 @@ export const OrderCardView: React.FC<OrderCardViewProps> = ({
               </span>
             </div>
           </div>
-          <div className="text-right p-6 bg-gradient-to-r from-green-200 to-emerald-200 rounded-2xl border-4 border-green-300 shadow-lg transform hover:scale-105 transition-transform">
+          <div
+            className="text-right p-6 bg-gradient-to-r from-green-200 to-emerald-200 rounded-2xl border-4 border-green-300 shadow-lg transform hover:scale-105 transition-transform">
             <p className="text-green-700 font-bold text-lg mb-2">
               💰 Tổng Thu Nhập 💰
             </p>
             <p className="font-black text-green-900 text-3xl drop-shadow-lg animate-pulse">
               {formatUSD(
-                orders.reduce((sum, o) => sum + (o.order_earnings_usd || 0), 0),
+                orders.reduce((sum, o) => sum + (o.order_earnings_usd || 0), 0)
               )}
             </p>
           </div>

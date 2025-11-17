@@ -4,13 +4,9 @@
  * Simple section component for order statuses
  */
 
+import { type Option, OptionBox, SectionCard } from "@components/common";
+import type { Status } from "@types";
 import React from "react";
-import {
-  OptionBox,
-  SectionCard,
-  type Option,
-} from "../../../../components/common";
-import type { Status } from "../../../../types/status";
 
 interface OrderStatusSectionProps {
   statusValues: {
@@ -27,7 +23,7 @@ interface OrderStatusSectionProps {
   };
   onStatusChange: (
     type: "general" | "customer" | "factory" | "delivery",
-    value: number,
+    value: number
   ) => void;
 }
 
@@ -48,25 +44,25 @@ const StatusIcon = (
 );
 
 export const OrderStatusSection: React.FC<OrderStatusSectionProps> = ({
-  statusValues,
-  statusOptions,
-  onStatusChange,
-}) => {
+                                                                        statusValues,
+                                                                        statusOptions,
+                                                                        onStatusChange
+                                                                      }) => {
   // Convert Status[] to Option[]
   const convertToOptions = (statuses: Status[]): Option[] => {
     return statuses.map((status) => ({
       value: status.id,
       label: status.name_vi,
-      color: status.color,
+      color: status.color
     }));
   };
 
   // Handler wrapper for status changes
   const handleStatusChange =
     (type: "general" | "customer" | "factory" | "delivery") =>
-    (value: string | number) => {
-      onStatusChange(type, Number(value));
-    };
+      (value: string | number) => {
+        onStatusChange(type, Number(value));
+      };
 
   return (
     <SectionCard

@@ -1,13 +1,10 @@
+// src/services/imageService.ts
 /**
  * General Image Service
  * Handles image processing, conversion, and validation
  */
 
-import {
-  ACCEPTED_FILE_TYPES,
-  FILE_SIZE_LIMITS,
-  IMAGE_OPTIMIZATION,
-} from "../constants";
+import { ACCEPTED_FILE_TYPES, FILE_SIZE_LIMITS, IMAGE_OPTIMIZATION } from "@constants";
 
 export interface ImageValidationOptions {
   maxSize?: number; // in bytes, default 10MB
@@ -37,18 +34,18 @@ export const imageService = {
    */
   validateImage(
     file: File,
-    options: ImageValidationOptions = {},
+    options: ImageValidationOptions = {}
   ): { valid: boolean; error?: string } {
     const {
       maxSize = FILE_SIZE_LIMITS.IMAGE_MAX_SIZE,
-      allowedTypes = ACCEPTED_FILE_TYPES.IMAGES,
+      allowedTypes = ACCEPTED_FILE_TYPES.IMAGES
     } = options;
 
     // Check file type
-    if (!allowedTypes.includes(file.type)) {
+    if (!allowedTypes.includes(file.type as any)) {
       return {
         valid: false,
-        error: `Invalid image type. Allowed types: ${allowedTypes.join(", ")}`,
+        error: `Invalid image type. Allowed types: ${allowedTypes.join(", ")}`
       };
     }
 
@@ -56,7 +53,7 @@ export const imageService = {
     if (file.size > maxSize) {
       return {
         valid: false,
-        error: `File size exceeds maximum of ${(maxSize / 1024 / 1024).toFixed(2)}MB`,
+        error: `File size exceeds maximum of ${(maxSize / 1024 / 1024).toFixed(2)}MB`
       };
     }
 
@@ -75,7 +72,7 @@ export const imageService = {
         img.onload = () => {
           resolve({
             width: img.width,
-            height: img.height,
+            height: img.height
           });
         };
         img.onerror = () => {
@@ -97,12 +94,12 @@ export const imageService = {
    */
   async convertToWebP(
     file: File,
-    options: ImageConversionOptions = {},
+    options: ImageConversionOptions = {}
   ): Promise<File> {
     const {
       quality = IMAGE_OPTIMIZATION.QUALITY,
       maxWidth = IMAGE_OPTIMIZATION.MAX_WIDTH,
-      maxHeight = IMAGE_OPTIMIZATION.MAX_HEIGHT,
+      maxHeight = IMAGE_OPTIMIZATION.MAX_HEIGHT
     } = options;
 
     return new Promise((resolve, reject) => {
@@ -152,20 +149,20 @@ export const imageService = {
                   file.name.replace(/\.[^/.]+$/, ".webp"),
                   {
                     type: "image/webp",
-                    lastModified: Date.now(),
-                  },
+                    lastModified: Date.now()
+                  }
                 );
 
                 console.log("✅ Image converted to WebP:", {
                   original: `${(file.size / 1024).toFixed(2)}KB`,
                   converted: `${(webpFile.size / 1024).toFixed(2)}KB`,
-                  dimensions: `${width}x${height}`,
+                  dimensions: `${width}x${height}`
                 });
 
                 resolve(webpFile);
               },
               "image/webp",
-              quality,
+              quality
             );
           } catch (error) {
             reject(error);
@@ -192,13 +189,13 @@ export const imageService = {
    */
   async convertImage(
     file: File,
-    options: ImageConversionOptions = {},
+    options: ImageConversionOptions = {}
   ): Promise<File> {
     const {
       quality = IMAGE_OPTIMIZATION.QUALITY,
       maxWidth = IMAGE_OPTIMIZATION.MAX_WIDTH,
       maxHeight = IMAGE_OPTIMIZATION.MAX_HEIGHT,
-      format = IMAGE_OPTIMIZATION.FORMAT,
+      format = IMAGE_OPTIMIZATION.FORMAT
     } = options;
 
     return new Promise((resolve, reject) => {
@@ -236,7 +233,13 @@ export const imageService = {
 
             ctx.drawImage(img, 0, 0, width, height);
 
-            const mimeType = `image/${format}`;
+            const mimeTypeMap: Record<string, "image/jpeg" | "image/png" | "image/webp"> = {
+              jpeg: "image/jpeg",
+              png: "image/png",
+              webp: "image/webp"
+            };
+
+            const mimeType = mimeTypeMap[format] || "image/jpeg";
             const extension = format === "jpeg" ? "jpg" : format;
 
             canvas.toBlob(
@@ -251,21 +254,21 @@ export const imageService = {
                   file.name.replace(/\.[^/.]+$/, `.${extension}`),
                   {
                     type: mimeType,
-                    lastModified: Date.now(),
-                  },
+                    lastModified: Date.now()
+                  }
                 );
 
                 console.log("✅ Image converted:", {
                   format,
                   original: `${(file.size / 1024).toFixed(2)}KB`,
                   converted: `${(convertedFile.size / 1024).toFixed(2)}KB`,
-                  dimensions: `${width}x${height}`,
+                  dimensions: `${width}x${height}`
                 });
 
                 resolve(convertedFile);
               },
               mimeType,
-              quality,
+              quality
             );
           } catch (error) {
             reject(error);
@@ -293,12 +296,12 @@ export const imageService = {
   async resizeImage(
     file: File,
     maxWidth: number,
-    maxHeight: number,
+    maxHeight: number
   ): Promise<File> {
     return this.convertImage(file, {
       maxWidth,
       maxHeight,
-      format: file.type === "image/webp" ? "webp" : "jpeg",
+      format: file.type === "image/webp" ? "webp" : "jpeg"
     });
   },
 
@@ -308,13 +311,13 @@ export const imageService = {
   async createThumbnail(
     file: File,
     width: number = 200,
-    height: number = 200,
+    height: number = 200
   ): Promise<File> {
     return this.convertImage(file, {
       maxWidth: width,
       maxHeight: height,
       format: "webp",
-      quality: 0.7,
+      quality: 0.7
     });
   },
 
@@ -327,7 +330,7 @@ export const imageService = {
       quality,
       maxWidth: dimensions.width,
       maxHeight: dimensions.height,
-      format: file.type === "image/webp" ? "webp" : "jpeg",
+      format: file.type === "image/webp" ? "webp" : "jpeg"
     });
   },
 
@@ -337,7 +340,7 @@ export const imageService = {
   async generatePreview(
     file: File,
     maxWidth: number = 300,
-    maxHeight: number = 300,
+    maxHeight: number = 300
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -384,5 +387,5 @@ export const imageService = {
 
       reader.readAsDataURL(file);
     });
-  },
+  }
 };

@@ -1,17 +1,13 @@
 // src/features/orders/services/orderHistoryService.ts
 
-import { handleSupabaseError, supabase } from "../../../lib/supabase";
-import type {
-  OrderHistory,
-  OrderHistoryActionType,
-} from "../../../types/orderHistory";
-import type { Database } from "../../../types/supabase.ts";
+import { handleSupabaseError, supabase } from "@lib";
+import type { Database, OrderHistory, OrderHistoryActionType } from "@types";
 
 /**
  * Helper function to map database row to OrderHistory type
  */
 const mapToOrderHistoryRow = (
-  data: Database["public"]["Tables"]["order_history"]["Row"],
+  data: Database["public"]["Tables"]["order_history"]["Row"]
 ): OrderHistory => {
   return {
     id: data.id,
@@ -23,7 +19,7 @@ const mapToOrderHistoryRow = (
     changed_by_employee_id: data.changed_by_employee_id,
     description: data.description,
     created_at: new Date(data.created_at),
-    updated_at: new Date(data.created_at), // Use created_at since order_history table doesn't track updates
+    updated_at: new Date(data.created_at) // Use created_at since order_history table doesn't track updates
   };
 };
 
@@ -44,7 +40,7 @@ export const orderHistoryService = {
       newValue?: string;
       changedByEmployeeId?: number;
       description?: string;
-    },
+    }
   ): Promise<OrderHistory> {
     const insertData = {
       order_id: orderId,
@@ -53,7 +49,7 @@ export const orderHistoryService = {
       old_value: options?.oldValue || null,
       new_value: options?.newValue || null,
       changed_by_employee_id: options?.changedByEmployeeId || null,
-      description: options?.description || null,
+      description: options?.description || null
     };
 
     console.log("📝 Creating order history record:", insertData);
@@ -101,7 +97,7 @@ export const orderHistoryService = {
   async getOrderHistoryPaginated(
     orderId: number,
     limit: number = 20,
-    offset: number = 0,
+    offset: number = 0
   ): Promise<{ data: OrderHistory[]; total: number }> {
     // Get total count
     const { count, error: countError } = await supabase
@@ -129,7 +125,7 @@ export const orderHistoryService = {
 
     return {
       data: (data || []).map(mapToOrderHistoryRow),
-      total: count || 0,
+      total: count || 0
     };
   },
 
@@ -161,7 +157,7 @@ export const orderHistoryService = {
    */
   async getHistoryByActionType(
     orderId: number,
-    actionType: OrderHistoryActionType,
+    actionType: OrderHistoryActionType
   ): Promise<OrderHistory[]> {
     const { data, error } = await supabase
       .from("order_history")
@@ -185,7 +181,7 @@ export const orderHistoryService = {
    */
   async getHistoryByEmployee(
     orderId: number,
-    employeeId: number,
+    employeeId: number
   ): Promise<OrderHistory[]> {
     const { data, error } = await supabase
       .from("order_history")
@@ -210,7 +206,7 @@ export const orderHistoryService = {
   async getHistoryByDateRange(
     orderId: number,
     startDate: string,
-    endDate: string,
+    endDate: string
   ): Promise<OrderHistory[]> {
     const { data, error } = await supabase
       .from("order_history")
@@ -265,5 +261,5 @@ export const orderHistoryService = {
    */
   async exportOrderHistory(orderId: number): Promise<OrderHistory[]> {
     return this.getOrderHistory(orderId);
-  },
+  }
 };

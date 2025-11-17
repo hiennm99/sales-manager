@@ -1,7 +1,7 @@
 // src/features/dashboard/components/widgets/SummaryCard.tsx
 
+import { type LucideIcon, Minus } from "lucide-react";
 import { FiTrendingDown, FiTrendingUp } from "react-icons/fi";
-import { Minus, type LucideIcon } from "lucide-react";
 
 
 interface SummaryCardProps {
@@ -20,15 +20,15 @@ interface SummaryCardProps {
 }
 
 export const SummaryCard: React.FC<SummaryCardProps> = ({
-  title,
-  value,
-  subtitle,
-  icon: Icon,
-  trend,
-  currency,
-  loading = false,
-  className = "",
-}) => {
+                                                          title,
+                                                          value,
+                                                          subtitle,
+                                                          icon: Icon,
+                                                          trend,
+                                                          currency,
+                                                          loading = false,
+                                                          className = ""
+                                                        }) => {
   const formatValue = (val: string | number): string => {
     if (typeof val === "number") {
       if (currency === "VND") {
@@ -36,14 +36,14 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
           style: "currency",
           currency: "VND",
           minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
+          maximumFractionDigits: 0
         }).format(val);
       } else if (currency === "USD") {
         return new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
           minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
+          maximumFractionDigits: 2
         }).format(val);
       } else {
         return new Intl.NumberFormat("vi-VN").format(val);

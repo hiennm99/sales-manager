@@ -1,16 +1,15 @@
 // src/features/employees/pages/EmployeeDetail.tsx
 
+import { EmployeeCard, useEmployeeStore } from "@features/employees";
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { EmployeeCard } from "../components/EmployeeCard";
-import { useEmployeeStore } from "../store/useEmployeeStore";
 
 export const EmployeeDetail: React.FC = () => {
   const { employeeId } = useParams<{ employeeId: string }>();
   const navigate = useNavigate();
   const { fetchEmployeeById, deleteEmployee, isLoading } = useEmployeeStore();
   const [employee, setEmployee] = React.useState(
-    fetchEmployeeById(Number(employeeId)) || null,
+    fetchEmployeeById(Number(employeeId)) || null
   );
 
   useEffect(() => {

@@ -1,15 +1,15 @@
-// features/statuses/pages/StatusCreate.tsx
+// src/features/statuses/pages/StatusCreate.tsx
 /**
  * StatusCreate - Create/Edit Status Form
  * Modern form interface for managing order statuses
  */
 
-import { FiSave, FiTag, FiX } from "react-icons/fi";
+import { OptionBox, TextBox } from "@components/common";
+import { Breadcrumbs } from "@components/layout";
+import { useStatusStore } from "@features/statuses";
 import React, { useEffect, useState } from "react";
+import { FiSave, FiTag, FiX } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
-import { OptionBox, TextBox } from "../../../components/common";
-import { Breadcrumbs } from "../../../components/layout/Breadcrumbs";
-import { useStatusStore } from "../store/useStatusStore";
 
 interface StatusFormData {
   name_vi: string;
@@ -23,7 +23,7 @@ const CATEGORIES = [
   { value: "general", label: "Trạng thái chung" },
   { value: "customer", label: "Trạng thái khách hàng" },
   { value: "factory", label: "Trạng thái nhà máy" },
-  { value: "delivery", label: "Trạng thái giao hàng" },
+  { value: "delivery", label: "Trạng thái giao hàng" }
 ];
 
 const DEFAULT_COLORS = [
@@ -36,7 +36,7 @@ const DEFAULT_COLORS = [
   "#6366F1",
   "#14B8A6",
   "#F97316",
-  "#84CC16",
+  "#84CC16"
 ];
 
 export const StatusCreate: React.FC = () => {
@@ -55,7 +55,7 @@ export const StatusCreate: React.FC = () => {
     name_en: "",
     description: "",
     color: "#3B82F6",
-    category: "general",
+    category: "general"
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,13 +72,13 @@ export const StatusCreate: React.FC = () => {
         ...generalStatuses.map((s) => ({ ...s, category: "general" as const })),
         ...customerStatuses.map((s) => ({
           ...s,
-          category: "customer" as const,
+          category: "customer" as const
         })),
         ...factoryStatuses.map((s) => ({ ...s, category: "factory" as const })),
         ...deliveryStatuses.map((s) => ({
           ...s,
-          category: "delivery" as const,
-        })),
+          category: "delivery" as const
+        }))
       ];
 
       const status = allStatuses.find((s) => s.id === parseInt(statusId));
@@ -88,7 +88,7 @@ export const StatusCreate: React.FC = () => {
           name_en: status.name || "",
           description: status.description || "",
           color: status.color || "#3B82F6",
-          category: status.category,
+          category: status.category
         });
       }
     }
@@ -98,12 +98,12 @@ export const StatusCreate: React.FC = () => {
     generalStatuses,
     customerStatuses,
     factoryStatuses,
-    deliveryStatuses,
+    deliveryStatuses
   ]);
 
   const handleChange = (
     name: string,
-    value: string | number | React.ReactNode | undefined,
+    value: string | number | React.ReactNode | undefined
   ) => {
     setFormData((prev) => ({ ...prev, [name]: value as string }));
     // Clear error when user types
@@ -152,7 +152,7 @@ export const StatusCreate: React.FC = () => {
         items={[
           { label: "Trang chủ", path: "/dashboard" },
           { label: "Trạng thái", path: "/statuses" },
-          { label: isEditMode ? "Chỉnh sửa" : "Tạo mới" },
+          { label: isEditMode ? "Chỉnh sửa" : "Tạo mới" }
         ]}
       />
 
@@ -160,7 +160,8 @@ export const StatusCreate: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg">
+            <div
+              className="w-16 h-16 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg">
               <FiTag className="w-8 h-8 text-white" />
             </div>
             <div>

@@ -1,11 +1,11 @@
 // src/features/reports/components/CreateReportModal.tsx
 
-import { Select } from "@/components/ui/Select";
-import { MONTH_OPTIONS, objectsToOptions, YEAR_OPTIONS } from "@/constants";
-import type { Shop } from "@/types/shop";
-import { FiX } from "react-icons/fi";
-import { Calendar, Building2 } from "lucide-react";
+import { Select } from "@components/ui";
+import { MONTH_OPTIONS, objectsToOptions, YEAR_OPTIONS } from "@constants";
+import type { Shop } from "@types";
+import { Building2, Calendar } from "lucide-react";
 import React, { useState } from "react";
+import { FiX } from "react-icons/fi";
 
 interface CreateReportModalProps {
   isOpen: boolean;
@@ -15,11 +15,11 @@ interface CreateReportModalProps {
 }
 
 export const CreateReportModal: React.FC<CreateReportModalProps> = ({
-  isOpen,
-  onClose,
-  onConfirm,
-  shops,
-}) => {
+                                                                      isOpen,
+                                                                      onClose,
+                                                                      onConfirm,
+                                                                      shops
+                                                                    }) => {
   const currentDate = new Date();
   const [shopId, setShopId] = useState<number>(shops[0]?.id || 1);
   const [year, setYear] = useState<number>(currentDate.getFullYear());

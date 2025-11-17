@@ -1,8 +1,8 @@
 // src/features/reports/components/CsvFileUpload.tsx
 
-import { supabase } from "@/lib/supabase";
-import { FiCheckCircle, FiDownload, FiFileText, FiTrash2, FiUpload, FiX } from "react-icons/fi";
+import { supabase } from "@lib";
 import React, { useRef, useState } from "react";
+import { FiCheckCircle, FiDownload, FiFileText, FiTrash2, FiUpload, FiX } from "react-icons/fi";
 
 interface CsvFile {
   id: string;
@@ -22,13 +22,13 @@ interface CsvFileUploadProps {
 }
 
 export const CsvFileUpload: React.FC<CsvFileUploadProps> = ({
-  reportPeriodId,
-  shopId,
-  year,
-  month,
-  files,
-  onFilesChange,
-}) => {
+                                                              reportPeriodId,
+                                                              shopId,
+                                                              year,
+                                                              month,
+                                                              files,
+                                                              onFilesChange
+                                                            }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -70,7 +70,7 @@ export const CsvFileUpload: React.FC<CsvFileUploadProps> = ({
           .from("financial-documents")
           .upload(filePath, file, {
             cacheControl: "3600",
-            upsert: false,
+            upsert: false
           });
 
         if (uploadError) throw uploadError;
@@ -85,7 +85,7 @@ export const CsvFileUpload: React.FC<CsvFileUploadProps> = ({
           name: file.name,
           url: urlData.publicUrl,
           size: file.size,
-          uploadedAt: new Date().toISOString(),
+          uploadedAt: new Date().toISOString()
         });
 
         // Update progress
@@ -143,7 +143,8 @@ export const CsvFileUpload: React.FC<CsvFileUploadProps> = ({
   return (
     <div className="space-y-6">
       {/* Upload Area */}
-      <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-indigo-400 transition-colors">
+      <div
+        className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-indigo-400 transition-colors">
         <input
           ref={fileInputRef}
           type="file"

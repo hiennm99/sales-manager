@@ -1,6 +1,6 @@
-// types/financialReport.ts
+// src/types/financialReport.ts
 
-import type { BaseEntity } from "./common";
+import type { BaseEntity } from "./common.ts";
 
 // Financial Report Period
 export interface FinancialReportPeriod extends BaseEntity {
@@ -225,20 +225,20 @@ export interface FinancialReportFilters {
 
 // Type Casting Helpers for Supabase
 export const castFinancialReportPeriod = (
-  data: any,
+  data: any
 ): FinancialReportPeriod => ({
   ...data,
-  status: (data.status as "draft" | "approved" | "finalized") || "draft",
+  status: (data.status as "draft" | "approved" | "finalized") || "draft"
 });
 
 export const castMoneyOnEtsy = (data: any): MoneyOnEtsy => ({
   ...data,
-  type: (data.type as "balance" | "pending" | "available") || "balance",
+  type: (data.type as "balance" | "pending" | "available") || "balance"
 });
 
 export const castIncomingMoney = (data: any): IncomingMoney => ({
   ...data,
-  status: (data.status as "pending" | "processing" | "received") || "pending",
+  status: (data.status as "pending" | "processing" | "received") || "pending"
 });
 
 export const castReceivedMoney = (data: any): ReceivedMoney => ({
@@ -246,7 +246,7 @@ export const castReceivedMoney = (data: any): ReceivedMoney => ({
   created_at:
     typeof data.created_at === "string"
       ? new Date(data.created_at)
-      : data.created_at,
+      : data.created_at
 });
 
 export const castExpense = (data: any): Expense => ({
@@ -254,7 +254,7 @@ export const castExpense = (data: any): Expense => ({
   created_at:
     typeof data.created_at === "string"
       ? new Date(data.created_at)
-      : data.created_at,
+      : data.created_at
 });
 
 export const castTransferredMoney = (data: any): TransferredMoney => ({
@@ -262,7 +262,7 @@ export const castTransferredMoney = (data: any): TransferredMoney => ({
   created_at:
     typeof data.created_at === "string"
       ? new Date(data.created_at)
-      : data.created_at,
+      : data.created_at
 });
 
 // Helper Functions
@@ -272,7 +272,7 @@ export const createEmptyFinancialReport =
     totalFees: 0,
     netProfit: 0,
     marketingFees: 0,
-    status: "draft",
+    status: "draft"
   });
 
 export const formatCurrency = (amount: number): string => {
@@ -281,7 +281,7 @@ export const formatCurrency = (amount: number): string => {
     style: "currency",
     currency: "VND",
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(amount);
 };
 
@@ -298,7 +298,7 @@ export const getMonthName = (month: number): string => {
     "Tháng 9",
     "Tháng 10",
     "Tháng 11",
-    "Tháng 12",
+    "Tháng 12"
   ];
   return months[month - 1] || "";
 };

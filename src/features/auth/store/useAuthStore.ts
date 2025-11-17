@@ -1,9 +1,9 @@
-// features/auth/store/useAuthStore.ts
+// src/features/auth/stores/useAuthStore.ts
 
+import { useEmployeeStore } from "@features/auth";
+import { supabase } from "@lib";
 import type { User } from "@supabase/supabase-js";
 import { create } from "zustand";
-import { supabase } from "@/lib/supabase";
-import { useEmployeeStore } from "./useEmployeeStore";
 
 interface AuthState {
   user: User | null;
@@ -27,7 +27,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   initialize: async () => {
     try {
       const {
-        data: { session },
+        data: { session }
       } = await supabase.auth.getSession();
       set({ user: session?.user ?? null, initialized: true });
 
@@ -59,7 +59,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password,
+        password
       });
 
       if (error) throw error;
@@ -74,7 +74,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (error: any) {
       set({
         error: error.message || "Failed to sign in",
-        loading: false,
+        loading: false
       });
       throw error;
     }
@@ -87,8 +87,8 @@ export const useAuthStore = create<AuthState>((set) => ({
         email,
         password,
         options: {
-          data: metadata || {},
-        },
+          data: metadata || {}
+        }
       });
 
       if (error) throw error;
@@ -97,7 +97,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (error: any) {
       set({
         error: error.message || "Failed to sign up",
-        loading: false,
+        loading: false
       });
       throw error;
     }
@@ -117,7 +117,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (error: any) {
       set({
         error: error.message || "Failed to sign out",
-        loading: false,
+        loading: false
       });
       throw error;
     }
@@ -137,11 +137,11 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (error: any) {
       set({
         error: error.message || "Failed to link user to employee",
-        loading: false,
+        loading: false
       });
       throw error;
     }
   },
 
-  clearError: () => set({ error: null }),
+  clearError: () => set({ error: null })
 }));

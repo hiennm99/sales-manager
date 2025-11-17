@@ -1,13 +1,9 @@
-// src/features/employees/store/useEmployeeSalaryStore.ts
+// src/features/employees/stores/useEmployeeSalaryStore.ts
 
+import { employeeSalaryService } from "@features/employees";
+import type { EmployeeSalary, EmployeeSalaryFilters, EmployeeSalaryPeriod } from "@types";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import type {
-  EmployeeSalary,
-  EmployeeSalaryFilters,
-  EmployeeSalaryPeriod,
-} from "../../../types/employee";
-import { employeeSalaryService } from "../services/employeeSalaryService.ts";
 
 interface EmployeeSalaryState {
   // Data
@@ -30,7 +26,7 @@ interface EmployeeSalaryState {
   fetchSalaryRecord: (
     employee_id: number,
     year: number,
-    month: number,
+    month: number
   ) => Promise<void>;
   calculateSalaries: (filters: EmployeeSalaryFilters) => Promise<void>;
 
@@ -39,18 +35,18 @@ interface EmployeeSalaryState {
     employee_id: number,
     year: number,
     month: number,
-    calculated_by?: number,
+    calculated_by?: number
   ) => Promise<EmployeeSalary>;
   updateSalary: (
     employee_id: number,
     year: number,
     month: number,
-    updates: Partial<EmployeeSalary>,
+    updates: Partial<EmployeeSalary>
   ) => Promise<void>;
   deleteSalary: (
     employee_id: number,
     year: number,
-    month: number,
+    month: number
   ) => Promise<void>;
 
   // Workflow operations
@@ -58,19 +54,19 @@ interface EmployeeSalaryState {
     employee_id: number,
     year: number,
     month: number,
-    approved_by: number,
+    approved_by: number
   ) => Promise<void>;
   markAsPaid: (
     employee_id: number,
     year: number,
-    month: number,
+    month: number
   ) => Promise<void>;
 
   // Bulk operations
   calculateAndSaveAll: (
     year: number,
     month: number,
-    calculated_by?: number,
+    calculated_by?: number
   ) => Promise<void>;
 
   // Reset
@@ -79,7 +75,7 @@ interface EmployeeSalaryState {
 
 const initialFilters: EmployeeSalaryFilters = {
   year: new Date().getFullYear(),
-  month: new Date().getMonth() + 1,
+  month: new Date().getMonth() + 1
 };
 
 export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
@@ -122,7 +118,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
           const salary = await employeeSalaryService.getSalaryRecord(
             employee_id,
             year,
-            month,
+            month
           );
           set({ currentSalary: salary, isLoading: false });
         } catch (error) {
@@ -159,7 +155,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
           let salary = await employeeSalaryService.calculateAndSave(
             employee_id,
             year,
-            month,
+            month
           );
 
           // If calculated_by is provided, update the salary record with it
@@ -174,7 +170,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
               other_costs: salary.other_costs,
               bonus: salary.bonus,
               deduction: salary.deduction,
-              approved_by: calculated_by,
+              approved_by: calculated_by
             });
           }
 
@@ -184,7 +180,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
             (s) =>
               s.employee_id === employee_id &&
               s.salary_period_year === year &&
-              s.salary_period_month === month,
+              s.salary_period_month === month
           );
 
           if (index >= 0) {
@@ -213,7 +209,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
           const current = await employeeSalaryService.getSalaryRecord(
             employee_id,
             year,
-            month,
+            month
           );
           if (!current) {
             throw new Error("Salary record not found");
@@ -237,7 +233,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
             status: updates.status ?? current.status,
             notes: updates.notes ?? current.notes ?? undefined,
             approved_by:
-              updates.approved_by ?? current.approved_by ?? undefined,
+              updates.approved_by ?? current.approved_by ?? undefined
           };
 
           const updated =
@@ -249,7 +245,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
             (s) =>
               s.employee_id === employee_id &&
               s.salary_period_year === year &&
-              s.salary_period_month === month,
+              s.salary_period_month === month
           );
 
           if (index >= 0) {
@@ -257,7 +253,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
             set({
               salaries: [...salaries],
               currentSalary: updated,
-              isLoading: false,
+              isLoading: false
             });
           }
         } catch (error) {
@@ -275,7 +271,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
           await employeeSalaryService.deleteSalaryRecord(
             employee_id,
             year,
-            month,
+            month
           );
 
           // Remove from state
@@ -285,7 +281,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
                 s.employee_id === employee_id &&
                 s.salary_period_year === year &&
                 s.salary_period_month === month
-              ),
+              )
           );
 
           set({ salaries, isLoading: false });
@@ -305,7 +301,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
             employee_id,
             year,
             month,
-            approved_by,
+            approved_by
           );
 
           if (approved) {
@@ -315,7 +311,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
               (s) =>
                 s.employee_id === employee_id &&
                 s.salary_period_year === year &&
-                s.salary_period_month === month,
+                s.salary_period_month === month
             );
 
             if (index >= 0) {
@@ -323,7 +319,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
               set({
                 salaries: [...salaries],
                 currentSalary: approved,
-                isLoading: false,
+                isLoading: false
               });
             }
           }
@@ -342,7 +338,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
           const paid = await employeeSalaryService.markAsPaid(
             employee_id,
             year,
-            month,
+            month
           );
 
           if (paid) {
@@ -352,7 +348,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
               (s) =>
                 s.employee_id === employee_id &&
                 s.salary_period_year === year &&
-                s.salary_period_month === month,
+                s.salary_period_month === month
             );
 
             if (index >= 0) {
@@ -360,7 +356,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
               set({
                 salaries: [...salaries],
                 currentSalary: paid,
-                isLoading: false,
+                isLoading: false
               });
             }
           }
@@ -375,14 +371,14 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
       },
 
       // Calculate and save for all employees
-      calculateAndSaveAll: async (year, month, calculated_by) => {
+      calculateAndSaveAll: async (year, month) => {
         set({ isLoading: true, error: null });
         try {
           // Calculate for all employees at once (without filtering by employee_id)
           const calculated =
             await employeeSalaryService.calculateEmployeeSalary({
               year,
-              month,
+              month
             });
 
           // Save each one using the pre-calculated data
@@ -398,7 +394,7 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
               seller_commission_total: calc.seller_commission_total,
               other_costs: calc.other_costs,
               bonus: calc.bonus,
-              deduction: calc.deduction,
+              deduction: calc.deduction
             };
 
             // Save directly without recalculating
@@ -426,10 +422,10 @@ export const useEmployeeSalaryStore = create<EmployeeSalaryState>()(
           currentSalary: null,
           isLoading: false,
           error: null,
-          filters: initialFilters,
+          filters: initialFilters
         });
-      },
+      }
     }),
-    { name: "EmployeeSalaryStore" },
-  ),
+    { name: "EmployeeSalaryStore" }
+  )
 );

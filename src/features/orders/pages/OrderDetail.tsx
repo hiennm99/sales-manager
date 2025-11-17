@@ -1,12 +1,9 @@
 // src/features/orders/pages/OrderDetail.tsx
 
+import { OrderDetailTabs, OrderForm, orderService, useOrderStore } from "@features/orders";
+import type { Order, OrderItem } from "@types";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import type { Order, OrderItem } from "../../../types/order";
-import { OrderDetailTabs } from "../components";
-import { OrderForm } from "../components/OrderForm";
-import { useOrderStore } from "../store/useOrderStore";
-import { orderService } from "../services/orderService.ts";
 
 /**
  * Component for viewing and editing an existing order
@@ -25,7 +22,7 @@ export const OrderDetail: React.FC = () => {
     isLoading,
     initializeDraftForEdit,
     updateOrder,
-    deleteOrder,
+    deleteOrder
   } = useOrderStore();
 
   // Find order by ID with proper validation
@@ -33,7 +30,7 @@ export const OrderDetail: React.FC = () => {
     ? orders.find((o) => o.id === Number(orderId))
     : undefined;
 
-  // If order not in store, try to fetch from database
+  // If order not in stores, try to fetch from database
   useEffect(() => {
     if (!order && orderId && !dbOrder && !dbLoading) {
       const fetchOrder = async () => {
@@ -53,7 +50,7 @@ export const OrderDetail: React.FC = () => {
     }
   }, [orderId, order, dbOrder, dbLoading]);
 
-  // Use database order if local store doesn't have it
+  // Use database order if local stores doesn't have it
   if (!order && dbOrder) {
     order = dbOrder;
   }
@@ -75,7 +72,7 @@ export const OrderDetail: React.FC = () => {
 
   const handleSubmit = async (
     updatedOrder: Partial<Order>,
-    updatedOrderItems: OrderItem[],
+    updatedOrderItems: OrderItem[]
   ) => {
     if (!orderId) {
       console.error("Order ID is missing");
@@ -98,7 +95,7 @@ export const OrderDetail: React.FC = () => {
 
     // Confirm deletion
     const confirmed = window.confirm(
-      "Bạn có chắc chắn muốn xóa đơn hàng này? Hành động này không thể hoàn tác.",
+      "Bạn có chắc chắn muốn xóa đơn hàng này? Hành động này không thể hoàn tác."
     );
 
     if (!confirmed) return;

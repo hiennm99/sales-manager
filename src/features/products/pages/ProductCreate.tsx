@@ -1,11 +1,11 @@
 // src/features/products/pages/ProductCreate.tsx
 
+import { TextBox } from "@components";
+import { useProductStore } from "@features/products";
+import { useShopStore } from "@features/shops";
+import type { ProductFormData } from "@types";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { TextBox } from "../../../components/common/TextBox";
-import type { ProductFormData } from "../../../types/product";
-import { useShopStore } from "../../shops/store/useShopStore.ts";
-import { useProductStore } from "../store/useProductStore";
 
 export const ProductCreate: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -23,7 +23,7 @@ export const ProductCreate: React.FC = () => {
     sku: "",
     title: "",
     etsy_url: "",
-    image_url: "",
+    image_url: ""
   });
 
   // Calculate next SKU when shop code changes
@@ -31,7 +31,7 @@ export const ProductCreate: React.FC = () => {
     if (selectedShop && !productId) {
       // Get products of this shop
       const shopProducts = products.filter(
-        (p) => p.shop_code === selectedShop.code,
+        (p) => p.shop_code === selectedShop.code
       );
 
       let nextSerial = 1;
@@ -39,7 +39,7 @@ export const ProductCreate: React.FC = () => {
         // Sort by created_at to get the latest
         const sortedProducts = [...shopProducts].sort(
           (a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
 
         const lastSKU = sortedProducts[0].sku;
@@ -75,7 +75,7 @@ export const ProductCreate: React.FC = () => {
           sku: product.sku,
           title: product.title,
           etsy_url: product.etsy_url,
-          image_url: product.image_url,
+          image_url: product.image_url
         });
         setImagePreview(product.image_url);
         setGeneratedSKU(product.sku);
@@ -111,7 +111,7 @@ export const ProductCreate: React.FC = () => {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -128,7 +128,7 @@ export const ProductCreate: React.FC = () => {
       if (!file.type.startsWith("image/")) {
         setErrors((prev) => ({
           ...prev,
-          image: "Vui lòng chọn file hình ảnh",
+          image: "Vui lòng chọn file hình ảnh"
         }));
         return;
       }
@@ -137,7 +137,7 @@ export const ProductCreate: React.FC = () => {
       if (file.size > 5 * 1024 * 1024) {
         setErrors((prev) => ({
           ...prev,
-          image: "Kích thước file không được vượt quá 5MB",
+          image: "Kích thước file không được vượt quá 5MB"
         }));
         return;
       }
@@ -168,7 +168,7 @@ export const ProductCreate: React.FC = () => {
       } else {
         const newProduct = await createProduct(
           formData,
-          imageFile || undefined,
+          imageFile || undefined
         );
         navigate(`/products/${newProduct.id}`);
       }
@@ -184,7 +184,7 @@ export const ProductCreate: React.FC = () => {
       sku: "",
       title: "",
       etsy_url: "",
-      image_url: "",
+      image_url: ""
     });
     setImageFile(null);
     setImagePreview("");

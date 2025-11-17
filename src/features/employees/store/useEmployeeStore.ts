@@ -1,9 +1,9 @@
-// src/features/employees/store/useEmployeeStore.ts
+// src/features/employees/stores/useEmployeeStore.ts
 
+import { employeeService } from "@features/employees";
+import type { Employee, EmployeeFormData } from "@types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Employee, EmployeeFormData } from "../../../types/employee";
-import { employeeService } from "../services/employeeService.ts";
 
 interface EmployeeStore {
   employees: Employee[];
@@ -20,7 +20,7 @@ interface EmployeeStore {
   createEmployee: (data: EmployeeFormData) => Promise<Employee>;
   updateEmployee: (
     id: number,
-    data: Partial<EmployeeFormData>,
+    data: Partial<EmployeeFormData>
   ) => Promise<Employee>;
   deleteEmployee: (id: number) => Promise<void>;
   toggleEmployeeStatus: (id: number) => Promise<void>;
@@ -67,7 +67,7 @@ export const useEmployeeStore = create<EmployeeStore>()(
           set((state) => ({
             employees: [newEmployee, ...state.employees],
             selectedEmployee: newEmployee,
-            isLoading: false,
+            isLoading: false
           }));
 
           return newEmployee;
@@ -90,9 +90,9 @@ export const useEmployeeStore = create<EmployeeStore>()(
 
           set((state) => ({
             employees: state.employees.map((a) =>
-              a.id === id ? updatedEmployee : a,
+              a.id === id ? updatedEmployee : a
             ),
-            isLoading: false,
+            isLoading: false
           }));
 
           // Update selected employee if it's the one being updated
@@ -122,7 +122,7 @@ export const useEmployeeStore = create<EmployeeStore>()(
             employees: state.employees.filter((a) => a.id !== id),
             selectedEmployee:
               state.selectedEmployee?.id === id ? null : state.selectedEmployee,
-            isLoading: false,
+            isLoading: false
           }));
         } catch (error) {
           const errorMessage =
@@ -143,9 +143,9 @@ export const useEmployeeStore = create<EmployeeStore>()(
 
           set((state) => ({
             employees: state.employees.map((a) =>
-              a.id === id ? toggledEmployee : a,
+              a.id === id ? toggledEmployee : a
             ),
-            isLoading: false,
+            isLoading: false
           }));
 
           // Update selected employee if it's the one being toggled
@@ -190,7 +190,7 @@ export const useEmployeeStore = create<EmployeeStore>()(
               state.selectedEmployee && ids.includes(state.selectedEmployee.id)
                 ? null
                 : state.selectedEmployee,
-            isLoading: false,
+            isLoading: false
           }));
         } catch (error) {
           const errorMessage =
@@ -209,21 +209,21 @@ export const useEmployeeStore = create<EmployeeStore>()(
 
           const updatedSelectedEmployee = get().selectedEmployee
             ? {
-                ...get().selectedEmployee!,
-                is_active: ids.includes(get().selectedEmployee!.id)
-                  ? is_active
-                  : get().selectedEmployee!.is_active,
-              }
+              ...get().selectedEmployee!,
+              is_active: ids.includes(get().selectedEmployee!.id)
+                ? is_active
+                : get().selectedEmployee!.is_active
+            }
             : null;
 
           set((state) => ({
             employees: state.employees.map((a) =>
               ids.includes(a.id)
                 ? { ...a, is_active, updated_at: new Date() }
-                : a,
+                : a
             ),
             selectedEmployee: updatedSelectedEmployee,
-            isLoading: false,
+            isLoading: false
           }));
         } catch (error) {
           const errorMessage =
@@ -233,13 +233,13 @@ export const useEmployeeStore = create<EmployeeStore>()(
         }
       },
 
-      clearError: () => set({ error: null }),
+      clearError: () => set({ error: null })
     }),
     {
       name: "employee-storage",
       partialize: (state) => ({
-        selectedEmployee: state.selectedEmployee,
-      }),
-    },
-  ),
+        selectedEmployee: state.selectedEmployee
+      })
+    }
+  )
 );

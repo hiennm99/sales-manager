@@ -1,11 +1,8 @@
-// src/features/orders/store/useOrderHistoryStore.ts
+// src/features/orders/stores/useOrderHistoryStore.ts
 
+import { orderHistoryService } from "@features/orders";
+import type { OrderHistory, OrderHistoryActionType } from "@types";
 import { create } from "zustand";
-import type {
-  OrderHistory,
-  OrderHistoryActionType,
-} from "../../../types/orderHistory";
-import { orderHistoryService } from "../services/orderHistoryService.ts";
 
 interface OrderHistoryState {
   // State
@@ -24,7 +21,7 @@ interface OrderHistoryState {
       newValue?: string;
       changedByEmployeeId?: number;
       description?: string;
-    },
+    }
   ) => Promise<OrderHistory>;
   deleteHistoryRecord: (orderId: number, recordId: number) => Promise<void>;
   clearError: () => void;
@@ -43,9 +40,9 @@ export const useOrderHistoryStore = create<OrderHistoryState>((set) => ({
       set((state) => ({
         history: {
           ...state.history,
-          [orderId]: data,
+          [orderId]: data
         },
-        isLoading: false,
+        isLoading: false
       }));
     } catch (error) {
       const errorMsg =
@@ -58,22 +55,22 @@ export const useOrderHistoryStore = create<OrderHistoryState>((set) => ({
   createHistoryRecord: async (
     orderId: number,
     actionType: OrderHistoryActionType,
-    options,
+    options
   ) => {
     set({ isLoading: true, error: null });
     try {
       const record = await orderHistoryService.createHistoryRecord(
         orderId,
         actionType,
-        options,
+        options
       );
 
       set((state) => ({
         history: {
           ...state.history,
-          [orderId]: [record, ...(state.history[orderId] || [])],
+          [orderId]: [record, ...(state.history[orderId] || [])]
         },
-        isLoading: false,
+        isLoading: false
       }));
 
       return record;
@@ -96,10 +93,10 @@ export const useOrderHistoryStore = create<OrderHistoryState>((set) => ({
         history: {
           ...state.history,
           [orderId]: (state.history[orderId] || []).filter(
-            (h) => h.id !== recordId,
-          ),
+            (h) => h.id !== recordId
+          )
         },
-        isLoading: false,
+        isLoading: false
       }));
     } catch (error) {
       const errorMsg =
@@ -119,5 +116,5 @@ export const useOrderHistoryStore = create<OrderHistoryState>((set) => ({
       delete newHistory[orderId];
       return { history: newHistory };
     });
-  },
+  }
 }));

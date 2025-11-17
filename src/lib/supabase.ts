@@ -1,7 +1,7 @@
 // src/lib/supabase.ts
 
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "../types/supabase.ts";
+import type { Database } from "@types";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -32,7 +32,7 @@ export const handleSupabaseError = (error: unknown): string => {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const cleanInsertData = <T extends Record<string, any>>(
-  data: T,
+  data: T
 ): Record<string, any> => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cleaned: Record<string, any> = { ...data };
@@ -62,7 +62,7 @@ export const cleanInsertData = <T extends Record<string, any>>(
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const cleanUpdateData = <T extends Record<string, any>>(
-  data: T,
+  data: T
 ): Record<string, any> => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cleaned: Record<string, any> = { ...data };

@@ -1,7 +1,6 @@
 // src/features/dashboard/services/dashboardService.ts
 
-import { format } from "date-fns";
-import { handleSupabaseError, supabase } from "../../../lib/supabase";
+import { handleSupabaseError, supabase } from "@lib";
 import type {
   ChartDataPoint,
   DashboardData,
@@ -10,14 +9,15 @@ import type {
   DashboardTrends,
   DateRange,
   EmployeePerformance,
+  Order,
   OrdersChartData,
   OrderStatusDistribution,
   ProfitChartData,
   RevenueChartData,
   ShopPerformance,
-  TrendData,
-} from "../../../types/dashboard";
-import type { Order } from "../../../types/order";
+  TrendData
+} from "@types";
+import { format } from "date-fns";
 
 /**
  * Dashboard Service API
@@ -33,7 +33,7 @@ export const dashboardService = {
       const orders = await this.getOrdersInDateRange(
         filters.dateRange,
         filters.shopIds,
-        filters.employeeIds,
+        filters.employeeIds
       );
 
       // Calculate all metrics and chart data
@@ -44,7 +44,7 @@ export const dashboardService = {
         ordersChart,
         shopPerformance,
         employeePerformance,
-        orderStatusDistribution,
+        orderStatusDistribution
       ] = await Promise.all([
         this.calculateMetrics(orders, filters),
         this.getRevenueChartData(filters),
@@ -52,7 +52,7 @@ export const dashboardService = {
         this.getOrdersChartData(filters),
         this.getShopPerformance(filters),
         this.getEmployeePerformance(filters),
-        this.getOrderStatusDistribution(filters),
+        this.getOrderStatusDistribution(filters)
       ]);
 
       return {
@@ -63,7 +63,7 @@ export const dashboardService = {
         shopPerformance,
         employeePerformance,
         orderStatusDistribution,
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: new Date().toISOString()
       };
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
@@ -77,7 +77,7 @@ export const dashboardService = {
   async getOrdersInDateRange(
     dateRange: DateRange,
     shopIds?: number[],
-    employeeIds?: number[],
+    employeeIds?: number[]
   ): Promise<Order[]> {
     let query = supabase
       .from("orders")
@@ -94,7 +94,7 @@ export const dashboardService = {
     }
 
     const { data, error } = await query.order("order_date", {
-      ascending: false,
+      ascending: false
     });
 
     if (error) {
@@ -106,7 +106,7 @@ export const dashboardService = {
     return (data || []).map((row) => ({
       ...row,
       created_at: new Date(row.created_at),
-      updated_at: new Date(row.updated_at),
+      updated_at: new Date(row.updated_at)
     }));
   },
 
@@ -115,32 +115,32 @@ export const dashboardService = {
    */
   async calculateMetrics(
     orders: Order[],
-    filters: DashboardFilters,
+    filters: DashboardFilters
   ): Promise<DashboardMetrics> {
     const totalRevenue = {
       usd: orders.reduce(
         (sum, order) => sum + (order.order_earnings_usd || 0),
-        0,
+        0
       ),
       vnd: orders.reduce(
         (sum, order) => sum + (order.order_earnings_vnd || 0),
-        0,
-      ),
+        0
+      )
     };
 
     const totalProfit = {
       usd: orders.reduce((sum, order) => sum + (order.profit_usd || 0), 0),
-      vnd: orders.reduce((sum, order) => sum + (order.profit_vnd || 0), 0),
+      vnd: orders.reduce((sum, order) => sum + (order.profit_vnd || 0), 0)
     };
 
     const totalOrders = orders.length;
     const deliveredOrders = orders.filter(
-      (order) => order.delivery_status_id === 4,
+      (order) => order.delivery_status_id === 4
     ).length; // Assuming 4 = delivered
 
     const averageOrderValue = {
       usd: totalOrders > 0 ? totalRevenue.usd / totalOrders : 0,
-      vnd: totalOrders > 0 ? totalRevenue.vnd / totalOrders : 0,
+      vnd: totalOrders > 0 ? totalRevenue.vnd / totalOrders : 0
     };
 
     const profitMargin =
@@ -161,7 +161,7 @@ export const dashboardService = {
       conversionRate,
       revenueGrowth: trends.revenue.changePercentage,
       profitGrowth: trends.profit.changePercentage,
-      ordersGrowth: trends.orders.changePercentage,
+      ordersGrowth: trends.orders.changePercentage
     };
   },
 
@@ -169,12 +169,12 @@ export const dashboardService = {
    * Get revenue chart data
    */
   async getRevenueChartData(
-    filters: DashboardFilters,
+    filters: DashboardFilters
   ): Promise<RevenueChartData> {
     const [monthly, quarterly, yearly] = await Promise.all([
       this.getChartDataByPeriod(filters, "monthly"),
       this.getChartDataByPeriod(filters, "quarterly"),
-      this.getChartDataByPeriod(filters, "yearly"),
+      this.getChartDataByPeriod(filters, "yearly")
     ]);
 
     return { monthly, quarterly, yearly };
@@ -184,12 +184,12 @@ export const dashboardService = {
    * Get profit chart data
    */
   async getProfitChartData(
-    filters: DashboardFilters,
+    filters: DashboardFilters
   ): Promise<ProfitChartData> {
     const [monthly, quarterly, yearly] = await Promise.all([
       this.getChartDataByPeriod(filters, "monthly"),
       this.getChartDataByPeriod(filters, "quarterly"),
-      this.getChartDataByPeriod(filters, "yearly"),
+      this.getChartDataByPeriod(filters, "yearly")
     ]);
 
     return { monthly, quarterly, yearly };
@@ -199,12 +199,12 @@ export const dashboardService = {
    * Get orders chart data
    */
   async getOrdersChartData(
-    filters: DashboardFilters,
+    filters: DashboardFilters
   ): Promise<OrdersChartData> {
     const [monthly, quarterly, yearly] = await Promise.all([
       this.getChartDataByPeriod(filters, "monthly"),
       this.getChartDataByPeriod(filters, "quarterly"),
-      this.getChartDataByPeriod(filters, "yearly"),
+      this.getChartDataByPeriod(filters, "yearly")
     ]);
 
     return { monthly, quarterly, yearly };
@@ -215,12 +215,12 @@ export const dashboardService = {
    */
   async getChartDataByPeriod(
     filters: DashboardFilters,
-    period: "monthly" | "quarterly" | "yearly",
+    period: "monthly" | "quarterly" | "yearly"
   ): Promise<ChartDataPoint[]> {
     const { data, error } = await supabase
       .from("orders")
       .select(
-        "order_date, order_earnings_usd, order_earnings_vnd, profit_usd, profit_vnd",
+        "order_date, order_earnings_usd, order_earnings_vnd, profit_usd, profit_vnd"
       )
       .gte("order_date", filters.dateRange.startDate)
       .lte("order_date", filters.dateRange.endDate)
@@ -239,19 +239,19 @@ export const dashboardService = {
     return Object.entries(groupedData).map(([dateKey, orders]) => {
       const revenue_usd = orders.reduce(
         (sum, order) => sum + (order.order_earnings_usd || 0),
-        0,
+        0
       );
       const revenue_vnd = orders.reduce(
         (sum, order) => sum + (order.order_earnings_vnd || 0),
-        0,
+        0
       );
       const profit_usd = orders.reduce(
         (sum, order) => sum + (order.profit_usd || 0),
-        0,
+        0
       );
       const profit_vnd = orders.reduce(
         (sum, order) => sum + (order.profit_vnd || 0),
-        0,
+        0
       );
       const orders_count = orders.length;
       const average_order_value_usd =
@@ -268,7 +268,7 @@ export const dashboardService = {
         profit_vnd,
         orders_count,
         average_order_value_usd,
-        profit_margin,
+        profit_margin
       };
     });
   },
@@ -277,7 +277,7 @@ export const dashboardService = {
    * Get shop performance data
    */
   async getShopPerformance(
-    filters: DashboardFilters,
+    filters: DashboardFilters
   ): Promise<ShopPerformance[]> {
     const { data, error } = await supabase
       .from("orders")
@@ -288,7 +288,7 @@ export const dashboardService = {
         order_earnings_vnd,
         profit_usd,
         profit_vnd
-      `,
+      `
       )
       .gte("order_date", filters.dateRange.startDate)
       .lte("order_date", filters.dateRange.endDate);
@@ -310,26 +310,26 @@ export const dashboardService = {
         acc[shopId].push(order);
         return acc;
       },
-      {} as Record<number, any[]>,
+      {} as Record<number, any[]>
     );
 
     return Object.entries(shopGroups)
       .map(([shopId, orders]) => {
         const revenue_usd = orders.reduce(
           (sum, order) => sum + (order.order_earnings_usd || 0),
-          0,
+          0
         );
         const revenue_vnd = orders.reduce(
           (sum, order) => sum + (order.order_earnings_vnd || 0),
-          0,
+          0
         );
         const profit_usd = orders.reduce(
           (sum, order) => sum + (order.profit_usd || 0),
-          0,
+          0
         );
         const profit_vnd = orders.reduce(
           (sum, order) => sum + (order.profit_vnd || 0),
-          0,
+          0
         );
         const profit_margin =
           revenue_usd > 0 ? (profit_usd / revenue_usd) * 100 : 0;
@@ -341,7 +341,7 @@ export const dashboardService = {
           profit_usd,
           profit_vnd,
           orders_count: orders.length,
-          profit_margin,
+          profit_margin
         };
       })
       .sort((a, b) => b.revenue_usd - a.revenue_usd);
@@ -351,7 +351,7 @@ export const dashboardService = {
    * Get employee performance data
    */
   async getEmployeePerformance(
-    filters: DashboardFilters,
+    filters: DashboardFilters
   ): Promise<EmployeePerformance[]> {
     const { data, error } = await supabase
       .from("orders")
@@ -364,7 +364,7 @@ export const dashboardService = {
         profit_usd,
         profit_vnd,
         artist_commission_rate
-      `,
+      `
       )
       .gte("order_date", filters.dateRange.startDate)
       .lte("order_date", filters.dateRange.endDate);
@@ -401,19 +401,19 @@ export const dashboardService = {
       .map(([employeeId, orders]) => {
         const revenue_usd = orders.reduce(
           (sum, order) => sum + (order.order_earnings_usd || 0),
-          0,
+          0
         );
         const revenue_vnd = orders.reduce(
           (sum, order) => sum + (order.order_earnings_vnd || 0),
-          0,
+          0
         );
         const profit_usd = orders.reduce(
           (sum, order) => sum + (order.profit_usd || 0),
-          0,
+          0
         );
         const profit_vnd = orders.reduce(
           (sum, order) => sum + (order.profit_vnd || 0),
-          0,
+          0
         );
         const profit_margin =
           revenue_usd > 0 ? (profit_usd / revenue_usd) * 100 : 0;
@@ -432,7 +432,7 @@ export const dashboardService = {
           profit_vnd,
           orders_count: orders.length,
           profit_margin,
-          commission_earned,
+          commission_earned
         };
       })
       .sort((a, b) => b.revenue_usd - a.revenue_usd);
@@ -442,7 +442,7 @@ export const dashboardService = {
    * Get order status distribution
    */
   async getOrderStatusDistribution(
-    filters: DashboardFilters,
+    filters: DashboardFilters
   ): Promise<OrderStatusDistribution[]> {
     const { data, error } = await supabase
       .from("orders")
@@ -464,14 +464,14 @@ export const dashboardService = {
         acc[statusId] = (acc[statusId] || 0) + 1;
         return acc;
       },
-      {} as Record<number, number>,
+      {} as Record<number, number>
     );
 
     return Object.entries(statusGroups)
       .map(([statusId, count]) => ({
         status_id: parseInt(statusId),
         count,
-        percentage: (count / totalOrders) * 100,
+        percentage: (count / totalOrders) * 100
       }))
       .sort((a, b) => b.count - a.count);
   },
@@ -480,7 +480,7 @@ export const dashboardService = {
    * Get dashboard trends (compare current vs previous period)
    */
   async getDashboardTrends(
-    filters: DashboardFilters,
+    filters: DashboardFilters
   ): Promise<DashboardTrends> {
     const currentOrders = await this.getOrdersInDateRange(filters.dateRange);
     const previousOrders = await this.getPreviousPeriodOrders(filters);
@@ -501,7 +501,7 @@ export const dashboardService = {
 
     const previousDateRange = {
       startDate: previousStart.toISOString().split("T")[0],
-      endDate: previousEnd.toISOString().split("T")[0],
+      endDate: previousEnd.toISOString().split("T")[0]
     };
 
     return this.getOrdersInDateRange(previousDateRange);
@@ -512,11 +512,11 @@ export const dashboardService = {
    */
   calculateTrends(
     currentOrders: Order[],
-    previousOrders: Order[],
+    previousOrders: Order[]
   ): DashboardTrends {
     const calculateTrendData = (
       current: number,
-      previous: number,
+      previous: number
     ): TrendData => {
       const change = current - previous;
       const changePercentage = previous > 0 ? (change / previous) * 100 : 0;
@@ -527,20 +527,20 @@ export const dashboardService = {
 
     const currentRevenue = currentOrders.reduce(
       (sum, order) => sum + (order.order_earnings_usd || 0),
-      0,
+      0
     );
     const previousRevenue = previousOrders.reduce(
       (sum, order) => sum + (order.order_earnings_usd || 0),
-      0,
+      0
     );
 
     const currentProfit = currentOrders.reduce(
       (sum, order) => sum + (order.profit_usd || 0),
-      0,
+      0
     );
     const previousProfit = previousOrders.reduce(
       (sum, order) => sum + (order.profit_usd || 0),
-      0,
+      0
     );
 
     const currentOrderCount = currentOrders.length;
@@ -563,8 +563,8 @@ export const dashboardService = {
       averageOrderValue: calculateTrendData(currentAOV, previousAOV),
       profitMargin: calculateTrendData(
         currentProfitMargin,
-        previousProfitMargin,
-      ),
+        previousProfitMargin
+      )
     };
   },
 
@@ -573,7 +573,7 @@ export const dashboardService = {
    */
   groupDataByPeriod(
     data: any[],
-    period: "monthly" | "quarterly" | "yearly",
+    period: "monthly" | "quarterly" | "yearly"
   ): Record<string, any[]> {
     return data.reduce(
       (acc, item) => {
@@ -600,7 +600,7 @@ export const dashboardService = {
         acc[key].push(item);
         return acc;
       },
-      {} as Record<string, any[]>,
+      {} as Record<string, any[]>
     );
   },
 
@@ -609,7 +609,7 @@ export const dashboardService = {
    */
   formatPeriodLabel(
     dateKey: string,
-    period: "monthly" | "quarterly" | "yearly",
+    period: "monthly" | "quarterly" | "yearly"
   ): string {
     switch (period) {
       case "monthly":
@@ -621,5 +621,5 @@ export const dashboardService = {
       default:
         return dateKey;
     }
-  },
+  }
 };

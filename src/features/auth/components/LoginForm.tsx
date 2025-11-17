@@ -1,10 +1,11 @@
-// features/auth/components/LoginForm.tsx
+// src/features/auth/components/LoginForm.tsx
 
-import { FiMail, FiLock, FiAlertCircle, FiLogIn } from "react-icons/fi";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { useAuthStore } from "@features/auth";
 import { useState } from "react";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { FiAlertCircle, FiLock, FiLogIn, FiMail } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/useAuthStore";
+import Icon from '../../../../public/icons/icon-384x384.webp';
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -30,15 +31,15 @@ export const LoginForm = () => {
       <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <FiLogIn className="w-8 h-8 text-white" />
-          </div>
+          <img 
+            src={Icon} 
+            alt="TranhArt Sales Manager Logo" 
+            className="w-20 h-20 mx-auto mb-4 rounded-3xl"
+          />
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome Back
+            TranhArt Sales Manager
           </h2>
-          <p className="text-gray-600">
-            Sign in to your account
-          </p>
+          <p className="text-gray-600">Sign in to your account</p>
         </div>
 
         {/* Error Message */}
@@ -57,7 +58,7 @@ export const LoginForm = () => {
               htmlFor="email"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Email Address
+              Email
             </label>
             <div className="relative">
               <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -100,7 +101,7 @@ export const LoginForm = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+            className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 rounded-lg font-medium hover:from-orange-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
           >
             {loading ? (
               <>

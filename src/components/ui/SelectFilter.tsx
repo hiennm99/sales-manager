@@ -1,12 +1,7 @@
 // src/components/ui/SelectFilter.tsx
 
+import type { SelectOption } from "@components/ui/Select.tsx";
 import React from "react";
-
-// Định nghĩa cấu trúc cho mỗi option trong select
-export interface SelectOption {
-  value: string | number;
-  label: string;
-}
 
 interface SelectFilterProps {
   label: string;
@@ -18,13 +13,13 @@ interface SelectFilterProps {
 }
 
 export const SelectFilter: React.FC<SelectFilterProps> = ({
-  label,
-  value,
-  onChange,
-  options,
-  defaultOptionLabel = "Tất cả",
-  defaultOptionValue = "all",
-}) => {
+                                                            label,
+                                                            value,
+                                                            onChange,
+                                                            options,
+                                                            defaultOptionLabel = "Tất cả",
+                                                            defaultOptionValue = "all"
+                                                          }) => {
   return (
     <div>
       <label className="block text-xs text-gray-600 mb-1">{label}</label>

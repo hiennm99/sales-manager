@@ -1,19 +1,9 @@
 // src/features/products/services/productService.ts
 
-import {
-  CACHE,
-  IMAGE_OPTIMIZATION,
-  STORAGE_PATHS,
-  VALIDATION,
-} from "../../../constants";
-import {
-  cleanInsertData,
-  handleSupabaseError,
-  supabase,
-} from "../../../lib/supabase";
-import { databaseService, imageService } from "../../../services";
-import type { Product, ProductFormData } from "../../../types/product";
-import type { Database } from "../../../types/supabase.ts";
+import { CACHE, IMAGE_OPTIMIZATION, STORAGE_PATHS, VALIDATION } from "@constants";
+import { cleanInsertData, handleSupabaseError, supabase } from "@lib";
+import { databaseService, imageService } from "@services";
+import type { Database, Product, ProductFormData } from "@types";
 
 /**
  * Table reference for reusability
@@ -24,7 +14,7 @@ const productsTable = () => supabase.from("products");
  * Helper function to map database row to Product type
  */
 const mapToRow = (
-  data: Database["public"]["Tables"]["products"]["Row"],
+  data: Database["public"]["Tables"]["products"]["Row"]
 ): Product => {
   return {
     id: data.id,
@@ -35,7 +25,7 @@ const mapToRow = (
     image_url: data.image_url,
     is_active: data.is_active,
     created_at: new Date(data.created_at),
-    updated_at: new Date(data.updated_at),
+    updated_at: new Date(data.updated_at)
   };
 };
 
@@ -52,7 +42,7 @@ const generateSKU = (shopCode: string, serialId: number): string => {
 
   if (zerosNeeded < 0) {
     throw new Error(
-      `SKU would exceed ${maxLength} characters. Shop code: ${shopCode}, Serial: ${serialId}`,
+      `SKU would exceed ${maxLength} characters. Shop code: ${shopCode}, Serial: ${serialId}`
     );
   }
 
@@ -67,7 +57,7 @@ const getNextSerialId = async (shopCode: string): Promise<number> => {
   try {
     // Get the maximum ID for the current shop using databaseService
     const maxId = await databaseService.getMaxColumnValue("products", "id", {
-      shop_code: shopCode,
+      shop_code: shopCode
     });
 
     // If no products exist for this shop, start with 1, otherwise increment max ID
@@ -93,7 +83,7 @@ const uploadProductImage = async (file: File, sku: string): Promise<string> => {
   const optimizedImage = await imageService.convertToWebP(file, {
     quality: IMAGE_OPTIMIZATION.QUALITY,
     maxWidth: IMAGE_OPTIMIZATION.MAX_WIDTH,
-    maxHeight: IMAGE_OPTIMIZATION.MAX_HEIGHT,
+    maxHeight: IMAGE_OPTIMIZATION.MAX_HEIGHT
   });
 
   // Delete existing file if exists
@@ -111,7 +101,7 @@ const uploadProductImage = async (file: File, sku: string): Promise<string> => {
     .upload(filePath, optimizedImage, {
       cacheControl: CACHE.STORAGE_CACHE_CONTROL,
       upsert: true,
-      contentType: `image/${IMAGE_OPTIMIZATION.FORMAT}`,
+      contentType: `image/${IMAGE_OPTIMIZATION.FORMAT}`
     });
 
   if (uploadError) {
@@ -136,7 +126,7 @@ const deleteProductImage = async (sku: string): Promise<void> => {
     const { data: files, error: listError } = await supabase.storage
       .from(STORAGE_PATHS.PRODUCTS.BUCKET)
       .list(STORAGE_PATHS.PRODUCTS.FOLDER, {
-        search: sku,
+        search: sku
       });
 
     if (listError) {
@@ -146,7 +136,7 @@ const deleteProductImage = async (sku: string): Promise<void> => {
 
     if (files && files.length > 0) {
       const filesToDelete = files.map((file) =>
-        STORAGE_PATHS.PRODUCTS.getFilePath(file.name),
+        STORAGE_PATHS.PRODUCTS.getFilePath(file.name)
       );
       const { error: deleteError } = await supabase.storage
         .from(STORAGE_PATHS.PRODUCTS.BUCKET)
@@ -226,7 +216,7 @@ export const productService = {
    */
   async createProduct(
     formData: ProductFormData,
-    imageFile?: File,
+    imageFile?: File
   ): Promise<Product> {
     // Get next serial ID for this shop
     const serialId = await getNextSerialId(formData.shop_code);
@@ -246,7 +236,7 @@ export const productService = {
       title: formData.title,
       etsy_url: formData.etsy_url,
       image_url: imageUrl,
-      is_active: true,
+      is_active: true
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -277,7 +267,7 @@ export const productService = {
   async updateProduct(
     id: string,
     formData: Partial<ProductFormData>,
-    imageFile?: File,
+    imageFile?: File
   ): Promise<Product> {
     const numericId = parseInt(id, 10);
 
@@ -285,7 +275,7 @@ export const productService = {
     const currentProduct = await this.getProductById(numericId);
 
     const updateData: Record<string, unknown> = {
-      updated_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
 
     if (formData.title !== undefined) updateData.title = formData.title;
@@ -296,7 +286,7 @@ export const productService = {
     if (imageFile) {
       updateData.image_url = await uploadProductImage(
         imageFile,
-        currentProduct.sku,
+        currentProduct.sku
       );
     } else if (formData.image_url !== undefined) {
       updateData.image_url = formData.image_url;
@@ -362,7 +352,7 @@ export const productService = {
     const { data, error } = await productsTable()
       .update({
         is_active: newStatus,
-        updated_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       })
       .eq("id", numericId)
       .select()
@@ -436,7 +426,7 @@ export const productService = {
     const { error } = await productsTable()
       .update({
         is_active,
-        updated_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       })
       .in("id", ids);
 
@@ -486,7 +476,7 @@ export const productService = {
    */
   async productExists(id: number): Promise<boolean> {
     return productExists(id);
-  },
+  }
 };
 
 /**
@@ -509,7 +499,7 @@ export const downloadProductsCSV = async (): Promise<void> => {
     "Image URL",
     "Status",
     "Created At",
-    "Updated At",
+    "Updated At"
   ];
   const rows = products.map((p) => [
     p.id,
@@ -520,12 +510,12 @@ export const downloadProductsCSV = async (): Promise<void> => {
     p.image_url,
     p.is_active ? "active" : "inactive",
     p.created_at.toISOString(),
-    p.updated_at.toISOString(),
+    p.updated_at.toISOString()
   ]);
 
   const csvContent = [
     headers.join(","),
-    ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
+    ...rows.map((row) => row.map((cell) => `"${cell}"`).join(","))
   ].join("\n");
 
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -534,7 +524,7 @@ export const downloadProductsCSV = async (): Promise<void> => {
   link.setAttribute("href", url);
   link.setAttribute(
     "download",
-    `products-${new Date().toISOString().split("T")[0]}.csv`,
+    `products-${new Date().toISOString().split("T")[0]}.csv`
   );
   link.style.visibility = "hidden";
   document.body.appendChild(link);

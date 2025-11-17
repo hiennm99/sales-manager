@@ -1,12 +1,14 @@
+// src/components/ui/forms/FormAutocomplete.tsx
 /**
  * FormAutocomplete - Generic autocomplete component
  * Consolidates EmployeeAutocomplete and ProductAutocomplete
  * Reusable for any entity with search functionality
  */
 
+import { cn } from "@lib";
 import React, { useEffect, useRef, useState } from "react";
-import { cn } from "../../../lib/utils";
-import { theme } from "../../../styles/theme";
+
+import { theme } from "../../../styles";
 
 export interface AutocompleteOption {
   id: string | number;
@@ -33,7 +35,7 @@ interface FormAutocompleteProps {
   onChange?: (
     name: string,
     value: string | number,
-    option?: AutocompleteOption,
+    option?: AutocompleteOption
   ) => void;
   onBlur?: () => void;
   maxResults?: number;
@@ -51,23 +53,23 @@ interface FormAutocompleteProps {
  * - Loading state
  */
 export const FormAutocomplete: React.FC<FormAutocompleteProps> = ({
-  label,
-  value,
-  name,
-  placeholder = "Tìm kiếm...",
-  required = false,
-  disabled = false,
-  error,
-  helperText,
-  className = "",
-  icon,
-  fetchOptions,
-  displayFormat,
-  getInitialLabel,
-  onChange,
-  onBlur,
-  maxResults = 10,
-}) => {
+                                                                    label,
+                                                                    value,
+                                                                    name,
+                                                                    placeholder = "Tìm kiếm...",
+                                                                    required = false,
+                                                                    disabled = false,
+                                                                    error,
+                                                                    helperText,
+                                                                    className = "",
+                                                                    icon,
+                                                                    fetchOptions,
+                                                                    displayFormat,
+                                                                    getInitialLabel,
+                                                                    onChange,
+                                                                    onBlur,
+                                                                    maxResults = 10
+                                                                  }) => {
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState<AutocompleteOption[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -76,7 +78,7 @@ export const FormAutocomplete: React.FC<FormAutocompleteProps> = ({
   const [displayLabel, setDisplayLabel] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const searchTimeoutRef = useRef<NodeJS.Timeout>();
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load initial label when value changes
   useEffect(() => {
@@ -145,7 +147,7 @@ export const FormAutocomplete: React.FC<FormAutocompleteProps> = ({
       case "ArrowDown":
         e.preventDefault();
         setSelectedIndex((prev) =>
-          prev < options.length - 1 ? prev + 1 : prev,
+          prev < options.length - 1 ? prev + 1 : prev
         );
         break;
       case "ArrowUp":
@@ -228,7 +230,7 @@ export const FormAutocomplete: React.FC<FormAutocompleteProps> = ({
               icon && "pl-10",
               error
                 ? theme.components.input.error
-                : theme.components.input.border,
+                : theme.components.input.border
             )}
           />
 
@@ -269,7 +271,7 @@ export const FormAutocomplete: React.FC<FormAutocompleteProps> = ({
                     "px-4 py-2.5 cursor-pointer flex items-center gap-3 transition-colors",
                     index === selectedIndex
                       ? "bg-blue-100 text-blue-900"
-                      : "hover:bg-gray-50 text-gray-900",
+                      : "hover:bg-gray-50 text-gray-900"
                   )}
                 >
                   {/* Avatar or Icon */}
@@ -284,7 +286,8 @@ export const FormAutocomplete: React.FC<FormAutocompleteProps> = ({
                       {option.icon}
                     </div>
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-semibold text-blue-600">
+                    <div
+                      className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-semibold text-blue-600">
                       {getInitials(option.label)}
                     </div>
                   )}
@@ -314,7 +317,8 @@ export const FormAutocomplete: React.FC<FormAutocompleteProps> = ({
 
         {/* No results message */}
         {isOpen && !isLoading && inputValue && options.length === 0 && (
-          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg p-4 text-center text-gray-500">
+          <div
+            className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg p-4 text-center text-gray-500">
             Không tìm thấy kết quả
           </div>
         )}
@@ -324,7 +328,7 @@ export const FormAutocomplete: React.FC<FormAutocompleteProps> = ({
         <p
           className={cn(
             "mt-1 text-sm flex items-center gap-1",
-            error ? "text-red-600" : "text-gray-500",
+            error ? "text-red-600" : "text-gray-500"
           )}
         >
           {error && (

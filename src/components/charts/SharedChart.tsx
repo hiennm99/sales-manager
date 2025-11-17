@@ -113,7 +113,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
   payload,
   label,
   tooltipFormatter,
-  currency = "USD",
+  // currency = "USD",
 }) => {
   if (active && payload && payload.length) {
     return (

@@ -1,8 +1,8 @@
 // src/features/dashboard/components/filters/DateRangeFilter.tsx
 
-import { FiCalendar, FiChevronDown } from "react-icons/fi";
+import type { QuickDateRange, TimePeriod } from "@types";
 import React, { useState } from "react";
-import type { QuickDateRange, TimePeriod } from "../../../../types/dashboard";
+import { FiCalendar, FiChevronDown } from "react-icons/fi";
 
 interface DateRangeFilterProps {
   selectedRange: TimePeriod | null;
@@ -15,14 +15,14 @@ interface DateRangeFilterProps {
 }
 
 export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
-  selectedRange,
-  quickRanges,
-  customStartDate,
-  customEndDate,
-  onQuickRangeSelect,
-  onCustomRangeSelect,
-  className = "",
-}) => {
+                                                                  selectedRange,
+                                                                  quickRanges,
+                                                                  customStartDate,
+                                                                  customEndDate,
+                                                                  onQuickRangeSelect,
+                                                                  onCustomRangeSelect,
+                                                                  className = ""
+                                                                }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showCustom, setShowCustom] = useState(false);
   const [tempStartDate, setTempStartDate] = useState(customStartDate || "");

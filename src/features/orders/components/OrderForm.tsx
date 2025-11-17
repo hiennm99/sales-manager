@@ -1,23 +1,21 @@
 // src/features/orders/components/OrderForm.tsx
 
-import { FiDollarSign, FiFileText, FiPackage, FiTrash2, FiTruck, FiUser } from "react-icons/fi";
+import { ActionButtons } from "@components/common";
+import { ConfirmModal } from "@components/modals";
+import { DEFAULTS } from "@constants";
+import { useEmployeeStore } from "@features/employees";
+import { ORDER_DEFAULT_VALUES, useOrderCalculations, useOrderStore } from "@features/orders";
+import { useProductStore } from "@features/products";
+import { useShopStore } from "@features/shops";
+import { useStatusStore } from "@features/statuses";
+import { useConfirmModal } from "@hooks";
+import { useExchangeRateStore } from "@stores";
+import type { Order, OrderItem, OrderItemFormData, Product } from "@types";
+import { populateEmployeeName } from "@types";
 import React, { useEffect, useState } from "react";
+import { FiDollarSign, FiFileText, FiPackage, FiTrash2, FiTruck, FiUser } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { ActionButtons } from "../../../components/common";
-import { ConfirmModal } from "../../../components/modals";
-import { DEFAULTS } from "../../../constants/app-constants";
-import { useConfirmModal } from "../../../hooks";
-import { useExchangeRateStore } from "../../../store/useExchangeRateStore";
-import type { Order, OrderItem, OrderItemFormData } from "../../../types/order";
-import { populateEmployeeName } from "../../../types/order";
-import type { Product } from "../../../types/product";
-import { useEmployeeStore } from "../../employees/store/useEmployeeStore";
-import { useProductStore } from "../../products/store/useProductStore";
-import { useShopStore } from "../../shops/store/useShopStore";
-import { useStatusStore } from "../../statuses/store/useStatusStore";
-import { ORDER_DEFAULT_VALUES } from "../constants/orderDefaults";
-import { useOrderCalculations } from "../hooks";
-import { useOrderStore } from "../store/useOrderStore";
+
 import {
   CustomerInfoSection,
   FinancialInputSection,
@@ -27,24 +25,24 @@ import {
   OrderItemsSection,
   OrderStatusSection,
   ShippingInfoSection,
-  TabNavigation,
   type Tab,
+  TabNavigation
 } from "./index";
 
 interface OrderFormProps {
   mode: "create" | "edit";
   onSubmit: (
     updatedOrder: Partial<Order>,
-    updatedOrderItems: OrderItem[],
+    updatedOrderItems: OrderItem[]
   ) => Promise<void>;
   onDelete?: () => void;
 }
 
 export const OrderForm: React.FC<OrderFormProps> = ({
-  mode,
-  onSubmit,
-  onDelete,
-}) => {
+                                                      mode,
+                                                      onSubmit,
+                                                      onDelete
+                                                    }) => {
   const navigate = useNavigate();
 
   // Lấy draft state và các hàm cập nhật trực tiếp từ useOrderStore
@@ -56,7 +54,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
     updateDraftItems,
     updateDraftStatus,
     resetDraft,
-    isLoading,
+    isLoading
   } = useOrderStore();
 
   const { selectedShop } = useShopStore();
@@ -66,7 +64,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
     customerStatuses,
     factoryStatuses,
     deliveryStatuses,
-    fetchAllStatuses,
+    fetchAllStatuses
   } = useStatusStore();
   const { employees, fetchEmployees } = useEmployeeStore();
 
@@ -76,13 +74,13 @@ export const OrderForm: React.FC<OrderFormProps> = ({
 
   // State này vẫn cần thiết cho UI để hiển thị thông tin sản phẩm đã chọn
   const [selectedProducts, setSelectedProducts] = useState<(Product | null)[]>(
-    [],
+    []
   );
 
-  // Đồng bộ hóa selectedProducts với draftItems từ store
+  // Đồng bộ hóa selectedProducts với draftItems từ stores
   useEffect(() => {
     const products = draftItems.map(
-      (item) => getProductBySku(item.sku) || null,
+      (item) => getProductBySku(item.sku) || null
     );
     setSelectedProducts(products);
   }, [draftItems, getProductBySku]);
@@ -93,13 +91,13 @@ export const OrderForm: React.FC<OrderFormProps> = ({
 
   // Get global exchange rate for fallback
   const globalExchangeRate = useExchangeRateStore(
-    (state) => state.exchangeRate,
+    (state) => state.exchangeRate
   );
 
   // Helper to get effective exchange rate
   const getEffectiveRate = (
     fieldValue: number | undefined,
-    mainRate: number | undefined,
+    mainRate: number | undefined
   ): number => {
     if (fieldValue && fieldValue !== DEFAULTS.EXCHANGE_RATE) {
       return fieldValue;
@@ -112,76 +110,76 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   // Calculate effective exchange rates
   const effectiveExchangeRate = getEffectiveRate(
     draftOrder.exchangeRate,
-    undefined,
+    undefined
   );
   const effectiveShippingRate = getEffectiveRate(
     draftOrder.shippingExchangeRate,
-    draftOrder.exchangeRate,
+    draftOrder.exchangeRate
   );
   const effectiveRefundRate = getEffectiveRate(
     draftOrder.refundFeeExchangeRate,
-    draftOrder.exchangeRate,
+    draftOrder.exchangeRate
   );
   const effectiveOtherFeeRate = getEffectiveRate(
     draftOrder.otherFeeExchangeRate,
-    draftOrder.exchangeRate,
+    draftOrder.exchangeRate
   );
   const effectiveBonusRate = getEffectiveRate(
     draftOrder.otherBonusExchangeRate,
-    draftOrder.exchangeRate,
+    draftOrder.exchangeRate
   );
 
   const tabs: Tab[] =
     mode === "create"
       ? [
-          {
-            id: "order-info",
-            label: "Thông tin đơn",
-            icon: <FiFileText className="w-5 h-5" />,
-          },
-          {
-            id: "customer",
-            label: "Khách hàng",
-            icon: <FiUser className="w-5 h-5" />,
-          },
-          {
-            id: "products",
-            label: "Sản phẩm",
-            icon: <FiPackage className="w-5 h-5" />,
-          },
-          {
-            id: "financial",
-            label: "Tài chính",
-            icon: <FiDollarSign className="w-5 h-5" />,
-          },
-        ]
+        {
+          id: "order-info",
+          label: "Thông tin đơn",
+          icon: <FiFileText className="w-5 h-5" />
+        },
+        {
+          id: "customer",
+          label: "Khách hàng",
+          icon: <FiUser className="w-5 h-5" />
+        },
+        {
+          id: "products",
+          label: "Sản phẩm",
+          icon: <FiPackage className="w-5 h-5" />
+        },
+        {
+          id: "financial",
+          label: "Tài chính",
+          icon: <FiDollarSign className="w-5 h-5" />
+        }
+      ]
       : [
-          {
-            id: "order-info",
-            label: "Thông tin đơn",
-            icon: <FiFileText className="w-5 h-5" />,
-          },
-          {
-            id: "customer",
-            label: "Khách hàng",
-            icon: <FiUser className="w-5 h-5" />,
-          },
-          {
-            id: "shipping",
-            label: "Vận chuyển",
-            icon: <FiTruck className="w-5 h-5" />,
-          },
-          {
-            id: "products",
-            label: "Sản phẩm",
-            icon: <FiPackage className="w-5 h-5" />,
-          },
-          {
-            id: "financial",
-            label: "Tài chính",
-            icon: <FiDollarSign className="w-5 h-5" />,
-          },
-        ];
+        {
+          id: "order-info",
+          label: "Thông tin đơn",
+          icon: <FiFileText className="w-5 h-5" />
+        },
+        {
+          id: "customer",
+          label: "Khách hàng",
+          icon: <FiUser className="w-5 h-5" />
+        },
+        {
+          id: "shipping",
+          label: "Vận chuyển",
+          icon: <FiTruck className="w-5 h-5" />
+        },
+        {
+          id: "products",
+          label: "Sản phẩm",
+          icon: <FiPackage className="w-5 h-5" />
+        },
+        {
+          id: "financial",
+          label: "Tài chính",
+          icon: <FiDollarSign className="w-5 h-5" />
+        }
+      ];
 
   useEffect(() => {
     fetchAllStatuses();
@@ -199,7 +197,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       employeeId: draftOrder.employeeId,
       employeeName: draftOrder.employeeName,
       sellerEmployeeId: draftOrder.sellerEmployeeId,
-      sellerEmployeeName: draftOrder.sellerEmployeeName,
+      sellerEmployeeName: draftOrder.sellerEmployeeName
     });
 
     // If we have employee IDs but no names, populate them
@@ -216,7 +214,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       const updatedOrder = populateEmployeeName(draftOrder, employees);
       console.log("✅ Updated order:", {
         employeeName: updatedOrder.employeeName,
-        sellerEmployeeName: updatedOrder.sellerEmployeeName,
+        sellerEmployeeName: updatedOrder.sellerEmployeeName
       });
 
       const hasChanges =
@@ -237,7 +235,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
     draftOrder.employeeName,
     draftOrder.sellerEmployeeName,
     employees,
-    updateDraftOrder,
+    updateDraftOrder
   ]);
 
   const validateForm = (): boolean => {
@@ -264,7 +262,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => {
     const { name, value } = e.target;
     const isNumericField = [
@@ -283,7 +281,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       "otherBonusExchangeRate",
       "artistCommissionRate",
       "employeeId",
-      "sellerEmployeeId",
+      "sellerEmployeeId"
     ].includes(name);
 
     const finalValue = isNumericField ? Number(value) || 0 : value;
@@ -298,7 +296,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
         name,
         value,
         finalValue,
-        type: typeof value,
+        type: typeof value
       });
     }
 
@@ -311,7 +309,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
 
   const handleStatusChange = (
     type: "general" | "customer" | "factory" | "delivery",
-    value: number,
+    value: number
   ) => {
     updateDraftStatus(type, value);
   };
@@ -319,7 +317,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   const handleItemChange = (
     index: number,
     field: keyof OrderItemFormData,
-    value: string | number,
+    value: string | number
   ) => {
     const newItems = [...draftItems];
     newItems[index] = { ...newItems[index], [field]: value };
@@ -341,7 +339,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       size: "",
       type: "",
       quantity: ORDER_DEFAULT_VALUES.ITEM_QUANTITY,
-      unit_price_usd: 0,
+      unit_price_usd: 0
     };
     updateDraftItems([...draftItems, newItem]);
   };
@@ -363,7 +361,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       employeeId: draftOrder.employeeId,
       employeeName: draftOrder.employeeName,
       sellerEmployeeId: draftOrder.sellerEmployeeId,
-      sellerEmployeeName: draftOrder.sellerEmployeeName,
+      sellerEmployeeName: draftOrder.sellerEmployeeName
     });
 
     // 1. Chuẩn bị dữ liệu Order (convert camelCase → snake_case)
@@ -417,7 +415,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       general_status_id: draftStatusValues.general,
       customer_status_id: draftStatusValues.customer,
       factory_status_id: draftStatusValues.factory,
-      delivery_status_id: draftStatusValues.delivery,
+      delivery_status_id: draftStatusValues.delivery
     };
 
     // 2. Chuẩn bị dữ liệu OrderItems riêng biệt
@@ -431,7 +429,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       unit_price_usd: item.unit_price_usd || 0,
       item_total_usd: item.quantity * (item.unit_price_usd || 0),
       created_at: new Date(),
-      updated_at: new Date(),
+      updated_at: new Date()
     }));
 
     try {
@@ -458,9 +456,9 @@ export const OrderForm: React.FC<OrderFormProps> = ({
           message:
             "Bạn có muốn hủy bỏ mọi thay đổi và tải lại dữ liệu gốc của đơn hàng không?",
           confirmText: "Tải lại",
-          variant: "warning",
+          variant: "warning"
         },
-        () => window.location.reload(),
+        () => window.location.reload()
       );
     }
     setErrors({});
@@ -488,11 +486,11 @@ export const OrderForm: React.FC<OrderFormProps> = ({
         ),
         confirmText: "Xóa đơn hàng",
         cancelText: "Hủy",
-        variant: "delete",
+        variant: "delete"
       },
       async () => {
         await onDelete();
-      },
+      }
     );
   };
 
@@ -552,7 +550,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                       general: generalStatuses,
                       customer: customerStatuses,
                       factory: factoryStatuses,
-                      delivery: deliveryStatuses,
+                      delivery: deliveryStatuses
                     }}
                     onStatusChange={handleStatusChange}
                   />
@@ -587,7 +585,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 <FinancialInputSection
                   formData={{
                     ...draftOrder,
-                    itemTotalUsd: calculations.itemTotalUsd,
+                    itemTotalUsd: calculations.itemTotalUsd
                   }}
                   errors={errors}
                   onChange={handleChange}

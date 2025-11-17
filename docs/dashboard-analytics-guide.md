@@ -2,80 +2,88 @@
 
 ## Overview
 
-The Dashboard Analytics feature provides comprehensive business intelligence and performance metrics for the Sales Manager application. It includes multiple interactive charts and tables to visualize revenue, order statistics, and employee performance.
+The Dashboard Analytics feature provides comprehensive business intelligence and performance metrics for the Sales
+Manager application. It includes multiple interactive charts and tables to visualize revenue, order statistics, and
+employee performance.
 
 ## Features
 
 ### 1. Revenue by Month Chart
+
 **Multi-line chart showing revenue trends over time**
 
 - **Data Source**: Orders grouped by `order_date`
 - **Metrics**:
-  - Total Earnings (USD/VND)
-  - Total Profit (USD/VND)
+    - Total Earnings (USD/VND)
+    - Total Profit (USD/VND)
 - **Features**:
-  - Toggle between USD and VND currency
-  - Smooth curve visualization
-  - Interactive tooltips
-  - Last 12 months by default
+    - Toggle between USD and VND currency
+    - Smooth curve visualization
+    - Interactive tooltips
+    - Last 12 months by default
 
 ### 2. Revenue by Employee Chart
+
 **Multi-line chart showing employee revenue performance**
 
 - **Data Source**: Orders grouped by `actual_ship_date` (when orders are shipped)
 - **Metrics**:
-  - Revenue per employee per month
-  - Top 5 employees by default
-  - Single employee view when filtered
+    - Revenue per employee per month
+    - Top 5 employees by default
+    - Single employee view when filtered
 - **Features**:
-  - Color-coded lines for each employee
-  - Employee filter dropdown
-  - Automatic top performer selection
+    - Color-coded lines for each employee
+    - Employee filter dropdown
+    - Automatic top performer selection
 
 ### 3. Order Statistics Chart
+
 **Multi-line chart showing order fulfillment metrics**
 
 - **Data Source**: Orders grouped by `order_date`
 - **Metrics**:
-  - Total Orders
-  - Completed Orders
-  - Late Orders (shipped after scheduled date)
+    - Total Orders
+    - Completed Orders
+    - Late Orders (shipped after scheduled date)
 - **Features**:
-  - Identify delivery performance trends
-  - Track completion rates
-  - Monitor late deliveries
+    - Identify delivery performance trends
+    - Track completion rates
+    - Monitor late deliveries
 
 ### 4. Order Status Distribution
+
 **Pie chart showing order status breakdown**
 
 - **Data Source**: Orders grouped by `general_status_id`
 - **Metrics**:
-  - Count per status
-  - Percentage distribution
+    - Count per status
+    - Percentage distribution
 - **Features**:
-  - Color-coded by status type
-  - Interactive donut chart
-  - Detailed breakdown table
+    - Color-coded by status type
+    - Interactive donut chart
+    - Detailed breakdown table
 
 ### 5. Employee Performance Table
+
 **Ranked table of employee metrics**
 
 - **Data Source**: Aggregated order data per employee
 - **Metrics**:
-  - Total Orders
-  - Completed Orders
-  - Total Revenue (USD/VND)
-  - Total Profit (USD/VND)
-  - Average Order Value
-  - Completion Rate
-  - On-time Delivery Rate
+    - Total Orders
+    - Completed Orders
+    - Total Revenue (USD/VND)
+    - Total Profit (USD/VND)
+    - Average Order Value
+    - Completion Rate
+    - On-time Delivery Rate
 - **Features**:
-  - Top 3 highlighted with gold badges
-  - Avatar display with initials fallback
-  - Sortable by revenue
-  - Color-coded completion rates
+    - Top 3 highlighted with gold badges
+    - Avatar display with initials fallback
+    - Sortable by revenue
+    - Color-coded completion rates
 
 ### 6. Quick Summary Stats
+
 **Key performance indicators at a glance**
 
 - Total Orders
@@ -126,37 +134,40 @@ src/features/dashboard/
 ### Tables Used
 
 1. **orders**
-   - `order_date`: For revenue by month grouping
-   - `actual_ship_date`: For employee revenue grouping
-   - `scheduled_ship_date`: For late order calculation
-   - `order_earnings_usd/vnd`: Revenue metrics
-   - `profit_usd/vnd`: Profit metrics
-   - `employee_id`: Employee attribution
-   - `general_status_id`: Order status
+    - `order_date`: For revenue by month grouping
+    - `actual_ship_date`: For employee revenue grouping
+    - `scheduled_ship_date`: For late order calculation
+    - `order_earnings_usd/vnd`: Revenue metrics
+    - `profit_usd/vnd`: Profit metrics
+    - `employee_id`: Employee attribution
+    - `general_status_id`: Order status
 
 2. **employees**
-   - `id`: Employee identifier
-   - `name`: Employee name
-   - `code`: Employee code
-   - `avatar`: Profile picture
-   - `role`: Job role
-   - `is_active`: Active status
+    - `id`: Employee identifier
+    - `name`: Employee name
+    - `code`: Employee code
+    - `avatar`: Profile picture
+    - `role`: Job role
+    - `is_active`: Active status
 
 3. **general_statuses**
-   - `id`: Status identifier
-   - `name`: Status code
-   - `name_vi`: Vietnamese name
-   - `color`: Display color
+    - `id`: Status identifier
+    - `name`: Status code
+    - `name_vi`: Vietnamese name
+    - `color`: Display color
 
 ## API Service Methods
 
 ### `analyticsServiceApi.getMonthlyRevenue(filters?)`
+
 Returns monthly revenue data grouped by order_date.
 
 **Parameters:**
+
 - `filters?: DashboardFilters` - Optional filters (dateRange, employeeId, shopId)
 
 **Returns:**
+
 ```typescript
 MonthlyRevenue[] {
     month: string;              // YYYY-MM
@@ -170,12 +181,15 @@ MonthlyRevenue[] {
 ```
 
 ### `analyticsServiceApi.getRevenueByEmployee(filters?)`
+
 Returns employee revenue data grouped by actual_ship_date.
 
 **Parameters:**
+
 - `filters?: DashboardFilters`
 
 **Returns:**
+
 ```typescript
 RevenueByEmployee[] {
     employee_id: number;
@@ -192,12 +206,15 @@ RevenueByEmployee[] {
 ```
 
 ### `analyticsServiceApi.getMonthlyOrderStats(filters?)`
+
 Returns monthly order statistics including completion and late delivery rates.
 
 **Parameters:**
+
 - `filters?: DashboardFilters`
 
 **Returns:**
+
 ```typescript
 MonthlyOrderStats[] {
     month: string;
@@ -212,12 +229,15 @@ MonthlyOrderStats[] {
 ```
 
 ### `analyticsServiceApi.getOrderStatusDistribution(filters?)`
+
 Returns order count distribution by status.
 
 **Parameters:**
+
 - `filters?: DashboardFilters`
 
 **Returns:**
+
 ```typescript
 OrderStatusDistribution[] {
     status_id: number;
@@ -230,12 +250,15 @@ OrderStatusDistribution[] {
 ```
 
 ### `analyticsServiceApi.getEmployeePerformance(filters?)`
+
 Returns comprehensive employee performance metrics.
 
 **Parameters:**
+
 - `filters?: DashboardFilters`
 
 **Returns:**
+
 ```typescript
 EmployeePerformance[] {
     employee_id: number;
@@ -309,16 +332,19 @@ To add new charts or metrics:
 ## Troubleshooting
 
 ### Charts not displaying
+
 - Ensure Google Charts script is loaded in `index.html`
 - Check browser console for errors
 - Verify data is being fetched successfully
 
 ### Empty data
+
 - Check database has orders with required fields
 - Verify date range includes existing orders
 - Check employee_id and actual_ship_date are populated
 
 ### Performance issues
+
 - Limit date range to reduce data volume
 - Consider pagination for large datasets
 - Optimize Supabase queries with indexes

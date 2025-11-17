@@ -1,11 +1,11 @@
-// features/shops/components/ShopCard.tsx
+// src/features/shops/components/ShopCard.tsx
 
+import { Button } from "@components/ui";
+import { useShopStore } from "@features/shops";
+import { cn } from "@lib";
+import type { Shop } from "@types";
 import React from "react";
 import { Link } from "react-router-dom";
-import { Button } from "../../../components/ui/Button";
-import { cn } from "../../../lib/utils";
-import type { Shop } from "../../../types/shop";
-import { useShopStore } from "../store/useShopStore.ts";
 
 interface ShopCardProps {
   shop: Shop;
@@ -25,7 +25,7 @@ export const ShopCard: React.FC<ShopCardProps> = ({ shop, onSelect }) => {
     <div
       className={cn(
         "bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden",
-        isSelected && "ring-2 ring-blue-500",
+        isSelected && "ring-2 ring-blue-500"
       )}
     >
       {/* Header với logo */}
@@ -37,7 +37,8 @@ export const ShopCard: React.FC<ShopCardProps> = ({ shop, onSelect }) => {
             className="w-20 h-20 rounded-full border-4 border-white"
           />
         ) : (
-          <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center text-3xl font-bold text-blue-600">
+          <div
+            className="w-20 h-20 rounded-full bg-white flex items-center justify-center text-3xl font-bold text-blue-600">
             {shop.name.charAt(0)}
           </div>
         )}
@@ -49,7 +50,7 @@ export const ShopCard: React.FC<ShopCardProps> = ({ shop, onSelect }) => {
               "px-2 py-1 rounded-full text-xs font-semibold",
               shop.is_active === true
                 ? "bg-green-100 text-green-700"
-                : "bg-gray-100 text-gray-700",
+                : "bg-gray-100 text-gray-700"
             )}
           >
             {shop.is_active === true ? "Hoạt động" : "Tạm ngưng"}

@@ -1,18 +1,18 @@
-// features/auth/components/SignUpWithEmployee.tsx
+// src/features/auth/components/SignUpWithEmployee.tsx
 
-import { FiAlertCircle, FiMail, FiLock, FiUsers } from "react-icons/fi";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { useAuthStore } from "@features/auth";
+import { employeeService } from "@features/employees";
+import type { Employee } from "@types";
 import { useEffect, useState } from "react";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { FiAlertCircle, FiLock, FiMail, FiUsers } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { employeeService } from "../../employees/services/employeeService.ts";
-import type { Employee } from "../../../types/employee";
-import { useAuthStore } from "../store/useAuthStore";
 
 export const SignUpWithEmployee = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(
-    null,
+    null
   );
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loadingEmployees, setLoadingEmployees] = useState(false);
@@ -55,7 +55,7 @@ export const SignUpWithEmployee = () => {
       // For now, we'll link it immediately after signup
       // In production, you might want to wait for email verification
       alert(
-        "Account created! Please check your email to verify your account.",
+        "Account created! Please check your email to verify your account."
       );
       navigate("/login");
     } catch (err) {
@@ -68,7 +68,8 @@ export const SignUpWithEmployee = () => {
       <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <div
+            className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <FiUsers className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">

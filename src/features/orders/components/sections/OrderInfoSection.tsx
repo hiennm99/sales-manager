@@ -4,13 +4,9 @@
  * Simple section component for order information
  */
 
+import { EmployeeAutocomplete, SectionCard, TextBox } from "@components/common";
+import type { OrderFormData } from "@types";
 import React from "react";
-import {
-  EmployeeAutocomplete,
-  SectionCard,
-  TextBox,
-} from "../../../../components/common";
-import type { OrderFormData } from "../../../../types/order";
 
 interface OrderInfoSectionProps {
   formData: OrderFormData;
@@ -19,7 +15,7 @@ interface OrderInfoSectionProps {
   onChange: (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => void;
 }
 
@@ -40,21 +36,21 @@ const InfoIcon = (
 );
 
 export const OrderInfoSection: React.FC<OrderInfoSectionProps> = ({
-  formData,
-  shopName,
-  errors = {},
-  onChange,
-}) => {
+                                                                    formData,
+                                                                    shopName,
+                                                                    errors = {},
+                                                                    onChange
+                                                                  }) => {
   // Convert TextBox onChange to standard form event
   const handleChange = (
     name: string,
-    value: string | number | React.ReactNode | undefined,
+    value: string | number | React.ReactNode | undefined
   ) => {
     const fakeEvent = {
       target: {
         name,
-        value: typeof value === "number" ? value : (value as string),
-      },
+        value: typeof value === "number" ? value : (value as string)
+      }
     } as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>;
     onChange(fakeEvent);
   };
@@ -149,7 +145,7 @@ export const OrderInfoSection: React.FC<OrderInfoSectionProps> = ({
             onChange={(value, sellerEmployeeId) => {
               console.log("💼 Seller employee selected:", {
                 value,
-                sellerEmployeeId,
+                sellerEmployeeId
               });
               handleChange("sellerEmployeeName", value);
               if (sellerEmployeeId !== undefined) {

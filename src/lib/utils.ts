@@ -1,4 +1,4 @@
-// lib/utils.ts
+// src/lib/utils.ts
 
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -11,7 +11,7 @@ export function cn(...inputs: ClassValue[]) {
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
-    currency: "VND",
+    currency: "VND"
   }).format(amount);
 }
 
@@ -42,7 +42,7 @@ export function formatPercentage(value: number | undefined): string {
 export function formatNumber(value: number, decimals: number = 0): string {
   return new Intl.NumberFormat("vi-VN", {
     minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
+    maximumFractionDigits: decimals
   }).format(value);
 }
 
@@ -51,7 +51,7 @@ export function formatDate(date: Date | string): string {
   return new Intl.DateTimeFormat("vi-VN", {
     day: "2-digit",
     month: "2-digit",
-    year: "numeric",
+    year: "numeric"
   }).format(d);
 }
 
@@ -62,7 +62,7 @@ export function formatDateTime(date: Date | string): string {
     month: "2-digit",
     year: "numeric",
     hour: "2-digit",
-    minute: "2-digit",
+    minute: "2-digit"
   }).format(d);
 }
 

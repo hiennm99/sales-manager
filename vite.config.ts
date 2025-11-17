@@ -1,58 +1,72 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import path from 'path'
-import Inspect from "vite-plugin-inspect"
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+import { VitePWA } from "vite-plugin-pwa";
+import tsconfigPaths from "vite-tsconfig-paths";
 
+// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    Inspect()
-  ],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-      "@/components": path.resolve(__dirname, "./src/components"),
-      "@/features": path.resolve(__dirname, "./src/features"),
-      "@/types": path.resolve(__dirname, "./src/types"),
-      "@/lib": path.resolve(__dirname, "./src/lib"),
-      "@/hooks": path.resolve(__dirname, "./src/hooks"),
-      "@/store": path.resolve(__dirname, "./src/store"),
-      "@/services": path.resolve(__dirname, "./src/services"),
-      "@/utils": path.resolve(__dirname, "./src/utils"),
-      "@/constants": path.resolve(__dirname, "./src/constants"),
-    },
-  },
-  optimizeDeps: {
-    exclude: ['discord.js', 'dotenv'],
-    include: [
-      "react",
-      "react-dom",
-      "react-icons"
-    ],
-    esbuildOptions: {
-      target: 'esnext'
-    }
-  },
-  build: {
-    assetsInlineLimit: 4096,
-    chunkSizeWarningLimit: 1024,
-    rollupOptions: {
-      external: ['discord.js', 'dotenv'],
-      output: {
-        assetFileNames: "images/[name]-[hash].[ext]",
-        manualChunks: {
-          'vendor': ['react', 'react-dom', 'react-router', 'react-router-dom'],
-          'supabase': ['@supabase/supabase-js'],
-          'ui': ['react-icons', 'clsx', 'tailwind-merge', 'lucide-react'],
-          'utils': ['date-fns', 'zustand', 'gsap', 'lodash'],
-          'charts': ['recharts'],
-        }
+    tsconfigPaths(),
+    VitePWA({
+      registerType: "autoUpdate",
+      includeAssets: [
+        "favicon.ico",
+        "icons/*.webp",
+      ],
+      manifest: {
+        name: "TranhArt Sales Manager",
+        short_name: "TranhArt Sales Manager",
+        icons: [
+          { src: "icons/icon-48x48.webp", sizes: "48x48", type: "image/webp" },
+          { src: "icons/icon-72x72.webp", sizes: "72x72", type: "image/webp" },
+          { src: "icons/icon-96x96.webp", sizes: "96x96", type: "image/webp" },
+          {
+            src: "icons/icon-128x128.webp",
+            sizes: "128x128",
+            type: "image/webp",
+          },
+          {
+            src: "icons/icon-144x144.webp",
+            sizes: "144x144",
+            type: "image/webp",
+          },
+          {
+            src: "icons/icon-152x152.webp",
+            sizes: "152x152",
+            type: "image/webp",
+          },
+          {
+            src: "icons/icon-192x192.webp",
+            sizes: "192x192",
+            type: "image/webp",
+          },
+          {
+            src: "icons/icon-256x256.webp",
+            sizes: "256x256",
+            type: "image/webp",
+          },
+          {
+            src: "icons/icon-384x384.webp",
+            sizes: "384x384",
+            type: "image/webp",
+          },
+          {
+            src: "icons/icon-512x512.webp",
+            sizes: "512x512",
+            type: "image/webp",
+          },
+        ],
+        start_url: "/",
+        display: "standalone",
+        background_color: "#ffffff",
+        theme_color: "#000000",
       },
-    },
-  },
-  ssr: {
-    external: ['discord.js', 'dotenv'],
-  },
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,webp}"],
+      },
+    }),
+  ],
 });

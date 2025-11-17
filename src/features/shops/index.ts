@@ -1,4 +1,5 @@
-// features/shops/index.ts
-export { ShopCreate } from "./pages/ShopCreate";
-export { ShopListAdmin } from "./pages/ShopListAdmin";
-export { useShopStore } from "./store/useShopStore";
+// src/features/shops/index.ts
+export * from "./components";
+export * from "./pages";
+export * from "./services";
+export * from "./store";

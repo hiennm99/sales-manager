@@ -1,13 +1,11 @@
-// features/auth/pages/ProfilePage.tsx
+// src/features/auth/pages/ProfilePage.tsx
 
-import { IoArrowBack } from "react-icons/io5";
-import { FiEdit2 } from "react-icons/fi";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { EditProfileForm, useAuthStore, useEmployeeStore } from "@features/auth";
 import { useEffect, useState } from "react";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { FiEdit2 } from "react-icons/fi";
+import { IoArrowBack } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/useAuthStore";
-import { useEmployeeStore } from "../store/useEmployeeStore";
-import { EditProfileForm } from "../components/EditProfileForm";
 
 export const ProfilePage = () => {
   const navigate = useNavigate();
@@ -15,7 +13,7 @@ export const ProfilePage = () => {
   const { employee, loading } = useEmployeeStore();
   const [isEditing, setIsEditing] = useState(false);
 
-  // Redirect to login if not authenticated
+  // Redirect if not authenticated
   useEffect(() => {
     if (initialized && !user) {
       navigate("/login");
@@ -89,7 +87,8 @@ export const ProfilePage = () => {
                       className="w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover"
                     />
                   ) : (
-                    <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                    <div
+                      className="w-32 h-32 rounded-full border-4 border-white shadow-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
                       <span className="text-4xl font-bold text-white">
                         {employee.name
                           .split(" ")
@@ -194,7 +193,7 @@ export const ProfilePage = () => {
                     </label>
                     <p className="text-lg text-gray-900 mt-1">
                       {new Date(employee.created_at).toLocaleDateString(
-                        "vi-VN",
+                        "vi-VN"
                       )}
                     </p>
                   </div>

@@ -1,5 +1,14 @@
-// src/features/dashboard/store/useDashboardStore.ts
+// src/features/dashboard/stores/useDashboardStore.ts
 
+import { dashboardService } from "@features/dashboard";
+import type {
+  DashboardData,
+  DashboardFilters,
+  DashboardMetrics,
+  DashboardTrends,
+  QuickDateRange,
+  TimePeriod
+} from "@types";
 import {
   endOfDay,
   endOfMonth,
@@ -13,28 +22,19 @@ import {
   subDays,
   subMonths,
   subQuarters,
-  subYears,
+  subYears
 } from "date-fns";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type {
-  DashboardData,
-  DashboardFilters,
-  DashboardMetrics,
-  DashboardTrends,
-  QuickDateRange,
-  TimePeriod,
-} from "../../../types/dashboard";
-import { dashboardService } from "../services/dashboardService.ts";
 
 // Default filters
 const getDefaultFilters = (): DashboardFilters => ({
   dateRange: {
     startDate: format(startOfMonth(new Date()), "yyyy-MM-dd"),
-    endDate: format(endOfMonth(new Date()), "yyyy-MM-dd"),
+    endDate: format(endOfMonth(new Date()), "yyyy-MM-dd")
   },
   currency: "USD",
-  period: "monthly",
+  period: "monthly"
 });
 
 // Quick date range options
@@ -46,68 +46,68 @@ const getQuickDateRanges = (): QuickDateRange[] => {
       label: "Hôm nay",
       value: "today",
       startDate: format(startOfDay(today), "yyyy-MM-dd"),
-      endDate: format(endOfDay(today), "yyyy-MM-dd"),
+      endDate: format(endOfDay(today), "yyyy-MM-dd")
     },
     {
       label: "Hôm qua",
       value: "yesterday",
       startDate: format(startOfDay(subDays(today, 1)), "yyyy-MM-dd"),
-      endDate: format(endOfDay(subDays(today, 1)), "yyyy-MM-dd"),
+      endDate: format(endOfDay(subDays(today, 1)), "yyyy-MM-dd")
     },
     {
       label: "7 ngày qua",
       value: "last7days",
       startDate: format(subDays(today, 6), "yyyy-MM-dd"),
-      endDate: format(today, "yyyy-MM-dd"),
+      endDate: format(today, "yyyy-MM-dd")
     },
     {
       label: "30 ngày qua",
       value: "last30days",
       startDate: format(subDays(today, 29), "yyyy-MM-dd"),
-      endDate: format(today, "yyyy-MM-dd"),
+      endDate: format(today, "yyyy-MM-dd")
     },
     {
       label: "90 ngày qua",
       value: "last90days",
       startDate: format(subDays(today, 89), "yyyy-MM-dd"),
-      endDate: format(today, "yyyy-MM-dd"),
+      endDate: format(today, "yyyy-MM-dd")
     },
     {
       label: "Tháng này",
       value: "thisMonth",
       startDate: format(startOfMonth(today), "yyyy-MM-dd"),
-      endDate: format(endOfMonth(today), "yyyy-MM-dd"),
+      endDate: format(endOfMonth(today), "yyyy-MM-dd")
     },
     {
       label: "Tháng trước",
       value: "lastMonth",
       startDate: format(startOfMonth(subMonths(today, 1)), "yyyy-MM-dd"),
-      endDate: format(endOfMonth(subMonths(today, 1)), "yyyy-MM-dd"),
+      endDate: format(endOfMonth(subMonths(today, 1)), "yyyy-MM-dd")
     },
     {
       label: "Quý này",
       value: "thisQuarter",
       startDate: format(startOfQuarter(today), "yyyy-MM-dd"),
-      endDate: format(endOfQuarter(today), "yyyy-MM-dd"),
+      endDate: format(endOfQuarter(today), "yyyy-MM-dd")
     },
     {
       label: "Quý trước",
       value: "lastQuarter",
       startDate: format(startOfQuarter(subQuarters(today, 1)), "yyyy-MM-dd"),
-      endDate: format(endOfQuarter(subQuarters(today, 1)), "yyyy-MM-dd"),
+      endDate: format(endOfQuarter(subQuarters(today, 1)), "yyyy-MM-dd")
     },
     {
       label: "Năm này",
       value: "thisYear",
       startDate: format(startOfYear(today), "yyyy-MM-dd"),
-      endDate: format(endOfYear(today), "yyyy-MM-dd"),
+      endDate: format(endOfYear(today), "yyyy-MM-dd")
     },
     {
       label: "Năm trước",
       value: "lastYear",
       startDate: format(startOfYear(subYears(today, 1)), "yyyy-MM-dd"),
-      endDate: format(endOfYear(subYears(today, 1)), "yyyy-MM-dd"),
-    },
+      endDate: format(endOfYear(subYears(today, 1)), "yyyy-MM-dd")
+    }
   ];
 };
 
@@ -127,7 +127,7 @@ interface DashboardStore {
   // Auto-refresh
   autoRefresh: boolean;
   refreshInterval: number; // in seconds
-  refreshTimer: NodeJS.Timeout | null;
+  refreshTimer: ReturnType<typeof setInterval> | null;
 
   // Actions
   fetchDashboardData: () => Promise<void>;
@@ -137,7 +137,7 @@ interface DashboardStore {
   setQuickDateRange: (range: TimePeriod) => void;
   setCurrency: (currency: "USD" | "VND" | "BOTH") => void;
   setPeriod: (
-    period: "daily" | "weekly" | "monthly" | "quarterly" | "yearly",
+    period: "daily" | "weekly" | "monthly" | "quarterly" | "yearly"
   ) => void;
   addShopFilter: (shopId: number) => void;
   removeShopFilter: (shopId: number) => void;
@@ -159,7 +159,7 @@ interface DashboardStore {
   exportDashboardData: () => Promise<Blob>;
   getMetricValue: (
     metric: keyof DashboardMetrics,
-    currency?: "USD" | "VND",
+    currency?: "USD" | "VND"
   ) => number;
   getTrendValue: (trend: keyof DashboardTrends) => number;
 
@@ -194,7 +194,7 @@ export const useDashboardStore = create<DashboardStore>()(
           set({
             data,
             isLoading: false,
-            lastRefresh: new Date().toISOString(),
+            lastRefresh: new Date().toISOString()
           });
         } catch (error) {
           console.error("Error fetching dashboard data:", error);
@@ -203,7 +203,7 @@ export const useDashboardStore = create<DashboardStore>()(
               error instanceof Error
                 ? error.message
                 : "Failed to fetch dashboard data",
-            isLoading: false,
+            isLoading: false
           });
         }
       },
@@ -226,22 +226,22 @@ export const useDashboardStore = create<DashboardStore>()(
       // Set date range
       setDateRange: (startDate, endDate) => {
         get().updateFilters({
-          dateRange: { startDate, endDate },
+          dateRange: { startDate, endDate }
         });
       },
 
       // Set quick date range
       setQuickDateRange: (range) => {
         const quickRange = get().quickDateRanges.find(
-          (qr) => qr.value === range,
+          (qr) => qr.value === range
         );
         if (quickRange) {
           set({ selectedQuickRange: range });
           get().updateFilters({
             dateRange: {
               startDate: quickRange.startDate,
-              endDate: quickRange.endDate,
-            },
+              endDate: quickRange.endDate
+            }
           });
         }
       },
@@ -262,7 +262,7 @@ export const useDashboardStore = create<DashboardStore>()(
         const shopIds = filters.shopIds || [];
         if (!shopIds.includes(shopId)) {
           get().updateFilters({
-            shopIds: [...shopIds, shopId],
+            shopIds: [...shopIds, shopId]
           });
         }
       },
@@ -272,7 +272,7 @@ export const useDashboardStore = create<DashboardStore>()(
         const { filters } = get();
         const shopIds = filters.shopIds || [];
         get().updateFilters({
-          shopIds: shopIds.filter((id) => id !== shopId),
+          shopIds: shopIds.filter((id) => id !== shopId)
         });
       },
 
@@ -282,7 +282,7 @@ export const useDashboardStore = create<DashboardStore>()(
         const employeeIds = filters.employeeIds || [];
         if (!employeeIds.includes(employeeId)) {
           get().updateFilters({
-            employeeIds: [...employeeIds, employeeId],
+            employeeIds: [...employeeIds, employeeId]
           });
         }
       },
@@ -292,7 +292,7 @@ export const useDashboardStore = create<DashboardStore>()(
         const { filters } = get();
         const employeeIds = filters.employeeIds || [];
         get().updateFilters({
-          employeeIds: employeeIds.filter((id) => id !== employeeId),
+          employeeIds: employeeIds.filter((id) => id !== employeeId)
         });
       },
 
@@ -300,7 +300,7 @@ export const useDashboardStore = create<DashboardStore>()(
       clearFilters: () => {
         set({
           filters: getDefaultFilters(),
-          selectedQuickRange: "thisMonth",
+          selectedQuickRange: "thisMonth"
         });
         get().fetchDashboardData();
       },
@@ -315,7 +315,7 @@ export const useDashboardStore = create<DashboardStore>()(
           error: null,
           lastRefresh: null,
           selectedQuickRange: "thisMonth",
-          autoRefresh: false,
+          autoRefresh: false
         });
       },
 
@@ -330,7 +330,7 @@ export const useDashboardStore = create<DashboardStore>()(
           console.error("Error fetching trends:", error);
           set({
             error:
-              error instanceof Error ? error.message : "Failed to fetch trends",
+              error instanceof Error ? error.message : "Failed to fetch trends"
           });
         }
       },
@@ -386,11 +386,11 @@ export const useDashboardStore = create<DashboardStore>()(
         const exportData = {
           ...data,
           filters,
-          exportedAt: new Date().toISOString(),
+          exportedAt: new Date().toISOString()
         };
 
         const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-          type: "application/json",
+          type: "application/json"
         });
 
         return blob;
@@ -429,7 +429,7 @@ export const useDashboardStore = create<DashboardStore>()(
       // Set error
       setError: (error) => {
         set({ error });
-      },
+      }
     }),
     {
       name: "dashboard-store",
@@ -437,8 +437,8 @@ export const useDashboardStore = create<DashboardStore>()(
         filters: state.filters,
         selectedQuickRange: state.selectedQuickRange,
         autoRefresh: state.autoRefresh,
-        refreshInterval: state.refreshInterval,
-      }),
-    },
-  ),
+        refreshInterval: state.refreshInterval
+      })
+    }
+  )
 );

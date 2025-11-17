@@ -1,6 +1,7 @@
 # 🎯 Zustand Selector Patterns Guide
 
 ## Table of Contents
+
 1. [Why Use Selectors](#why-use-selectors)
 2. [Basic Patterns](#basic-patterns)
 3. [Advanced Patterns](#advanced-patterns)
@@ -15,9 +16,9 @@
 ### The Problem
 
 ```typescript
-// ❌ BAD: Subscribes to ENTIRE store
+// ❌ BAD: Subscribes to ENTIRE stores
 const store = useOrderStore();
-// Component re-renders when ANY field in store changes:
+// Component re-renders when ANY field in stores changes:
 // - orders, selectedOrder, draftOrder, draftItems, 
 // - isLoading, error, statusValues, etc. (20+ fields)
 ```
@@ -108,9 +109,10 @@ function TotalRevenue() {
 ### Pattern 5: Using Predefined Selectors
 
 **Setup** (in store file):
+
 ```typescript
-// src/features/orders/store/useOrderStore.ts
-import { createCRUDStoreSelectors } from '@/store/crud.store.factory';
+// src/features/orders/stores/useOrderStore.ts
+import { createCRUDStoreSelectors } from '@/stores/crud.stores.factory';
 
 export const useOrderStore = create<OrderStore>()(...);
 
@@ -119,8 +121,9 @@ export const orderSelectors = createCRUDStoreSelectors(useOrderStore);
 ```
 
 **Usage** (in component):
+
 ```typescript
-import { orderSelectors } from '@/features/orders/store/useOrderStore';
+import { orderSelectors } from '@/features/orders/stores/useOrderStore';
 
 function OrderList() {
   // Use predefined selectors
@@ -206,6 +209,7 @@ function OrderDetails({ orderId }: { orderId: string | null }) {
 ### Example 1: OrderList.tsx (Before & After)
 
 **❌ BEFORE** (10+ unnecessary re-renders):
+
 ```typescript
 export const OrderList: React.FC = () => {
   // Subscribes to EVERYTHING - 20+ fields
@@ -229,6 +233,7 @@ export const OrderList: React.FC = () => {
 ```
 
 **✅ AFTER** (70% reduction in re-renders):
+
 ```typescript
 export const OrderList: React.FC = () => {
   // Only subscribe to what we need
@@ -248,12 +253,14 @@ export const OrderList: React.FC = () => {
 ### Example 2: EmployeeList.tsx (Before & After)
 
 **❌ BEFORE**:
+
 ```typescript
 const { employees, isLoading, error, fetchEmployees, ...unused } = useEmployeeStore();
 // 8 re-renders when only employees are displayed
 ```
 
 **✅ AFTER**:
+
 ```typescript
 const employees = useEmployeeStore(state => state.employees);
 const isLoading = useEmployeeStore(state => state.isLoading);
@@ -265,6 +272,7 @@ const fetchEmployees = useEmployeeStore(state => state.fetchEmployees);
 ### Example 3: Dashboard with Auto-refresh
 
 **✅ OPTIMIZED**:
+
 ```typescript
 function DashboardPage() {
   // Data subscriptions
@@ -437,7 +445,7 @@ function AdminPanel() {
 ### Tip 5: Batch State Updates
 
 ```typescript
-// ❌ BAD - Multiple store updates
+// ❌ BAD - Multiple stores updates
 function loadData() {
   set({ isLoading: true });        // Re-render 1
   const data = await fetch();
@@ -445,7 +453,7 @@ function loadData() {
   set({ isLoading: false });        // Re-render 3
 }
 
-// ✅ GOOD - Single store update
+// ✅ GOOD - Single stores update
 function loadData() {
   set({ isLoading: true });
   const data = await fetch();
@@ -457,13 +465,13 @@ function loadData() {
 
 ## Quick Reference Card
 
-| Pattern | Use Case | Re-render Trigger |
-|---------|----------|-------------------|
-| `state => state.field` | Single field | When field changes |
-| `state => ({ a, b })` + shallow | Multiple fields | When any field changes |
-| `state => state.action` | Actions only | Never (stable reference) |
-| `state => computed` | Derived value | When result changes |
-| Predefined selectors | Common patterns | Depends on selector |
+| Pattern                         | Use Case        | Re-render Trigger        |
+|---------------------------------|-----------------|--------------------------|
+| `state => state.field`          | Single field    | When field changes       |
+| `state => ({ a, b })` + shallow | Multiple fields | When any field changes   |
+| `state => state.action`         | Actions only    | Never (stable reference) |
+| `state => computed`             | Derived value   | When result changes      |
+| Predefined selectors            | Common patterns | Depends on selector      |
 
 ---
 
@@ -481,7 +489,8 @@ function loadData() {
 ---
 
 **Last Updated**: 2025-10-22  
-**See Also**: 
+**See Also**:
+
 - [OPTIMIZATION_RESULTS.md](./OPTIMIZATION_RESULTS.md)
 - [React DevTools Profiler Guide](https://react.dev/learn/react-developer-tools)
 - [Zustand Documentation](https://github.com/pmndrs/zustand)

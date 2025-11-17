@@ -4,14 +4,22 @@
  * Simple section component for financial information
  */
 
-import { FiAlertCircle, FiCreditCard, FiDollarSign, FiRefreshCw, FiTrendingDown, FiXCircle, FiGift } from "react-icons/fi";
-import { MdOutlineAccountBalance } from "react-icons/md";
+import { SectionCard, TextBox } from "@components/common";
+import { DEFAULTS } from "@constants";
+import { formatPercentage, formatUSD, formatVND } from "@lib";
+import { useExchangeRateStore } from "@stores";
+import type { OrderFormData } from "@types";
 import React from "react";
-import { SectionCard, TextBox } from "../../../../components/common";
-import { DEFAULTS } from "../../../../constants/app-constants";
-import { formatPercentage, formatUSD, formatVND } from "../../../../lib/utils";
-import { useExchangeRateStore } from "../../../../store/useExchangeRateStore";
-import type { OrderFormData } from "../../../../types/order";
+import {
+  FiAlertCircle,
+  FiCreditCard,
+  FiDollarSign,
+  FiGift,
+  FiRefreshCw,
+  FiTrendingDown,
+  FiXCircle
+} from "react-icons/fi";
+import { MdOutlineAccountBalance } from "react-icons/md";
 
 interface FinancialInputSectionProps {
   formData: OrderFormData;
@@ -19,7 +27,7 @@ interface FinancialInputSectionProps {
   onChange: (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => void;
 }
 
@@ -40,21 +48,21 @@ const FinancialIcon = (
 );
 
 export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
-  formData,
-  errors = {},
-  onChange,
-}) => {
+                                                                              formData,
+                                                                              errors = {},
+                                                                              onChange
+                                                                            }) => {
   const globalExchangeRate = useExchangeRateStore(
-    (state) => state.exchangeRate,
+    (state) => state.exchangeRate
   );
 
   // Convert TextBox onChange to standard form event
   const handleChange = (
     name: string,
-    value: string | number | React.ReactNode | undefined,
+    value: string | number | React.ReactNode | undefined
   ) => {
     const fakeEvent = {
-      target: { name, value },
+      target: { name, value }
     } as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>;
     onChange(fakeEvent);
   };
@@ -67,7 +75,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
   // Helper function to get effective exchange rate for any field
   const getEffectiveRate = (
     fieldValue: number | undefined,
-    mainRate: number | undefined,
+    mainRate: number | undefined
   ): number => {
     // If field has custom value (not default), use it
     if (fieldValue && fieldValue !== DEFAULTS.EXCHANGE_RATE) {
@@ -125,7 +133,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
               <span className="text-sm font-normal text-gray-600 ml-2">
                 ≈{" "}
                 {formatVND(
-                  (formData?.itemTotalUsd || 0) * effectiveExchangeRate,
+                  (formData?.itemTotalUsd || 0) * effectiveExchangeRate
                 )}
               </span>
             </div>
@@ -216,7 +224,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
                   type="number"
                   value={getEffectiveRate(
                     formData?.refundFeeExchangeRate,
-                    formData?.exchangeRate,
+                    formData?.exchangeRate
                   )}
                   editable={true}
                   onChange={handleChange}
@@ -226,10 +234,10 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
                   ={" "}
                   {formatVND(
                     (formData?.refundFeeUsd || 0) *
-                      getEffectiveRate(
-                        formData?.refundFeeExchangeRate,
-                        formData?.exchangeRate,
-                      ),
+                    getEffectiveRate(
+                      formData?.refundFeeExchangeRate,
+                      formData?.exchangeRate
+                    )
                   )}
                 </p>
               </div>
@@ -258,7 +266,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
                   type="number"
                   value={getEffectiveRate(
                     formData?.otherFeeExchangeRate,
-                    formData?.exchangeRate,
+                    formData?.exchangeRate
                   )}
                   editable={true}
                   onChange={handleChange}
@@ -268,10 +276,10 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
                   ={" "}
                   {formatVND(
                     (formData?.otherFeeUsd || 0) *
-                      getEffectiveRate(
-                        formData?.otherFeeExchangeRate,
-                        formData?.exchangeRate,
-                      ),
+                    getEffectiveRate(
+                      formData?.otherFeeExchangeRate,
+                      formData?.exchangeRate
+                    )
                   )}
                 </p>
               </div>
@@ -312,7 +320,7 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
                   type="number"
                   value={getEffectiveRate(
                     formData?.otherBonusExchangeRate,
-                    formData?.exchangeRate,
+                    formData?.exchangeRate
                   )}
                   editable={true}
                   onChange={handleChange}
@@ -322,10 +330,10 @@ export const FinancialInputSection: React.FC<FinancialInputSectionProps> = ({
                   ={" "}
                   {formatVND(
                     (formData?.otherBonusUsd || 0) *
-                      getEffectiveRate(
-                        formData?.otherBonusExchangeRate,
-                        formData?.exchangeRate,
-                      ),
+                    getEffectiveRate(
+                      formData?.otherBonusExchangeRate,
+                      formData?.exchangeRate
+                    )
                   )}
                 </p>
               </div>

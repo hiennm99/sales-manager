@@ -59,13 +59,6 @@ export type Database = {
             referencedRelation: "financial_report_periods"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "csv_documents_uploaded_by_employee_id_fkey"
-            columns: ["uploaded_by_employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
         ]
       }
       customer_statuses: {
@@ -167,24 +160,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "employee_commission_artist_employee_id_fkey"
-            columns: ["artist_employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "employee_commission_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: true
             referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "employee_commission_seller_employee_id_fkey"
-            columns: ["seller_employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
             referencedColumns: ["id"]
           },
         ]
@@ -250,22 +229,7 @@ export type Database = {
           total_salary?: number | null
           updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "employee_salary_approved_by_fkey"
-            columns: ["approved_by"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "employee_salary_employee_id_fkey"
-            columns: ["employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       employees: {
         Row: {
@@ -273,8 +237,10 @@ export type Database = {
           base_salary: number | null
           code: string
           created_at: string
+          email: string
           id: number
           is_active: boolean
+          is_admin: boolean
           name: string
           role: string
           sales_commission_rate: number | null
@@ -286,8 +252,10 @@ export type Database = {
           base_salary?: number | null
           code: string
           created_at?: string
+          email: string
           id?: number
           is_active?: boolean
+          is_admin?: boolean
           name: string
           role: string
           sales_commission_rate?: number | null
@@ -299,8 +267,10 @@ export type Database = {
           base_salary?: number | null
           code?: string
           created_at?: string
+          email?: string
           id?: number
           is_active?: boolean
+          is_admin?: boolean
           name?: string
           role?: string
           sales_commission_rate?: number | null
@@ -450,13 +420,6 @@ export type Database = {
             columns: ["shop_id"]
             isOneToOne: false
             referencedRelation: "shops"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "financial_report_periods_uploaded_by_employee_id_fkey"
-            columns: ["uploaded_by_employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
             referencedColumns: ["id"]
           },
         ]
@@ -845,20 +808,6 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "orders_artist_employee_id_fkey"
-            columns: ["artist_employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "orders_seller_employee_id_fkey"
-            columns: ["seller_employee_id"]
-            isOneToOne: false
-            referencedRelation: "employees"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "orders_shop_id_fkey"
             columns: ["shop_id"]

@@ -1,13 +1,12 @@
-// components/TransferredMoneyForm.tsx
+// src/features/reports/components/TransferredMoneyForm.tsx
 
-import { DatePicker } from "@/components/ui/DatePicker";
-import { Select } from "@/components/ui/Select";
-import { CURRENCY_OPTIONS_SIMPLE } from "@/constants";
-import type { TransferredMoney } from "@/types/financialReport";
-import { FiPlus, FiSend, FiX } from "react-icons/fi";
+import { DatePicker, Select } from "@components/ui";
+import { CURRENCY_OPTIONS_SIMPLE } from "@constants";
+import { ImageUpload } from "@features/reports";
+import type { TransferredMoney } from "@types";
 import { ImageIcon } from "lucide-react";
 import React, { useState } from "react";
-import { ImageUpload } from "./ImageUpload";
+import { FiPlus, FiSend, FiX } from "react-icons/fi";
 
 interface TransferredMoneyFormProps {
   reportPeriodId: number;
@@ -18,12 +17,12 @@ interface TransferredMoneyFormProps {
 }
 
 export const TransferredMoneyForm: React.FC<TransferredMoneyFormProps> = ({
-  reportPeriodId,
-  shopId,
-  year,
-  month,
-  onAdd,
-}) => {
+                                                                            reportPeriodId,
+                                                                            shopId,
+                                                                            year,
+                                                                            month,
+                                                                            onAdd
+                                                                          }) => {
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split("T")[0],
     description: "",
@@ -32,7 +31,7 @@ export const TransferredMoneyForm: React.FC<TransferredMoneyFormProps> = ({
     transfer_date: new Date().toISOString().split("T")[0],
     bank_account: "",
     reference_number: "",
-    screenshot_url: null as string | null,
+    screenshot_url: null as string | null
   });
 
   const [showForm, setShowForm] = useState(false);
@@ -48,7 +47,7 @@ export const TransferredMoneyForm: React.FC<TransferredMoneyFormProps> = ({
       currency: formData.currency,
       transfer_date: formData.transfer_date,
       bank_account: formData.bank_account || null,
-      reference_number: formData.reference_number || null,
+      reference_number: formData.reference_number || null
     });
 
     // Reset form
@@ -60,7 +59,7 @@ export const TransferredMoneyForm: React.FC<TransferredMoneyFormProps> = ({
       transfer_date: new Date().toISOString().split("T")[0],
       bank_account: "",
       reference_number: "",
-      screenshot_url: null,
+      screenshot_url: null
     });
     setShowForm(false);
   };
@@ -130,7 +129,7 @@ export const TransferredMoneyForm: React.FC<TransferredMoneyFormProps> = ({
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      amount: parseFloat(e.target.value),
+                      amount: parseFloat(e.target.value)
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"

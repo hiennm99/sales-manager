@@ -1,2 +1,2 @@
 // src/components/modals/index.ts
-export * from "./ConfirmModal";
+export * from './ConfirmModal'

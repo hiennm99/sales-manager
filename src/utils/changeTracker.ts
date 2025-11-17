@@ -1,16 +1,19 @@
+// src/utils/changeTracker.ts
 /**
  * Change Tracker Utility
  * Detects and formats changes between old and new Order/OrderItem objects
  */
 
-import type { Order, OrderItem, OrderFormData } from "@/types/order";
-import type { Employee } from "@/types/employee";
 import type {
-  GeneralStatus,
   CustomerStatus,
-  FactoryStatus,
   DeliveryStatus,
-} from "@/types/status";
+  Employee,
+  FactoryStatus,
+  GeneralStatus,
+  Order,
+  OrderFormData,
+  OrderItem
+} from "@types";
 
 export interface FieldChange {
   field: string;
@@ -96,7 +99,7 @@ const ORDER_FIELD_LABELS: Record<string, string> = {
   general_status_id: "Trạng thái chung",
   customer_status_id: "Trạng thái khách hàng",
   factory_status_id: "Trạng thái nhà máy",
-  delivery_status_id: "Trạng thái giao hàng",
+  delivery_status_id: "Trạng thái giao hàng"
 };
 
 /**
@@ -107,7 +110,7 @@ const ORDER_ITEM_FIELD_LABELS: Record<string, string> = {
   size: "Kích cỡ",
   type: "Loại sản phẩm",
   quantity: "Số lượng",
-  unit_price_usd: "Giá đơn vị (USD)",
+  unit_price_usd: "Giá đơn vị (USD)"
 };
 
 /**
@@ -116,7 +119,7 @@ const ORDER_ITEM_FIELD_LABELS: Record<string, string> = {
 function formatValue(
   value: unknown,
   field?: string,
-  lookupData?: LookupData,
+  lookupData?: LookupData
 ): string {
   if (value === null || value === undefined) {
     return "N/A";
@@ -173,14 +176,14 @@ function formatValue(
 export function detectOrderChanges(
   oldOrder: Order,
   newOrder: Order,
-  lookupData?: LookupData,
+  lookupData?: LookupData
 ): FieldChange[] {
   const changes: FieldChange[] = [];
 
   // Get all keys from both objects
   const allKeys = new Set([
     ...Object.keys(oldOrder),
-    ...Object.keys(newOrder),
+    ...Object.keys(newOrder)
   ]);
 
   for (const key of allKeys) {
@@ -198,7 +201,7 @@ export function detectOrderChanges(
         field: key,
         label: ORDER_FIELD_LABELS[key] || key,
         oldValue: formatValue(oldValue, key, lookupData),
-        newValue: formatValue(newValue, key, lookupData),
+        newValue: formatValue(newValue, key, lookupData)
       });
     }
   }
@@ -211,13 +214,13 @@ export function detectOrderChanges(
  */
 export function detectOrderItemChanges(
   oldItem: OrderItem,
-  newItem: OrderItem,
+  newItem: OrderItem
 ): FieldChange[] {
   const changes: FieldChange[] = [];
 
   const allKeys = new Set([
     ...Object.keys(oldItem),
-    ...Object.keys(newItem),
+    ...Object.keys(newItem)
   ]);
 
   for (const key of allKeys) {
@@ -234,7 +237,7 @@ export function detectOrderItemChanges(
         field: key,
         label: ORDER_ITEM_FIELD_LABELS[key] || key,
         oldValue: formatValue(oldValue),
-        newValue: formatValue(newValue),
+        newValue: formatValue(newValue)
       });
     }
   }
@@ -258,7 +261,7 @@ export function formatChangesForNotification(changes: FieldChange[]): string[] {
 export function detectFormChanges(
   formData: OrderFormData,
   originalOrder: Order,
-  lookupData?: LookupData,
+  lookupData?: LookupData
 ): FieldChange[] {
   const changes: FieldChange[] = [];
 
@@ -297,7 +300,7 @@ export function detectFormChanges(
     generalStatusId: "general_status_id",
     customerStatusId: "customer_status_id",
     factoryStatusId: "factory_status_id",
-    deliveryStatusId: "delivery_status_id",
+    deliveryStatusId: "delivery_status_id"
   };
 
   for (const [formKey, orderKey] of Object.entries(fieldMappings)) {
@@ -313,7 +316,7 @@ export function detectFormChanges(
         field: orderKey,
         label: ORDER_FIELD_LABELS[orderKey] || orderKey,
         oldValue: formatValue(normalizedOrderValue, orderKey, lookupData),
-        newValue: formatValue(normalizedFormValue, orderKey, lookupData),
+        newValue: formatValue(normalizedFormValue, orderKey, lookupData)
       });
     }
   }
@@ -326,7 +329,7 @@ export function detectFormChanges(
  */
 export function detectOrderItemsChanges(
   oldItems: OrderItem[],
-  newItems: OrderItem[],
+  newItems: OrderItem[]
 ): FieldChange[] {
   const changes: FieldChange[] = [];
 
@@ -338,7 +341,7 @@ export function detectOrderItemsChanges(
         field: "items_added",
         label: "Thêm sản phẩm",
         oldValue: null,
-        newValue: `${newItem.sku} - ${newItem.size} (x${newItem.quantity})`,
+        newValue: `${newItem.sku} - ${newItem.size} (x${newItem.quantity})`
       });
     }
   });
@@ -351,7 +354,7 @@ export function detectOrderItemsChanges(
         field: "items_removed",
         label: "Xóa sản phẩm",
         oldValue: `${oldItem.sku} - ${oldItem.size} (x${oldItem.quantity})`,
-        newValue: null,
+        newValue: null
       });
     }
   });
@@ -364,7 +367,7 @@ export function detectOrderItemsChanges(
       itemChanges.forEach((change) => {
         changes.push({
           ...change,
-          label: `${change.label} (${oldItem.sku})`,
+          label: `${change.label} (${oldItem.sku})`
         });
       });
     }

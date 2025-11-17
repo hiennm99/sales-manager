@@ -1,12 +1,7 @@
 // src/features/statuses/services/statusService.ts
 
-import { handleSupabaseError, supabase } from "../../../lib/supabase";
-import type {
-  CustomerStatus,
-  DeliveryStatus,
-  FactoryStatus,
-  GeneralStatus,
-} from "../../../types/status";
+import { handleSupabaseError, supabase } from "@lib";
+import type { CustomerStatus, DeliveryStatus, FactoryStatus, GeneralStatus } from "@types";
 
 /**
  * Table references for reusability
@@ -35,7 +30,7 @@ class StatusService {
       color: this.getColorFromCode(item.code),
       description: item.description,
       created_at: new Date(item.created_at),
-      updated_at: new Date(item.updated_at),
+      updated_at: new Date(item.updated_at)
     }));
   }
 
@@ -56,7 +51,7 @@ class StatusService {
       color: this.getColorFromCode(item.code),
       description: item.description,
       created_at: new Date(item.created_at),
-      updated_at: new Date(item.updated_at),
+      updated_at: new Date(item.updated_at)
     }));
   }
 
@@ -77,7 +72,7 @@ class StatusService {
       color: this.getColorFromCode(item.code),
       description: item.description,
       created_at: new Date(item.created_at),
-      updated_at: new Date(item.updated_at),
+      updated_at: new Date(item.updated_at)
     }));
   }
 
@@ -98,7 +93,7 @@ class StatusService {
       color: this.getColorFromCode(item.code),
       description: item.description,
       created_at: new Date(item.created_at),
-      updated_at: new Date(item.updated_at),
+      updated_at: new Date(item.updated_at)
     }));
   }
 

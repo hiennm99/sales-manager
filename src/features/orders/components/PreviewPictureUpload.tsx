@@ -1,10 +1,10 @@
 // src/features/orders/components/PreviewPictureUpload.tsx
 
+import { orderPreviewService } from "@features/orders";
+import type { OrderPreviewPicture } from "@types";
+import React, { useRef, useState } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FiUpload, FiX } from "react-icons/fi";
-import React, { useRef, useState } from "react";
-import type { OrderPreviewPicture } from "../../../types/orderPreview";
-import { orderPreviewService } from "../services/orderPreviewService.ts";
 
 interface PreviewPictureUploadProps {
   orderId: number;
@@ -14,11 +14,11 @@ interface PreviewPictureUploadProps {
 }
 
 export const PreviewPictureUpload: React.FC<PreviewPictureUploadProps> = ({
-  orderId,
-  employeeId,
-  onUploadSuccess,
-  onUploadError,
-}) => {
+                                                                            orderId,
+                                                                            employeeId,
+                                                                            onUploadSuccess,
+                                                                            onUploadError
+                                                                          }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [description, setDescription] = useState("");
@@ -66,7 +66,7 @@ export const PreviewPictureUpload: React.FC<PreviewPictureUploadProps> = ({
         orderId,
         file,
         employeeId,
-        description || undefined,
+        description || undefined
       );
 
       setDescription("");

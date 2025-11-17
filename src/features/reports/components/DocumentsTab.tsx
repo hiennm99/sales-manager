@@ -1,9 +1,9 @@
-// components/DocumentsTab.tsx
+// src/features/reports/components/DocumentsTab.tsx
 
-import type { FinancialReportPeriod } from "@/types/financialReport";
-import { FiFileText } from "react-icons/fi";
+import { CsvFileUpload } from "@features/reports";
+import type { FinancialReportPeriod } from "@types";
 import React, { useEffect, useState } from "react";
-import { CsvFileUpload } from "./CsvFileUpload";
+import { FiFileText } from "react-icons/fi";
 
 interface CsvFile {
   id: string;
@@ -37,7 +37,7 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({ report }) => {
   const handleFilesChange = (files: CsvFile[]) => {
     setCsvFiles(files);
     // TODO: Save to database via API
-    // For now, we'll store in notes field as JSON
+    // For now, we'll stores in notes field as JSON
     console.log("CSV files updated:", files);
   };
 

@@ -4,7 +4,7 @@
  * Handles fetching and caching exchange rates from external API
  */
 
-import { API_ENDPOINTS, CACHE, DEFAULTS } from "@/constants/app-constants";
+import { API_ENDPOINTS, CACHE, DEFAULTS } from "@constants";
 
 interface ExchangeRateResponse {
   rates: {
@@ -39,9 +39,21 @@ class ExchangeRateService {
     } catch (error) {
       console.warn(
         "Failed to fetch exchange rate from API, using default:",
-        error,
+        error
       );
       return DEFAULTS.EXCHANGE_RATE;
+    }
+  }
+
+  /**
+   * Clear cached exchange rate
+   */
+  clearCache(): void {
+    try {
+      localStorage.removeItem(this.cacheKey);
+      localStorage.removeItem(this.cacheTimestampKey);
+    } catch (error) {
+      console.warn("Error clearing exchange rate cache:", error);
     }
   }
 
@@ -102,18 +114,6 @@ class ExchangeRateService {
       localStorage.setItem(this.cacheTimestampKey, Date.now().toString());
     } catch (error) {
       console.warn("Error caching exchange rate:", error);
-    }
-  }
-
-  /**
-   * Clear cached exchange rate
-   */
-  clearCache(): void {
-    try {
-      localStorage.removeItem(this.cacheKey);
-      localStorage.removeItem(this.cacheTimestampKey);
-    } catch (error) {
-      console.warn("Error clearing exchange rate cache:", error);
     }
   }
 }

@@ -1,8 +1,8 @@
-// components/DataTableTab.tsx
+// src/features/reports/components/DataTableTab.tsx
 
-import { formatCurrency } from "@/types/financialReport";
-import { FiFileText, FiTrash2, FiTrendingUp } from "react-icons/fi";
+import { formatCurrency } from "@types";
 import React from "react";
+import { FiFileText, FiTrash2, FiTrendingUp } from "react-icons/fi";
 
 interface DataRow {
   id: number;
@@ -10,6 +10,7 @@ interface DataRow {
   description: string;
   amount: number;
   currency: string;
+
   [key: string]: any;
 }
 
@@ -26,12 +27,12 @@ interface DataTableTabProps {
 }
 
 export const DataTableTab: React.FC<DataTableTabProps> = ({
-  title,
-  data,
-  columns,
-  emptyMessage = "Chưa có dữ liệu",
-  onDelete,
-}) => {
+                                                            title,
+                                                            data,
+                                                            columns,
+                                                            emptyMessage = "Chưa có dữ liệu",
+                                                            onDelete
+                                                          }) => {
   const [deleting, setDeleting] = React.useState<number | null>(null);
   const totalAmount = data.reduce((sum, row) => sum + (row.amount || 0), 0);
 
@@ -88,67 +89,67 @@ export const DataTableTab: React.FC<DataTableTabProps> = ({
           ) : (
             <table className="w-full">
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-                <tr>
-                  {columns.map((column) => (
-                    <th
-                      key={column.key}
-                      className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
-                    >
-                      {column.label}
-                    </th>
-                  ))}
-                  {onDelete && (
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                      Hành động
-                    </th>
-                  )}
-                </tr>
+              <tr>
+                {columns.map((column) => (
+                  <th
+                    key={column.key}
+                    className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  >
+                    {column.label}
+                  </th>
+                ))}
+                {onDelete && (
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Hành động
+                  </th>
+                )}
+              </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {data.map((row, index) => (
-                  <tr
-                    key={row.id || index}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    {columns.map((column) => (
-                      <td
-                        key={column.key}
-                        className="px-6 py-4 text-sm text-gray-900"
+              {data.map((row, index) => (
+                <tr
+                  key={row.id || index}
+                  className="hover:bg-gray-50 transition-colors"
+                >
+                  {columns.map((column) => (
+                    <td
+                      key={column.key}
+                      className="px-6 py-4 text-sm text-gray-900"
+                    >
+                      {column.render
+                        ? column.render(row[column.key], row)
+                        : row[column.key]}
+                    </td>
+                  ))}
+                  {onDelete && (
+                    <td className="px-6 py-4 text-sm">
+                      <button
+                        onClick={() => handleDelete(row.id)}
+                        disabled={deleting === row.id}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {column.render
-                          ? column.render(row[column.key], row)
-                          : row[column.key]}
-                      </td>
-                    ))}
-                    {onDelete && (
-                      <td className="px-6 py-4 text-sm">
-                        <button
-                          onClick={() => handleDelete(row.id)}
-                          disabled={deleting === row.id}
-                          className="inline-flex items-center gap-1 px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <FiTrash2 className="w-4 h-4" />
-                          <span className="text-xs font-medium">
+                        <FiTrash2 className="w-4 h-4" />
+                        <span className="text-xs font-medium">
                             {deleting === row.id ? "Đang xóa..." : "Xóa"}
                           </span>
-                        </button>
-                      </td>
-                    )}
-                  </tr>
-                ))}
+                      </button>
+                    </td>
+                  )}
+                </tr>
+              ))}
               </tbody>
               <tfoot className="bg-gradient-to-r from-indigo-50 to-purple-50 border-t-2 border-indigo-200">
-                <tr>
-                  <td
-                    colSpan={columns.length - 1 + (onDelete ? 1 : 0)}
-                    className="px-6 py-4 text-sm font-bold text-gray-900"
-                  >
-                    Tổng cộng
-                  </td>
-                  <td className="px-6 py-4 text-sm font-bold text-indigo-600 text-right">
-                    {formatCurrency(totalAmount)}
-                  </td>
-                </tr>
+              <tr>
+                <td
+                  colSpan={columns.length - 1 + (onDelete ? 1 : 0)}
+                  className="px-6 py-4 text-sm font-bold text-gray-900"
+                >
+                  Tổng cộng
+                </td>
+                <td className="px-6 py-4 text-sm font-bold text-indigo-600 text-right">
+                  {formatCurrency(totalAmount)}
+                </td>
+              </tr>
               </tfoot>
             </table>
           )}

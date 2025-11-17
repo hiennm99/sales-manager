@@ -1,13 +1,8 @@
 // src/features/employees/services/employeeSalaryService.ts
 
+import { handleSupabaseError, supabase } from "@lib";
+import type { EmployeeSalary, EmployeeSalaryFilters, EmployeeSalaryFormData, EmployeeSalaryPeriod } from "@types";
 import { endOfMonth, endOfYear, format } from "date-fns";
-import { handleSupabaseError, supabase } from "../../../lib/supabase";
-import type {
-  EmployeeSalary,
-  EmployeeSalaryFilters,
-  EmployeeSalaryFormData,
-  EmployeeSalaryPeriod,
-} from "../../../types/employee";
 
 /**
  * Table references for reusability
@@ -27,7 +22,7 @@ export const employeeSalaryService = {
    * - Seller commission: Sum of seller_commission_amount_vnd
    */
   async calculateEmployeeSalary(
-    filters: EmployeeSalaryFilters,
+    filters: EmployeeSalaryFilters
   ): Promise<EmployeeSalaryPeriod[]> {
     const { employee_id, year, month } = filters;
 
@@ -64,7 +59,7 @@ export const employeeSalaryService = {
       const startDate = format(new Date(year, month - 1, 1), "yyyy-MM-dd");
       const endDate = format(
         endOfMonth(new Date(year, month - 1, 1)),
-        "yyyy-MM-dd",
+        "yyyy-MM-dd"
       );
       commissionQuery = commissionQuery
         .gte("actual_ship_date", startDate)
@@ -101,11 +96,11 @@ export const employeeSalaryService = {
       // Sum up commissions
       const artist_commission_total = artistCommissions.reduce(
         (sum, c) => sum + (c.artist_commission_amount_vnd || 0),
-        0,
+        0
       );
       const seller_commission_total = sellerCommissions.reduce(
         (sum, c) => sum + (c.seller_commission_amount_vnd || 0),
-        0,
+        0
       );
 
       // Count orders
@@ -115,16 +110,16 @@ export const employeeSalaryService = {
       // Sum financial data
       const artist_profit_vnd = artistCommissions.reduce(
         (sum, c) => sum + (c.profit_vnd || 0),
-        0,
+        0
       );
       const seller_profit_vnd = sellerCommissions.reduce(
         (sum, c) => sum + (c.profit_vnd || 0),
-        0,
+        0
       );
       const total_profit_vnd = artist_profit_vnd + seller_profit_vnd;
       const total_order_earnings_vnd = sellerCommissions.reduce(
         (sum, c) => sum + (c.order_earnings_vnd || 0),
-        0,
+        0
       );
 
       // Base salary calculation
@@ -153,7 +148,7 @@ export const employeeSalaryService = {
         seller_commission_total,
         artist_orders_count,
         seller_orders_count,
-        total_salary,
+        total_salary
       });
 
       salaryData.push({
@@ -175,7 +170,7 @@ export const employeeSalaryService = {
         total_profit_vnd,
         total_order_earnings_vnd,
         artist_profit_vnd,
-        seller_profit_vnd,
+        seller_profit_vnd
       });
     }
 
@@ -187,7 +182,7 @@ export const employeeSalaryService = {
    */
   async getYearlySalaryBreakdown(
     employee_id: number,
-    year: number,
+    year: number
   ): Promise<EmployeeSalaryPeriod[]> {
     const monthlyData: EmployeeSalaryPeriod[] = [];
 
@@ -205,7 +200,7 @@ export const employeeSalaryService = {
       const data = await this.calculateEmployeeSalary({
         employee_id,
         year,
-        month,
+        month
       });
       if (data.length > 0) {
         monthlyData.push(data[0]);
@@ -231,7 +226,7 @@ export const employeeSalaryService = {
           total_profit_vnd: 0,
           total_order_earnings_vnd: 0,
           artist_profit_vnd: 0,
-          seller_profit_vnd: 0,
+          seller_profit_vnd: 0
         });
       }
     }
@@ -245,7 +240,7 @@ export const employeeSalaryService = {
   async getSalaryRecord(
     employee_id: number,
     year: number,
-    month?: number,
+    month?: number
   ): Promise<EmployeeSalary | null> {
     let query = employeeSalaryTable()
       .select("*")
@@ -288,7 +283,7 @@ export const employeeSalaryService = {
       paid_at: data.paid_at ? new Date(data.paid_at) : null,
       notes: data.notes,
       created_at: new Date(),
-      updated_at: new Date(),
+      updated_at: new Date()
     };
   },
 
@@ -296,7 +291,7 @@ export const employeeSalaryService = {
    * Get all salary records for a specific period
    */
   async getSalaryRecords(
-    filters: EmployeeSalaryFilters,
+    filters: EmployeeSalaryFilters
   ): Promise<EmployeeSalary[]> {
     let query = employeeSalaryTable()
       .select("*")
@@ -328,13 +323,13 @@ export const employeeSalaryService = {
     // Fetch commission data to calculate profit breakdown
     const startDate = format(
       new Date(filters.year, (filters.month || 1) - 1, 1),
-      "yyyy-MM-dd",
+      "yyyy-MM-dd"
     );
     const endDate = filters.month
       ? format(
-          endOfMonth(new Date(filters.year, filters.month - 1, 1)),
-          "yyyy-MM-dd",
-        )
+        endOfMonth(new Date(filters.year, filters.month - 1, 1)),
+        "yyyy-MM-dd"
+      )
       : format(endOfYear(new Date(filters.year, 0, 1)), "yyyy-MM-dd");
 
     const { data: commissions } = await employeeCommissionTable()
@@ -353,11 +348,11 @@ export const employeeSalaryService = {
 
       const artist_profit_vnd = artistCommissions.reduce(
         (sum, c) => sum + (c.profit_vnd || 0),
-        0,
+        0
       );
       const seller_profit_vnd = sellerCommissions.reduce(
         (sum, c) => sum + (c.profit_vnd || 0),
-        0,
+        0
       );
       const artist_orders_count = artistCommissions.length;
       const seller_orders_count = sellerCommissions.length;
@@ -384,7 +379,7 @@ export const employeeSalaryService = {
         paid_at: row.paid_at ? new Date(row.paid_at) : null,
         notes: row.notes,
         created_at: row.created_at ? new Date(row.created_at) : new Date(),
-        updated_at: row.updated_at ? new Date(row.updated_at) : new Date(),
+        updated_at: row.updated_at ? new Date(row.updated_at) : new Date()
       };
     });
   },
@@ -393,7 +388,7 @@ export const employeeSalaryService = {
    * Save/update salary record (upsert)
    */
   async saveSalaryRecord(
-    formData: EmployeeSalaryFormData,
+    formData: EmployeeSalaryFormData
   ): Promise<EmployeeSalary> {
     // Validate required fields
     if (!formData.employee_id) {
@@ -425,12 +420,12 @@ export const employeeSalaryService = {
       status: formData.status || "draft",
       notes: formData.notes || null,
       approved_by: formData.approved_by || null,
-      updated_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
 
     const { data, error } = await employeeSalaryTable()
       .upsert(insertData, {
-        onConflict: "employee_id,salary_period_year,salary_period_month",
+        onConflict: "employee_id,salary_period_year,salary_period_month"
       })
       .select()
       .single();
@@ -460,7 +455,7 @@ export const employeeSalaryService = {
       paid_at: data.paid_at ? new Date(data.paid_at) : null,
       notes: data.notes,
       created_at: new Date(),
-      updated_at: new Date(),
+      updated_at: new Date()
     };
   },
 
@@ -470,13 +465,13 @@ export const employeeSalaryService = {
   async calculateAndSave(
     employee_id: number,
     year: number,
-    month: number,
+    month: number
   ): Promise<EmployeeSalary> {
     // Calculate salary
     const calculated = await this.calculateEmployeeSalary({
       employee_id,
       year,
-      month,
+      month
     });
 
     if (calculated.length === 0) {
@@ -495,7 +490,7 @@ export const employeeSalaryService = {
       seller_commission_total: salaryData.seller_commission_total,
       other_costs: salaryData.other_costs,
       bonus: salaryData.bonus,
-      deduction: salaryData.deduction,
+      deduction: salaryData.deduction
     };
 
     return this.saveSalaryRecord(formData);
@@ -508,14 +503,14 @@ export const employeeSalaryService = {
     employee_id: number,
     year: number,
     month: number,
-    approved_by: number,
+    approved_by: number
   ): Promise<EmployeeSalary | null> {
     const { data, error } = await employeeSalaryTable()
       .update({
         status: "approved",
         approved_at: new Date().toISOString(),
         approved_by,
-        updated_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       })
       .eq("employee_id", employee_id)
       .eq("salary_period_year", year)
@@ -539,13 +534,13 @@ export const employeeSalaryService = {
   async markAsPaid(
     employee_id: number,
     year: number,
-    month: number,
+    month: number
   ): Promise<EmployeeSalary | null> {
     const { data, error } = await employeeSalaryTable()
       .update({
         status: "paid",
         paid_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       })
       .eq("employee_id", employee_id)
       .eq("salary_period_year", year)
@@ -569,7 +564,7 @@ export const employeeSalaryService = {
   async deleteSalaryRecord(
     employee_id: number,
     year: number,
-    month: number,
+    month: number
   ): Promise<void> {
     const { error } = await employeeSalaryTable()
       .delete()
@@ -581,5 +576,5 @@ export const employeeSalaryService = {
       console.error("Error deleting salary record:", error);
       throw new Error(handleSupabaseError(error));
     }
-  },
+  }
 };

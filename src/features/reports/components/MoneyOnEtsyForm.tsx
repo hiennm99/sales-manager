@@ -1,12 +1,11 @@
-// components/MoneyOnEtsyForm.tsx
+// src/features/reports/components/MoneyOnEtsyForm.tsx
 
-import { DatePicker } from "@/components/ui/DatePicker";
-import { Select } from "@/components/ui/Select";
-import { CURRENCY_OPTIONS_SIMPLE } from "@/constants";
-import type { MoneyOnEtsy } from "@/types/financialReport";
-import { FiPlus, FiX } from "react-icons/fi";
+import { DatePicker, Select } from "@components/ui";
+import { CURRENCY_OPTIONS_SIMPLE } from "@constants";
+import { ImageUpload } from "@features/reports";
+import type { MoneyOnEtsy } from "@types";
 import React, { useState } from "react";
-import { ImageUpload } from "./ImageUpload";
+import { FiImage, FiPlus, FiX } from "react-icons/fi";
 
 interface MoneyOnEtsyFormProps {
   reportPeriodId: number;
@@ -17,19 +16,19 @@ interface MoneyOnEtsyFormProps {
 }
 
 export const MoneyOnEtsyForm: React.FC<MoneyOnEtsyFormProps> = ({
-  reportPeriodId,
-  shopId,
-  year,
-  month,
-  onAdd,
-}) => {
+                                                                  reportPeriodId,
+                                                                  shopId,
+                                                                  year,
+                                                                  month,
+                                                                  onAdd
+                                                                }) => {
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split("T")[0],
     description: "",
     amount: 0,
     currency: "VND",
     type: "balance" as "balance" | "pending" | "available",
-    screenshot_url: null as string | null,
+    screenshot_url: null as string | null
   });
 
   const [showForm, setShowForm] = useState(false);
@@ -43,7 +42,7 @@ export const MoneyOnEtsyForm: React.FC<MoneyOnEtsyFormProps> = ({
       description: formData.description,
       amount: formData.amount,
       currency: formData.currency,
-      type: formData.type,
+      type: formData.type
     });
 
     // Reset form
@@ -53,7 +52,7 @@ export const MoneyOnEtsyForm: React.FC<MoneyOnEtsyFormProps> = ({
       amount: 0,
       currency: "USD",
       type: "balance",
-      screenshot_url: null,
+      screenshot_url: null
     });
     setShowForm(false);
   };
@@ -108,7 +107,7 @@ export const MoneyOnEtsyForm: React.FC<MoneyOnEtsyFormProps> = ({
                 options={[
                   { value: "balance", label: "Balance (Số dư)" },
                   { value: "pending", label: "Pending (Đang chờ)" },
-                  { value: "available", label: "Available (Có sẵn)" },
+                  { value: "available", label: "Available (Có sẵn)" }
                 ]}
               />
             </div>
@@ -143,7 +142,7 @@ export const MoneyOnEtsyForm: React.FC<MoneyOnEtsyFormProps> = ({
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      amount: parseFloat(e.target.value),
+                      amount: parseFloat(e.target.value)
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
@@ -168,7 +167,7 @@ export const MoneyOnEtsyForm: React.FC<MoneyOnEtsyFormProps> = ({
             {/* Screenshot Upload */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                <ImageIcon className="w-4 h-4 inline mr-1" />
+                <FiImage className="w-4 h-4 inline mr-1" />
                 Screenshot / Ảnh chứng từ (tùy chọn)
               </label>
               <ImageUpload

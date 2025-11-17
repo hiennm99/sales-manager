@@ -1,16 +1,16 @@
-// features/shops/pages/ShopCreate.tsx
+// src/features/shops/pages/ShopCreate.tsx
 /**
  * ShopCreate - Create/Edit Shop Form
  * Modern form interface for managing shops
  */
 
-import { FiSave, FiShoppingBag, FiX } from "react-icons/fi";
+import { TextBox } from "@components/common";
+import { Breadcrumbs } from "@components/layout";
+import { useShopStore } from "@features/shops";
+import type { ShopFormData } from "@types";
 import React, { useEffect, useState } from "react";
+import { FiSave, FiShoppingBag, FiX } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
-import { TextBox } from "../../../components/common";
-import { Breadcrumbs } from "../../../components/layout/Breadcrumbs";
-import type { ShopFormData } from "../../../types/shop";
-import { useShopStore } from "../store/useShopStore";
 
 export const ShopCreate: React.FC = () => {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export const ShopCreate: React.FC = () => {
   const [formData, setFormData] = useState<ShopFormData>({
     name: "",
     code: "",
-    logo: "",
+    logo: ""
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,7 +34,7 @@ export const ShopCreate: React.FC = () => {
         setFormData({
           name: shop.name,
           code: shop.code,
-          logo: shop.logo || "",
+          logo: shop.logo || ""
         });
       }
     }
@@ -42,7 +42,7 @@ export const ShopCreate: React.FC = () => {
 
   const handleChange = (
     name: string,
-    value: string | number | React.ReactNode | undefined,
+    value: string | number | React.ReactNode | undefined
   ) => {
     setFormData((prev) => ({ ...prev, [name]: value as string }));
     // Clear error when user types
@@ -93,7 +93,7 @@ export const ShopCreate: React.FC = () => {
         items={[
           { label: "Trang chủ", path: "/dashboard" },
           { label: "Cửa hàng", path: "/shops" },
-          { label: isEditMode ? "Chỉnh sửa" : "Tạo mới" },
+          { label: isEditMode ? "Chỉnh sửa" : "Tạo mới" }
         ]}
       />
 
@@ -101,7 +101,8 @@ export const ShopCreate: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
+            <div
+              className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
               <FiShoppingBag className="w-8 h-8 text-white" />
             </div>
             <div>

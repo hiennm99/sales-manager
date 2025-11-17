@@ -1,6 +1,6 @@
-// types/order.ts
+// src/types/order.ts
 
-import type { BaseEntity } from "./common";
+import type { BaseEntity } from "./common.ts";
 
 export interface Order extends BaseEntity {
   shop_id: number;
@@ -201,14 +201,14 @@ export const orderToFormData = (order: Order): OrderFormData => {
     generalStatusId: order.general_status_id || 1,
     customerStatusId: order.customer_status_id || 1,
     factoryStatusId: order.factory_status_id || 1,
-    deliveryStatusId: order.delivery_status_id || 1,
+    deliveryStatusId: order.delivery_status_id || 1
   };
 };
 
 // Helper function to populate employee names in form data
 export const populateEmployeeName = (
   formData: OrderFormData,
-  employees: Array<{ id: number; name: string; code: string }>,
+  employees: Array<{ id: number; name: string; code: string }>
 ): OrderFormData => {
   const updatedFormData = { ...formData };
 
@@ -237,7 +237,7 @@ export const populateEmployeeName = (
         : formData.sellerEmployeeId;
 
     const sellerEmployee = employees.find(
-      (emp) => emp.id === sellerEmployeeIdNum,
+      (emp) => emp.id === sellerEmployeeIdNum
     );
     if (sellerEmployee) {
       updatedFormData.sellerEmployeeName = sellerEmployee.name;

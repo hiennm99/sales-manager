@@ -1,8 +1,8 @@
 // src/features/orders/components/OrderHistoryTimeline.tsx
 
-import { FiAlertCircle, FiCheckCircle, FiEdit, FiFileText, FiImage, FiPlus, FiTruck } from "react-icons/fi";
+import type { OrderHistory } from "@types";
 import React from "react";
-import type { OrderHistory } from "../../../types/orderHistory";
+import { FiAlertCircle, FiCheckCircle, FiEdit, FiFileText, FiImage, FiPlus, FiTruck } from "react-icons/fi";
 
 interface OrderHistoryTimelineProps {
   history: OrderHistory[];
@@ -55,9 +55,9 @@ const getActionLabel = (actionType: string): string => {
 };
 
 export const OrderHistoryTimeline: React.FC<OrderHistoryTimelineProps> = ({
-  history,
-  employeeNames = {},
-}) => {
+                                                                            history,
+                                                                            employeeNames = {}
+                                                                          }) => {
   if (history.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">

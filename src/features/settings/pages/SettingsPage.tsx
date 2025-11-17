@@ -1,13 +1,12 @@
 // src/features/settings/pages/SettingsPage.tsx
 
-import { EmployeeList } from "@/features/employees/pages/EmployeeList";
-import { ShopListAdmin } from "@/features/shops";
-import { StatusList } from "@/features/statuses";
-import { FiSettings } from "react-icons/fi";
-import { AiOutlineShop } from "react-icons/ai";
-import { BiUserCircle } from "react-icons/bi";
-import { BiTag } from "react-icons/bi";
+import { EmployeeList } from "@features/employees";
+import { ShopListAdmin } from "@features/shops";
+import { StatusList } from "@features/statuses";
 import React, { useState } from "react";
+import { AiOutlineShop } from "react-icons/ai";
+import { BiTag, BiUserCircle } from "react-icons/bi";
+import { FiSettings } from "react-icons/fi";
 
 type SettingsTab = "shops" | "employees" | "statuses";
 
@@ -17,7 +16,7 @@ export const SettingsPage: React.FC = () => {
   const tabs = [
     { id: "shops" as SettingsTab, label: "Cửa Hàng", icon: AiOutlineShop },
     { id: "employees" as SettingsTab, label: "Nhân Viên", icon: BiUserCircle },
-    { id: "statuses" as SettingsTab, label: "Trạng Thái", icon: BiTag },
+    { id: "statuses" as SettingsTab, label: "Trạng Thái", icon: BiTag }
   ];
 
   return (
@@ -48,10 +47,10 @@ export const SettingsPage: React.FC = () => {
                   className={`
                     flex items-center gap-2 px-6 py-4 font-medium text-sm transition-all
                     ${
-                      activeTab === tab.id
-                        ? "text-blue-600 border-b-2 border-blue-600 bg-blue-50"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                    }
+                    activeTab === tab.id
+                      ? "text-blue-600 border-b-2 border-blue-600 bg-blue-50"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  }
                   `}
                 >
                   <Icon className="w-5 h-5" />

@@ -1,10 +1,9 @@
 // src/features/employees/pages/EmployeeCreate.tsx
 
+import { EmployeeForm, useEmployeeStore } from "@features/employees";
+import type { EmployeeFormData } from "@types";
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import type { EmployeeFormData } from "../../../types/employee";
-import { EmployeeForm } from "../components/EmployeeForm";
-import { useEmployeeStore } from "../store/useEmployeeStore";
 
 export const EmployeeCreate: React.FC = () => {
   const { employeeId } = useParams<{ employeeId: string }>();
@@ -14,10 +13,10 @@ export const EmployeeCreate: React.FC = () => {
     fetchEmployeeById,
     createEmployee,
     updateEmployee,
-    isLoading,
+    isLoading
   } = useEmployeeStore();
   const [employee, setEmployee] = React.useState(
-    employees.find((a) => a.id === Number(employeeId)) || null,
+    employees.find((a) => a.id === Number(employeeId)) || null
   );
 
   useEffect(() => {

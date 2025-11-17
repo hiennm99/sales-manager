@@ -1,6 +1,6 @@
-// types/orderHistory.ts
+// src/types/orderHistory.ts
 
-import type { BaseEntity } from "./common";
+import type { BaseEntity } from "./common.ts";
 
 export type OrderHistoryActionType =
   | "created"
@@ -34,7 +34,7 @@ export interface OrderHistoryFormData {
 
 // Helper function to convert OrderHistory to OrderHistoryFormData
 export const orderHistoryToFormData = (
-  history: OrderHistory,
+  history: OrderHistory
 ): OrderHistoryFormData => {
   return {
     orderId: history.order_id,
@@ -43,7 +43,7 @@ export const orderHistoryToFormData = (
     oldValue: history.old_value || undefined,
     newValue: history.new_value || undefined,
     changedByEmployeeId: history.changed_by_employee_id || undefined,
-    description: history.description || undefined,
+    description: history.description || undefined
   };
 };
 
@@ -52,7 +52,7 @@ export const createHistoryDescription = (
   actionType: OrderHistoryActionType,
   fieldName?: string,
   oldValue?: string,
-  newValue?: string,
+  newValue?: string
 ): string => {
   switch (actionType) {
     case "created":

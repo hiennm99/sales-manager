@@ -1,15 +1,16 @@
 // src/features/orders/components/OrderDetailTabs.tsx
 
-import { FiClock, FiImage } from "react-icons/fi";
+import { useEmployeeStore } from "@features/employees";
+import {
+  orderHistoryService,
+  OrderHistoryTimeline,
+  orderPreviewService,
+  PreviewPictureGallery,
+  PreviewPictureUpload
+} from "@features/orders";
+import type { OrderHistory, OrderPreviewPicture } from "@types";
 import React, { useEffect, useState } from "react";
-import type { OrderHistory } from "../../../types/orderHistory";
-import type { OrderPreviewPicture } from "../../../types/orderPreview";
-import { useEmployeeStore } from "../../employees/store/useEmployeeStore";
-import { orderHistoryService } from "../services/orderHistoryService.ts";
-import { orderPreviewService } from "../services/orderPreviewService.ts";
-import { OrderHistoryTimeline } from "./OrderHistoryTimeline";
-import { PreviewPictureGallery } from "./PreviewPictureGallery";
-import { PreviewPictureUpload } from "./PreviewPictureUpload";
+import { FiClock, FiImage } from "react-icons/fi";
 
 interface OrderDetailTabsProps {
   orderId: number;
@@ -19,9 +20,9 @@ interface OrderDetailTabsProps {
 type TabType = "pictures" | "history";
 
 export const OrderDetailTabs: React.FC<OrderDetailTabsProps> = ({
-  orderId,
-  employeeId,
-}) => {
+                                                                  orderId,
+                                                                  employeeId
+                                                                }) => {
   const [activeTab, setActiveTab] = useState<TabType>("pictures");
   const [pictures, setPictures] = useState<OrderPreviewPicture[]>([]);
   const [history, setHistory] = useState<OrderHistory[]>([]);
@@ -91,7 +92,7 @@ export const OrderDetailTabs: React.FC<OrderDetailTabsProps> = ({
       acc[emp.id] = emp.name;
       return acc;
     },
-    {} as Record<number, string>,
+    {} as Record<number, string>
   );
 
   return (

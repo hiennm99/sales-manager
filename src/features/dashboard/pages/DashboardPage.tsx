@@ -4,18 +4,13 @@
  * Optimized: Separates data state from actions to reduce re-renders
  */
 
-import { Select } from "@/components/ui/Select";
-import { CURRENCY_OPTIONS_SIMPLE } from "@/constants";
+import { Select } from "@components/ui";
+import { CURRENCY_OPTIONS_SIMPLE } from "@constants";
+import { useDashboardStore } from "@features/dashboard";
 import { Activity, DollarSign, Download, Percent, RefreshCw, ShoppingCart, TrendingUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import {
-  DateRangeFilter,
-  OrdersChart,
-  ProfitChart,
-  RevenueChart,
-  SummaryCard,
-} from "../components";
-import { useDashboardStore } from "../store/useDashboardStore";
+
+import { DateRangeFilter, OrdersChart, ProfitChart, RevenueChart, SummaryCard } from "../components";
 
 export const DashboardPage: React.FC = () => {
   // ✅ OPTIMIZED: Separate data subscriptions from actions
@@ -28,25 +23,25 @@ export const DashboardPage: React.FC = () => {
   // Quick ranges and auto-refresh config
   const quickDateRanges = useDashboardStore((state) => state.quickDateRanges);
   const selectedQuickRange = useDashboardStore(
-    (state) => state.selectedQuickRange,
+    (state) => state.selectedQuickRange
   );
   const autoRefresh = useDashboardStore((state) => state.autoRefresh);
 
   // Actions - never trigger re-renders (stable references)
   const fetchDashboardData = useDashboardStore(
-    (state) => state.fetchDashboardData,
+    (state) => state.fetchDashboardData
   );
   const refreshDashboardData = useDashboardStore(
-    (state) => state.refreshDashboardData,
+    (state) => state.refreshDashboardData
   );
   const setQuickDateRange = useDashboardStore(
-    (state) => state.setQuickDateRange,
+    (state) => state.setQuickDateRange
   );
   const setDateRange = useDashboardStore((state) => state.setDateRange);
   const setCurrency = useDashboardStore((state) => state.setCurrency);
   const setAutoRefresh = useDashboardStore((state) => state.setAutoRefresh);
   const exportDashboardData = useDashboardStore(
-    (state) => state.exportDashboardData,
+    (state) => state.exportDashboardData
   );
   const clearError = useDashboardStore((state) => state.clearError);
 
@@ -58,7 +53,7 @@ export const DashboardPage: React.FC = () => {
   useEffect(() => {
     fetchDashboardData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // fetchDashboardData is stable from Zustand store
+  }, []); // fetchDashboardData is stable from Zustand stores
 
   // Clear error after 5 seconds
   useEffect(() => {
@@ -69,7 +64,7 @@ export const DashboardPage: React.FC = () => {
       return () => clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [error]); // clearError is stable from Zustand store
+  }, [error]); // clearError is stable from Zustand stores
 
   const handleExport = async () => {
     try {
@@ -181,7 +176,7 @@ export const DashboardPage: React.FC = () => {
                 }
                 options={[
                   ...CURRENCY_OPTIONS_SIMPLE,
-                  { value: "BOTH", label: "Cả hai" },
+                  { value: "BOTH", label: "Cả hai" }
                 ]}
               />
             </div>
@@ -199,7 +194,7 @@ export const DashboardPage: React.FC = () => {
                 options={[
                   { value: "monthly", label: "Theo tháng" },
                   { value: "quarterly", label: "Theo quý" },
-                  { value: "yearly", label: "Theo năm" },
+                  { value: "yearly", label: "Theo năm" }
                 ]}
               />
             </div>
@@ -261,14 +256,14 @@ export const DashboardPage: React.FC = () => {
             value={
               data?.metrics.totalRevenue[
                 filters.currency === "VND" ? "vnd" : "usd"
-              ] || 0
+                ] || 0
             }
             currency={filters.currency === "VND" ? "VND" : "USD"}
             icon={DollarSign}
             trend={{
               value: data?.metrics.revenueGrowth || 0,
               type: (data?.metrics.revenueGrowth || 0) >= 0 ? "up" : "down",
-              label: "so với kỳ trước",
+              label: "so với kỳ trước"
             }}
             loading={isLoading}
           />
@@ -278,14 +273,14 @@ export const DashboardPage: React.FC = () => {
             value={
               data?.metrics.totalProfit[
                 filters.currency === "VND" ? "vnd" : "usd"
-              ] || 0
+                ] || 0
             }
             currency={filters.currency === "VND" ? "VND" : "USD"}
             icon={TrendingUp}
             trend={{
               value: data?.metrics.profitGrowth || 0,
               type: (data?.metrics.profitGrowth || 0) >= 0 ? "up" : "down",
-              label: "so với kỳ trước",
+              label: "so với kỳ trước"
             }}
             loading={isLoading}
           />
@@ -297,7 +292,7 @@ export const DashboardPage: React.FC = () => {
             trend={{
               value: data?.metrics.ordersGrowth || 0,
               type: (data?.metrics.ordersGrowth || 0) >= 0 ? "up" : "down",
-              label: "so với kỳ trước",
+              label: "so với kỳ trước"
             }}
             loading={isLoading}
           />
@@ -379,13 +374,13 @@ export const DashboardPage: React.FC = () => {
                       <p className="font-medium text-gray-900">
                         {filters.currency === "VND"
                           ? new Intl.NumberFormat("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            }).format(shop.revenue_vnd)
+                            style: "currency",
+                            currency: "VND"
+                          }).format(shop.revenue_vnd)
                           : new Intl.NumberFormat("en-US", {
-                              style: "currency",
-                              currency: "USD",
-                            }).format(shop.revenue_usd)}
+                            style: "currency",
+                            currency: "USD"
+                          }).format(shop.revenue_usd)}
                       </p>
                       <p className="text-sm text-gray-500">
                         {shop.profit_margin.toFixed(1)}% lợi nhuận
@@ -436,13 +431,13 @@ export const DashboardPage: React.FC = () => {
                         <p className="font-medium text-gray-900">
                           {filters.currency === "VND"
                             ? new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              }).format(employee.revenue_vnd)
+                              style: "currency",
+                              currency: "VND"
+                            }).format(employee.revenue_vnd)
                             : new Intl.NumberFormat("en-US", {
-                                style: "currency",
-                                currency: "USD",
-                              }).format(employee.revenue_usd)}
+                              style: "currency",
+                              currency: "USD"
+                            }).format(employee.revenue_usd)}
                         </p>
                         <p className="text-sm text-gray-500">
                           ${employee.commission_earned.toFixed(2)} hoa hồng

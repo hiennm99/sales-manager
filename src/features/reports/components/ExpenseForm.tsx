@@ -1,11 +1,11 @@
-// components/ExpenseForm.tsx
+// src/features/reports/components/ExpenseForm.tsx
 
-import { DatePicker } from "@/components/ui/DatePicker";
-import { Select } from "@/components/ui/Select";
-import { CURRENCY_OPTIONS_SIMPLE, EXPENSE_CATEGORY_OPTIONS } from "@/constants";
-import type { Expense } from "@/types/financialReport";
-import { FiPlus, FiFileText, FiX } from "react-icons/fi";
+import { DatePicker, Select } from "@components/ui";
+import { CURRENCY_OPTIONS_SIMPLE, EXPENSE_CATEGORY_OPTIONS } from "@constants";
+import type { Expense } from "@types";
 import React, { useState } from "react";
+import { FiFileText, FiImage, FiPlus, FiX } from "react-icons/fi";
+
 import { ImageUpload } from "./ImageUpload";
 
 interface ExpenseFormProps {
@@ -152,7 +152,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
             {/* Receipt Upload */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                <ImageIcon className="w-4 h-4 inline mr-1" />
+                <FiImage className="w-4 h-4 inline mr-1" />
                 Hóa đơn / Chứng từ (tùy chọn)
               </label>
               <ImageUpload

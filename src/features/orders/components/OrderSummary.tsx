@@ -4,8 +4,8 @@
  * Shows order financial overview with improved UI
  */
 
+import { formatVND } from "@lib";
 import React from "react";
-import { formatVND } from "../../../lib/utils";
 
 interface OrderSummaryProps {
   itemTotal: number;
@@ -18,14 +18,14 @@ interface OrderSummaryProps {
 }
 
 export const OrderSummary: React.FC<OrderSummaryProps> = ({
-  itemTotal,
-  itemTotalVND,
-  discountRate,
-  buyerPaid,
-  buyerPaidVND,
-  orderEarnings,
-  orderEarningsVND,
-}) => {
+                                                            itemTotal,
+                                                            itemTotalVND,
+                                                            discountRate,
+                                                            buyerPaid,
+                                                            buyerPaidVND,
+                                                            orderEarnings,
+                                                            orderEarningsVND
+                                                          }) => {
   // Calculate display values
   const commissionAmount = (itemTotal * discountRate) / 100;
   const commissionAmountVND = (itemTotalVND * discountRate) / 100;

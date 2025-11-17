@@ -4,19 +4,14 @@
  * Simple section component for shipping information
  */
 
-import { FiCalendar, FiDollarSign, FiFileText, FiHash, FiRefreshCw, FiTruck } from "react-icons/fi";
+import { type Option, OptionBox, SectionCard, TextBox } from "@components/common";
+import { DEFAULTS } from "@constants";
+import { CARRIER_UNITS } from "@features/orders";
+import { formatUSD, formatVND } from "@lib";
+import { useExchangeRateStore } from "@stores";
+import type { OrderFormData } from "@types";
 import React from "react";
-import {
-  OptionBox,
-  SectionCard,
-  TextBox,
-  type Option,
-} from "../../../../components/common";
-import { DEFAULTS } from "../../../../constants/app-constants";
-import { formatUSD, formatVND } from "../../../../lib/utils";
-import { useExchangeRateStore } from "../../../../store/useExchangeRateStore";
-import type { OrderFormData } from "../../../../types/order";
-import { CARRIER_UNITS } from "../../constants/orderDefaults";
+import { FiCalendar, FiDollarSign, FiFileText, FiHash, FiRefreshCw, FiTruck } from "react-icons/fi";
 
 interface ShippingInfoSectionProps {
   formData: OrderFormData;
@@ -24,7 +19,7 @@ interface ShippingInfoSectionProps {
   onChange: (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => void;
 }
 
@@ -45,12 +40,12 @@ const ShippingIcon = (
 );
 
 export const ShippingInfoSection: React.FC<ShippingInfoSectionProps> = ({
-  formData,
-  errors = {},
-  onChange,
-}) => {
+                                                                          formData,
+                                                                          errors = {},
+                                                                          onChange
+                                                                        }) => {
   const globalExchangeRate = useExchangeRateStore(
-    (state) => state.exchangeRate,
+    (state) => state.exchangeRate
   );
 
   // Convert CARRIER_UNITS to Option format
@@ -58,27 +53,27 @@ export const ShippingInfoSection: React.FC<ShippingInfoSectionProps> = ({
     { value: "", label: "-- Chọn đơn vị vận chuyển --" },
     ...CARRIER_UNITS.map((carrier) => ({
       value: carrier.value,
-      label: carrier.label,
-    })),
+      label: carrier.label
+    }))
   ];
 
   // Convert TextBox onChange to standard form event
   const handleChange = (
     name: string,
-    value: string | number | React.ReactNode | undefined,
+    value: string | number | React.ReactNode | undefined
   ) => {
     // Auto-set actualShipDate to today when carrier unit is selected
     if (name === "carrierUnit" && value && !formData.actualShipDate) {
       const today = new Date().toISOString().split("T")[0];
       const fakeEventCarrier = {
-        target: { name: "carrierUnit", value },
+        target: { name: "carrierUnit", value }
       } as React.ChangeEvent<
         HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
       >;
       onChange(fakeEventCarrier);
 
       const fakeEventDate = {
-        target: { name: "actualShipDate", value: today },
+        target: { name: "actualShipDate", value: today }
       } as React.ChangeEvent<
         HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
       >;
@@ -87,7 +82,7 @@ export const ShippingInfoSection: React.FC<ShippingInfoSectionProps> = ({
     }
 
     const fakeEvent = {
-      target: { name, value },
+      target: { name, value }
     } as React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >;
@@ -97,7 +92,7 @@ export const ShippingInfoSection: React.FC<ShippingInfoSectionProps> = ({
   // Helper function to get effective exchange rate
   const getEffectiveRate = (
     fieldValue: number | undefined,
-    mainRate: number | undefined,
+    mainRate: number | undefined
   ): number => {
     if (fieldValue && fieldValue !== DEFAULTS.EXCHANGE_RATE) {
       return fieldValue;
@@ -110,7 +105,7 @@ export const ShippingInfoSection: React.FC<ShippingInfoSectionProps> = ({
   // Calculate shipping fee in VND
   const effectiveShippingRate = getEffectiveRate(
     formData?.shippingExchangeRate,
-    formData?.exchangeRate,
+    formData?.exchangeRate
   );
   const shippingFeeVnd =
     (formData?.shippingFeeUsd || 0) * effectiveShippingRate;

@@ -1,8 +1,8 @@
 // src/components/common/EmployeeAutocomplete.tsx
 
+import { useEmployeeStore } from "@features/auth";
+import { type Employee } from "@types";
 import React, { useEffect, useRef, useState } from "react";
-import { useEmployeeStore } from "../../features/employees/store/useEmployeeStore";
-import type { Employee } from "../../types/employee";
 
 interface EmployeeAutocompleteProps {
   value: string; // Display value (employee name)
@@ -14,13 +14,13 @@ interface EmployeeAutocompleteProps {
 }
 
 export const EmployeeAutocomplete: React.FC<EmployeeAutocompleteProps> = ({
-  value,
-  onChange,
-  onSelect,
-  placeholder = "Nhập mã hoặc tên nhân viên...",
-  className = "",
-  error,
-}) => {
+                                                                            value,
+                                                                            onChange,
+                                                                            onSelect,
+                                                                            placeholder = "Nhập mã hoặc tên nhân viên...",
+                                                                            className = "",
+                                                                            error
+                                                                          }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
@@ -42,7 +42,7 @@ export const EmployeeAutocomplete: React.FC<EmployeeAutocompleteProps> = ({
     if (value.trim() !== "" && employees.length > 0) {
       // Check if the value matches an existing employee name
       const matchingEmployee = employees.find(
-        (emp) => emp.name === value.trim(),
+        (emp) => emp.name === value.trim()
       );
       if (matchingEmployee) {
         setIsEmployeeSelected(true);
@@ -64,7 +64,7 @@ export const EmployeeAutocomplete: React.FC<EmployeeAutocompleteProps> = ({
         (employee) =>
           employee.is_active &&
           (employee.code.toLowerCase().includes(searchTerm) ||
-            employee.name.toLowerCase().includes(searchTerm)),
+            employee.name.toLowerCase().includes(searchTerm))
       )
       .slice(0, 10); // Limit to 10 results
 
@@ -116,7 +116,7 @@ export const EmployeeAutocomplete: React.FC<EmployeeAutocompleteProps> = ({
       case "ArrowDown":
         e.preventDefault();
         setHighlightedIndex((prev) =>
-          prev < filteredEmployees.length - 1 ? prev + 1 : prev,
+          prev < filteredEmployees.length - 1 ? prev + 1 : prev
         );
         break;
       case "ArrowUp":
@@ -166,15 +166,16 @@ export const EmployeeAutocomplete: React.FC<EmployeeAutocompleteProps> = ({
               className={`
                                 flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors
                                 ${
-                                  index === highlightedIndex
-                                    ? "bg-blue-50 border-l-4 border-blue-500"
-                                    : "hover:bg-gray-50 border-l-4 border-transparent"
-                                }
+                index === highlightedIndex
+                  ? "bg-blue-50 border-l-4 border-blue-500"
+                  : "hover:bg-gray-50 border-l-4 border-transparent"
+              }
                                 ${index !== filteredEmployees.length - 1 ? "border-b border-gray-100" : ""}
                             `}
             >
               {/* Employee Avatar */}
-              <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full overflow-hidden flex items-center justify-center">
+              <div
+                className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full overflow-hidden flex items-center justify-center">
                 {employee.avatar ? (
                   <img
                     src={employee.avatar}

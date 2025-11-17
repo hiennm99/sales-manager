@@ -4,13 +4,9 @@
  * Reduced from ~300 lines to ~100 lines
  */
 
+import { type ChartType, type DataKey, SharedChart } from "@components/charts";
+import type { ChartDataPoint } from "@types";
 import React, { useMemo, useState } from "react";
-import {
-  SharedChart,
-  type ChartType,
-  type DataKey,
-} from "../../../../components/charts/SharedChart";
-import type { ChartDataPoint } from "../../../../types/dashboard";
 
 interface RevenueChartProps {
   data: ChartDataPoint[];
@@ -22,13 +18,13 @@ interface RevenueChartProps {
 }
 
 export const RevenueChart: React.FC<RevenueChartProps> = ({
-  data,
-  currency,
-  chartType = "line",
-  height = 400,
-  showComparison = false,
-  loading = false,
-}) => {
+                                                            data,
+                                                            currency,
+                                                            chartType = "line",
+                                                            height = 400,
+                                                            showComparison = false,
+                                                            loading = false
+                                                          }) => {
   const [activeTab, setActiveTab] = useState<ChartType>(chartType);
 
   // Format currency helper
@@ -38,14 +34,14 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
         style: "currency",
         currency: "VND",
         minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
+        maximumFractionDigits: 0
       }).format(value);
     } else {
       return new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
         minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
+        maximumFractionDigits: 0
       }).format(value);
     }
   };
@@ -59,7 +55,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
         key: "revenue_usd",
         name: "Doanh thu USD",
         color: "#3b82f6",
-        gradient: activeTab === "area",
+        gradient: activeTab === "area"
       });
     }
 
@@ -68,7 +64,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
         key: "revenue_vnd",
         name: "Doanh thu VND",
         color: "#10b981",
-        gradient: activeTab === "area",
+        gradient: activeTab === "area"
       });
     }
 
@@ -163,10 +159,10 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
                 {formatCurrency(
                   Math.max(
                     ...data.map((d) =>
-                      currency === "VND" ? d.revenue_vnd : d.revenue_usd,
-                    ),
+                      currency === "VND" ? d.revenue_vnd : d.revenue_usd
+                    )
                   ),
-                  currency === "VND" ? "VND" : "USD",
+                  currency === "VND" ? "VND" : "USD"
                 )}
               </span>
             </div>
@@ -176,10 +172,10 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({
                 {formatCurrency(
                   Math.min(
                     ...data.map((d) =>
-                      currency === "VND" ? d.revenue_vnd : d.revenue_usd,
-                    ),
+                      currency === "VND" ? d.revenue_vnd : d.revenue_usd
+                    )
                   ),
-                  currency === "VND" ? "VND" : "USD",
+                  currency === "VND" ? "VND" : "USD"
                 )}
               </span>
             </div>

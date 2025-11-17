@@ -4,13 +4,9 @@
  * Reduced from ~365 lines to ~120 lines
  */
 
+import { type ChartType, type DataKey, SharedChart } from "@components/charts";
+import type { ChartDataPoint } from "@types";
 import React, { useMemo, useState } from "react";
-import {
-  SharedChart,
-  type ChartType,
-  type DataKey,
-} from "../../../../components/charts/SharedChart";
-import type { ChartDataPoint } from "../../../../types/dashboard";
 
 interface ProfitChartProps {
   data: ChartDataPoint[];
@@ -22,13 +18,13 @@ interface ProfitChartProps {
 }
 
 export const ProfitChart: React.FC<ProfitChartProps> = ({
-  data,
-  currency,
-  chartType = "line",
-  height = 400,
-  showProfitMargin = true,
-  loading = false,
-}) => {
+                                                          data,
+                                                          currency,
+                                                          chartType = "line",
+                                                          height = 400,
+                                                          showProfitMargin = true,
+                                                          loading = false
+                                                        }) => {
   const [activeTab, setActiveTab] = useState<ChartType>(chartType);
 
   // Format currency helper
@@ -38,14 +34,14 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({
         style: "currency",
         currency: "VND",
         minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
+        maximumFractionDigits: 0
       }).format(value);
     } else {
       return new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
         minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
+        maximumFractionDigits: 0
       }).format(value);
     }
   };
@@ -61,7 +57,7 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({
           key: "profit_usd",
           name: "Lợi nhuận USD",
           color: "#10b981",
-          type: "bar",
+          type: "bar"
         });
       }
       if (currency === "VND" || currency === "BOTH") {
@@ -69,7 +65,7 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({
           key: "profit_vnd",
           name: "Lợi nhuận VND",
           color: "#059669",
-          type: "bar",
+          type: "bar"
         });
       }
       if (showProfitMargin) {
@@ -78,7 +74,7 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({
           name: "Tỷ lệ lợi nhuận (%)",
           color: "#f59e0b",
           type: "line",
-          yAxisId: "right",
+          yAxisId: "right"
         });
       }
     } else {
@@ -88,7 +84,7 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({
           key: "profit_usd",
           name: "Lợi nhuận USD",
           color: "#10b981",
-          gradient: activeTab === "area",
+          gradient: activeTab === "area"
         });
       }
       if (currency === "VND" || currency === "BOTH") {
@@ -96,7 +92,7 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({
           key: "profit_vnd",
           name: "Lợi nhuận VND",
           color: "#059669",
-          gradient: activeTab === "area",
+          gradient: activeTab === "area"
         });
       }
     }
@@ -209,10 +205,10 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({
                 {formatCurrency(
                   Math.max(
                     ...data.map((d) =>
-                      currency === "VND" ? d.profit_vnd : d.profit_usd,
-                    ),
+                      currency === "VND" ? d.profit_vnd : d.profit_usd
+                    )
                   ),
-                  currency === "VND" ? "VND" : "USD",
+                  currency === "VND" ? "VND" : "USD"
                 )}
               </div>
             </div>
@@ -222,10 +218,10 @@ export const ProfitChart: React.FC<ProfitChartProps> = ({
                 {formatCurrency(
                   Math.min(
                     ...data.map((d) =>
-                      currency === "VND" ? d.profit_vnd : d.profit_usd,
-                    ),
+                      currency === "VND" ? d.profit_vnd : d.profit_usd
+                    )
                   ),
-                  currency === "VND" ? "VND" : "USD",
+                  currency === "VND" ? "VND" : "USD"
                 )}
               </div>
             </div>

@@ -145,7 +145,7 @@ export const shopService = createCRUDService<Shop, ShopFormData>(
 ### Before: Original Implementation
 
 ```typescript
-// src/features/shops/store/useShopStore.ts (OLD)
+// src/features/shops/stores/useShopStore.ts (OLD)
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Shop, ShopFormData } from '../../../types/shop';
@@ -301,8 +301,8 @@ export const useShopStore = create<ShopStore>()(
 ### After: Using Factory
 
 ```typescript
-// src/features/shops/store/useShopStore.ts (NEW)
-import { createCRUDStore } from '../../../store/crud.store.factory';
+// src/features/shops/stores/useShopStore.ts (NEW)
+import { createCRUDStore } from '../../../stores/crud.stores.factory';
 import { shopService } from '../services/shop.service.api';
 import type { Shop, ShopFormData } from '../../../types/shop';
 
@@ -310,7 +310,7 @@ export const useShopStore = createCRUDStore<Shop, ShopFormData>(
   shopService,
   {
     storeName: 'shops',
-    persistKey: 'shop-store',
+    persistKey: 'shop-stores',
   }
 );
 ```
@@ -518,8 +518,8 @@ export const OrderForm: React.FC = () => {
 ```typescript
 // src/features/orders/components/OrderForm.tsx (NEW)
 import { FormAutocomplete } from '@/components/ui/forms';
-import { useEmployeeStore } from '@/features/employees/store';
-import { useProductStore } from '@/features/products/store';
+import { useEmployeeStore } from '@/features/employees/stores';
+import { useProductStore } from '@/features/products/stores';
 
 export const OrderForm: React.FC = () => {
   const [formData, setFormData] = useState<OrderFormData>(INITIAL_ORDER);
@@ -642,6 +642,7 @@ export const OrderCard: React.FC = ({ order }) => {
 ## Migration Checklist
 
 ### For Each Service
+
 - [ ] Create new service using factory
 - [ ] Define mappers (toRow, toFormData)
 - [ ] Configure search columns
@@ -651,6 +652,7 @@ export const OrderCard: React.FC = ({ order }) => {
 - [ ] Verify no broken imports
 
 ### For Each Store
+
 - [ ] Create new store using factory
 - [ ] Update component imports
 - [ ] Test all store actions
@@ -659,6 +661,7 @@ export const OrderCard: React.FC = ({ order }) => {
 - [ ] Verify no broken imports
 
 ### For Each Form
+
 - [ ] Replace Input/InputField/TextBox with FormInput
 - [ ] Replace OptionBox/Selector with FormSelect
 - [ ] Replace EmployeeAutocomplete/ProductAutocomplete with FormAutocomplete
@@ -668,6 +671,7 @@ export const OrderCard: React.FC = ({ order }) => {
 - [ ] Verify no broken imports
 
 ### For All Components
+
 - [ ] Import theme system
 - [ ] Replace hardcoded colors with theme colors
 - [ ] Replace hardcoded shadows with theme shadows
@@ -679,6 +683,7 @@ export const OrderCard: React.FC = ({ order }) => {
 ## Testing Strategy
 
 ### Unit Tests
+
 ```typescript
 // Test factory-created service
 describe('shopService', () => {
@@ -698,7 +703,7 @@ describe('shopService', () => {
   });
 });
 
-// Test factory-created store
+// Test factory-created stores
 describe('useShopStore', () => {
   it('should fetch shops', async () => {
     const { result } = renderHook(() => useShopStore());
@@ -711,6 +716,7 @@ describe('useShopStore', () => {
 ```
 
 ### Integration Tests
+
 ```typescript
 // Test form with new components
 describe('ShopForm', () => {
@@ -735,6 +741,7 @@ describe('ShopForm', () => {
 ## Performance Verification
 
 ### Before Migration
+
 ```
 Bundle Size: 2.2MB
 Initial Load: 3.2s
@@ -743,6 +750,7 @@ Store Update: 12ms
 ```
 
 ### After Migration
+
 ```
 Bundle Size: 1.8MB (18% reduction)
 Initial Load: 2.8s (12% improvement)

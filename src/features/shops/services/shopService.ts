@@ -1,8 +1,7 @@
-// src/features/shops/services/shop.service.supabase.ts
+// src/features/shops/services/shopService.ts
 
-import { handleSupabaseError, supabase } from "../../../lib/supabase";
-import type { Shop, ShopFormData } from "../../../types/shop";
-import type { Database } from "../../../types/supabase.ts";
+import { handleSupabaseError, supabase } from "@lib";
+import type { Database, Shop, ShopFormData } from "@types";
 
 /**
  * Table reference for reusability
@@ -20,7 +19,7 @@ const mapToRow = (data: Database["public"]["Tables"]["shops"]["Row"]): Shop => {
     is_active: data.is_active,
     logo: data.logo,
     created_at: new Date(data.created_at),
-    updated_at: new Date(data.updated_at),
+    updated_at: new Date(data.updated_at)
   };
 };
 
@@ -76,7 +75,7 @@ export const shopService = {
     const insertData = {
       name: formData.name,
       code: formData.code,
-      logo: formData.logo,
+      logo: formData.logo
     };
 
     const { data, error } = await shopsTable()
@@ -99,10 +98,10 @@ export const shopService = {
    */
   async update(
     id: number,
-    formData: Partial<ShopFormData>,
+    formData: Partial<ShopFormData>
   ): Promise<Shop | undefined> {
     const updateData: Record<string, unknown> = {
-      updated_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
 
     if (formData.name !== undefined) updateData.name = formData.name;
@@ -165,7 +164,7 @@ export const shopService = {
     const { data, error } = await shopsTable()
       .update({
         is_active: newStatus,
-        updated_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       })
       .eq("id", id)
       .select()
@@ -223,7 +222,7 @@ export const shopService = {
     const { error } = await shopsTable()
       .update({
         is_active,
-        updated_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       })
       .in("id", ids);
 
@@ -231,5 +230,5 @@ export const shopService = {
       console.error("Error bulk updating status:", error);
       throw new Error(handleSupabaseError(error));
     }
-  },
+  }
 };

@@ -1,11 +1,20 @@
 // src/features/employees/pages/EmployeeSalaryList.tsx
 
-import { FiCalendar, FiCheckCircle, FiChevronDown, FiChevronUp, FiClock, FiDollarSign, FiEdit2, FiFilter, FiPercent, FiXCircle } from "react-icons/fi";
+import { SalaryEditModal, useEmployeeSalaryStore, useEmployeeStore } from "@features/employees";
+import type { EmployeeSalary } from "@types";
 import React, { useEffect, useState } from "react";
-import type { EmployeeSalary } from "../../../types/employee";
-import { SalaryEditModal } from "../components/SalaryEditModal";
-import { useEmployeeSalaryStore } from "../store/useEmployeeSalaryStore";
-import { useEmployeeStore } from "../store/useEmployeeStore";
+import {
+  FiCalendar,
+  FiCheckCircle,
+  FiChevronDown,
+  FiChevronUp,
+  FiClock,
+  FiDollarSign,
+  FiEdit2,
+  FiFilter,
+  FiPercent,
+  FiXCircle
+} from "react-icons/fi";
 
 export const EmployeeSalaryList = () => {
   const {
@@ -17,14 +26,14 @@ export const EmployeeSalaryList = () => {
     calculateAndSaveAll,
     approveSalary,
     markAsPaid,
-    updateSalary,
+    updateSalary
   } = useEmployeeSalaryStore();
 
   const { employees, fetchEmployees } = useEmployeeStore();
 
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState<number | undefined>(
-    new Date().getMonth() + 1,
+    new Date().getMonth() + 1
   );
   const [selectedStatus, setSelectedStatus] = useState<
     "draft" | "approved" | "paid" | undefined
@@ -34,7 +43,7 @@ export const EmployeeSalaryList = () => {
   >();
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [editingSalary, setEditingSalary] = useState<EmployeeSalary | null>(
-    null,
+    null
   );
 
   // Load employees and salaries on mount
@@ -47,7 +56,7 @@ export const EmployeeSalaryList = () => {
       year: selectedYear,
       month: selectedMonth,
       status: selectedStatus,
-      employee_id: selectedEmployeeId,
+      employee_id: selectedEmployeeId
     };
     setFilters(newFilters);
     fetchSalaryRecords(newFilters);
@@ -57,7 +66,7 @@ export const EmployeeSalaryList = () => {
     selectedStatus,
     selectedEmployeeId,
     setFilters,
-    fetchSalaryRecords,
+    fetchSalaryRecords
   ]);
 
   const handleCalculateAll = async () => {
@@ -68,7 +77,7 @@ export const EmployeeSalaryList = () => {
 
     if (
       confirm(
-        `Tính lương cho tất cả nhân viên tháng ${selectedMonth}/${selectedYear}?`,
+        `Tính lương cho tất cả nhân viên tháng ${selectedMonth}/${selectedYear}?`
       )
     ) {
       try {
@@ -77,7 +86,7 @@ export const EmployeeSalaryList = () => {
       } catch (error) {
         alert(
           "Lỗi khi tính lương: " +
-            (error instanceof Error ? error.message : "Unknown error"),
+          (error instanceof Error ? error.message : "Unknown error")
         );
       }
     }
@@ -86,7 +95,7 @@ export const EmployeeSalaryList = () => {
   const handleApprove = async (
     employee_id: number,
     year: number,
-    month: number,
+    month: number
   ) => {
     if (confirm("Duyệt lương cho nhân viên này?")) {
       try {
@@ -95,7 +104,7 @@ export const EmployeeSalaryList = () => {
       } catch (error) {
         alert(
           "Lỗi khi duyệt lương: " +
-            (error instanceof Error ? error.message : "Unknown error"),
+          (error instanceof Error ? error.message : "Unknown error")
         );
       }
     }
@@ -104,7 +113,7 @@ export const EmployeeSalaryList = () => {
   const handleMarkPaid = async (
     employee_id: number,
     year: number,
-    month: number,
+    month: number
   ) => {
     if (!confirm("Đánh dấu đã thanh toán lương cho nhân viên này?")) {
       return;
@@ -115,7 +124,7 @@ export const EmployeeSalaryList = () => {
       alert("Đã đánh dấu đã thanh toán!");
     } catch (error) {
       alert(
-        "Lỗi: " + (error instanceof Error ? error.message : "Unknown error"),
+        "Lỗi: " + (error instanceof Error ? error.message : "Unknown error")
       );
     }
   };
@@ -148,13 +157,13 @@ export const EmployeeSalaryList = () => {
         editingSalary.employee_id,
         editingSalary.salary_period_year,
         editingSalary.salary_period_month,
-        updates,
+        updates
       );
       alert("Đã cập nhật lương thành công!");
     } catch (error) {
       alert(
         "Lỗi khi cập nhật: " +
-          (error instanceof Error ? error.message : "Unknown error"),
+        (error instanceof Error ? error.message : "Unknown error")
       );
       throw error;
     }
@@ -164,21 +173,24 @@ export const EmployeeSalaryList = () => {
     switch (status) {
       case "draft":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+          <span
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
             <FiClock className="w-3 h-3" />
             Nháp
           </span>
         );
       case "approved":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+          <span
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
             <FiCheckCircle className="w-3 h-3" />
             Đã duyệt
           </span>
         );
       case "paid":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+          <span
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
             <FiDollarSign className="w-3 h-3" />
             Đã thanh toán
           </span>
@@ -191,7 +203,7 @@ export const EmployeeSalaryList = () => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
-      currency: "VND",
+      currency: "VND"
     }).format(amount);
   };
 
@@ -204,7 +216,7 @@ export const EmployeeSalaryList = () => {
 
   const years = Array.from(
     { length: 5 },
-    (_, i) => new Date().getFullYear() - i,
+    (_, i) => new Date().getFullYear() - i
   );
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
@@ -265,7 +277,7 @@ export const EmployeeSalaryList = () => {
               value={selectedMonth ?? ""}
               onChange={(e) =>
                 setSelectedMonth(
-                  e.target.value ? Number(e.target.value) : undefined,
+                  e.target.value ? Number(e.target.value) : undefined
                 )
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -307,7 +319,7 @@ export const EmployeeSalaryList = () => {
               value={selectedEmployeeId ?? ""}
               onChange={(e) =>
                 setSelectedEmployeeId(
-                  e.target.value ? Number(e.target.value) : undefined,
+                  e.target.value ? Number(e.target.value) : undefined
                 )
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -347,210 +359,210 @@ export const EmployeeSalaryList = () => {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Nhân viên
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Kỳ lương
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Lương cơ bản
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    HH Vẽ
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    HH Bán hàng
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Tổng lương
-                  </th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Trạng thái
-                  </th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                    Hành động
-                  </th>
-                  <th className="px-4 py-3"></th>
-                </tr>
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Nhân viên
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Kỳ lương
+                </th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Lương cơ bản
+                </th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  HH Vẽ
+                </th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  HH Bán hàng
+                </th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Tổng lương
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Trạng thái
+                </th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                  Hành động
+                </th>
+                <th className="px-4 py-3"></th>
+              </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {salaries.map((salary) => (
-                  <React.Fragment key={salary.id}>
-                    <tr className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        {getEmployeeName(salary.employee_id)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
-                        <div className="flex items-center gap-1">
-                          <FiCalendar className="w-4 h-4" />
-                          {salary.salary_period_month}/
-                          {salary.salary_period_year}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-right text-gray-900">
-                        {formatCurrency(salary.base_salary)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-right text-green-600 font-medium">
-                        {formatCurrency(salary.artist_commission_total)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-right text-blue-600 font-medium">
-                        {formatCurrency(salary.seller_commission_total)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-right font-bold text-gray-900">
-                        {formatCurrency(salary.total_salary)}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        {getStatusBadge(salary.status)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            onClick={() => handleEditSalary(salary)}
-                            className="px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors flex items-center gap-1"
-                            title="Chỉnh sửa"
-                          >
-                            <FiEdit2 className="w-3 h-3" />
-                            Sửa
-                          </button>
-                          {salary.status === "draft" &&
-                            salary.salary_period_month !== null && (
-                              <button
-                                onClick={() =>
-                                  handleApprove(
-                                    salary.employee_id,
-                                    salary.salary_period_year,
-                                    salary.salary_period_month!,
-                                  )
-                                }
-                                className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                              >
-                                Duyệt
-                              </button>
-                            )}
-                          {salary.status === "approved" &&
-                            salary.salary_period_month !== null && (
-                              <button
-                                onClick={() =>
-                                  handleMarkPaid(
-                                    salary.employee_id,
-                                    salary.salary_period_year,
-                                    salary.salary_period_month!,
-                                  )
-                                }
-                                className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-                              >
-                                Đã trả
-                              </button>
-                            )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
+              {salaries.map((salary) => (
+                <React.Fragment key={salary.id}>
+                  <tr className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                      {getEmployeeName(salary.employee_id)}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        <FiCalendar className="w-4 h-4" />
+                        {salary.salary_period_month}/
+                        {salary.salary_period_year}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-900">
+                      {formatCurrency(salary.base_salary)}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-right text-green-600 font-medium">
+                      {formatCurrency(salary.artist_commission_total)}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-right text-blue-600 font-medium">
+                      {formatCurrency(salary.seller_commission_total)}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-right font-bold text-gray-900">
+                      {formatCurrency(salary.total_salary)}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {getStatusBadge(salary.status)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-center gap-2">
                         <button
-                          onClick={() => toggleRowExpand(salary.id)}
-                          className="text-gray-600 hover:text-gray-900"
+                          onClick={() => handleEditSalary(salary)}
+                          className="px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors flex items-center gap-1"
+                          title="Chỉnh sửa"
                         >
-                          {expandedRows.has(salary.id) ? (
-                            <FiChevronUp className="w-5 h-5" />
-                          ) : (
-                            <FiChevronDown className="w-5 h-5" />
-                          )}
+                          <FiEdit2 className="w-3 h-3" />
+                          Sửa
                         </button>
-                      </td>
-                    </tr>
+                        {salary.status === "draft" &&
+                          salary.salary_period_month !== null && (
+                            <button
+                              onClick={() =>
+                                handleApprove(
+                                  salary.employee_id,
+                                  salary.salary_period_year,
+                                  salary.salary_period_month!
+                                )
+                              }
+                              className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                            >
+                              Duyệt
+                            </button>
+                          )}
+                        {salary.status === "approved" &&
+                          salary.salary_period_month !== null && (
+                            <button
+                              onClick={() =>
+                                handleMarkPaid(
+                                  salary.employee_id,
+                                  salary.salary_period_year,
+                                  salary.salary_period_month!
+                                )
+                              }
+                              className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                            >
+                              Đã trả
+                            </button>
+                          )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => toggleRowExpand(salary.id)}
+                        className="text-gray-600 hover:text-gray-900"
+                      >
+                        {expandedRows.has(salary.id) ? (
+                          <FiChevronUp className="w-5 h-5" />
+                        ) : (
+                          <FiChevronDown className="w-5 h-5" />
+                        )}
+                      </button>
+                    </td>
+                  </tr>
 
-                    {/* Expanded Details */}
-                    {expandedRows.has(salary.id) && (
-                      <tr>
-                        <td colSpan={9} className="px-4 py-4 bg-gray-50">
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                            <div>
+                  {/* Expanded Details */}
+                  {expandedRows.has(salary.id) && (
+                    <tr>
+                      <td colSpan={9} className="px-4 py-4 bg-gray-50">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div>
                               <span className="text-gray-600">
                                 Hoa hồng Vẽ:
                               </span>
-                              <span className="ml-2 font-medium text-green-600">
+                            <span className="ml-2 font-medium text-green-600">
                                 {formatCurrency(salary.artist_commission_total)}
                               </span>
-                            </div>
-                            <div>
+                          </div>
+                          <div>
                               <span className="text-gray-600">
                                 Lợi nhuận Vẽ:
                               </span>
-                              <span className="ml-2 font-medium text-green-600">
+                            <span className="ml-2 font-medium text-green-600">
                                 {formatCurrency(salary.artist_profit_vnd || 0)}
                               </span>
-                            </div>
-                            <div>
+                          </div>
+                          <div>
                               <span className="text-gray-600">
                                 Hoa hồng Bán hàng:
                               </span>
-                              <span className="ml-2 font-medium text-purple-600">
+                            <span className="ml-2 font-medium text-purple-600">
                                 {formatCurrency(salary.seller_commission_total)}
                               </span>
-                            </div>
-                            <div>
+                          </div>
+                          <div>
                               <span className="text-gray-600">
                                 Lợi nhuận Bán hàng:
                               </span>
-                              <span className="ml-2 font-medium text-purple-600">
+                            <span className="ml-2 font-medium text-purple-600">
                                 {formatCurrency(salary.seller_profit_vnd || 0)}
                               </span>
-                            </div>
-                            <div>
+                          </div>
+                          <div>
                               <span className="text-gray-600">
                                 Chi phí khác:
                               </span>
-                              <span className="ml-2 font-medium text-orange-600">
+                            <span className="ml-2 font-medium text-orange-600">
                                 {formatCurrency(salary.other_costs)}
                               </span>
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Khấu trừ:</span>
-                              <span className="ml-2 font-medium text-red-600">
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Khấu trừ:</span>
+                            <span className="ml-2 font-medium text-red-600">
                                 {formatCurrency(salary.deduction)}
                               </span>
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Thưởng:</span>
-                              <span className="ml-2 font-medium text-green-600">
+                          </div>
+                          <div>
+                            <span className="text-gray-600">Thưởng:</span>
+                            <span className="ml-2 font-medium text-green-600">
                                 {formatCurrency(salary.bonus)}
                               </span>
-                            </div>
-                            {salary.approved_by && (
-                              <div>
+                          </div>
+                          {salary.approved_by && (
+                            <div>
                                 <span className="text-gray-600">
                                   Người duyệt:
                                 </span>
-                                <span className="ml-2 font-medium">
+                              <span className="ml-2 font-medium">
                                   ID: {salary.approved_by}
                                 </span>
-                              </div>
-                            )}
-                            {salary.paid_at && (
-                              <div>
-                                <span className="text-gray-600">Ngày trả:</span>
-                                <span className="ml-2 font-medium">
-                                  {new Date(salary.paid_at).toLocaleDateString(
-                                    "vi-VN",
-                                  )}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                          {salary.notes && (
-                            <div className="mt-3 text-sm">
-                              <span className="text-gray-600">Ghi chú:</span>
-                              <p className="mt-1 text-gray-900">
-                                {salary.notes}
-                              </p>
                             </div>
                           )}
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
-                ))}
+                          {salary.paid_at && (
+                            <div>
+                              <span className="text-gray-600">Ngày trả:</span>
+                              <span className="ml-2 font-medium">
+                                  {new Date(salary.paid_at).toLocaleDateString(
+                                    "vi-VN"
+                                  )}
+                                </span>
+                            </div>
+                          )}
+                        </div>
+                        {salary.notes && (
+                          <div className="mt-3 text-sm">
+                            <span className="text-gray-600">Ghi chú:</span>
+                            <p className="mt-1 text-gray-900">
+                              {salary.notes}
+                            </p>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))}
               </tbody>
             </table>
           </div>

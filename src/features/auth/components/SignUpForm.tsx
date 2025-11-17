@@ -1,10 +1,11 @@
+// src/features/auth/components/SignUpForm.tsx
 // features/auth/components/SignUpForm.tsx
 
-import { FiAlertCircle, FiMail, FiLock, FiUser } from "react-icons/fi";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { useAuthStore } from "@features/auth";
 import { useState } from "react";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { FiAlertCircle, FiLock, FiMail, FiUser } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/useAuthStore";
 
 export const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -22,7 +23,7 @@ export const SignUpForm = () => {
       // Sign up with metadata
       await signUp(email, password, { name });
       alert(
-        "Account created successfully! Employee profile created automatically. Please check your email to verify your account.",
+        "Account created successfully! Employee profile created automatically. Please check your email to verify your account."
       );
       navigate("/login");
     } catch (err) {
@@ -35,7 +36,8 @@ export const SignUpForm = () => {
       <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <div
+            className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <FiUser className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">

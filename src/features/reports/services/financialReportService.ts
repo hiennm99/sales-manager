@@ -1,6 +1,6 @@
-// services/financialReportService.ts
+// src/features/reports/services/financialReportService.ts
 
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@lib";
 import type {
   ExcelUploadData,
   Expense,
@@ -10,16 +10,16 @@ import type {
   IncomingMoney,
   MoneyOnEtsy,
   ReceivedMoney,
-  TransferredMoney,
-} from "@/types/financialReport";
+  TransferredMoney
+} from "@types";
 import {
   castExpense,
   castFinancialReportPeriod,
   castIncomingMoney,
   castMoneyOnEtsy,
   castReceivedMoney,
-  castTransferredMoney,
-} from "@/types/financialReport";
+  castTransferredMoney
+} from "@types";
 import * as XLSX from "exceljs";
 
 // ==================== Table References ====================
@@ -33,7 +33,7 @@ const transferredMoneyTable = () => supabase.from("transferred_money");
 // ==================== Financial Report Periods ====================
 
 const mapToReportRow = (
-  data: Partial<FinancialReportFormData>,
+  data: Partial<FinancialReportFormData>
 ): Record<string, unknown> => {
   const row: Record<string, unknown> = {};
 
@@ -60,7 +60,7 @@ const mapToReportRow = (
 export const financialReportService = {
   // Get all report periods
   async getReportPeriods(
-    filters?: FinancialReportFilters,
+    filters?: FinancialReportFilters
   ): Promise<FinancialReportPeriod[]> {
     let query = reportPeriodsTable()
       .select("*")
@@ -99,7 +99,7 @@ export const financialReportService = {
 
   // Create report period
   async createReportPeriod(
-    formData: FinancialReportFormData,
+    formData: FinancialReportFormData
   ): Promise<FinancialReportPeriod> {
     const row = mapToReportRow(formData);
 
@@ -117,7 +117,7 @@ export const financialReportService = {
   // Update report period
   async updateReportPeriod(
     id: number,
-    formData: Partial<FinancialReportFormData>,
+    formData: Partial<FinancialReportFormData>
   ): Promise<FinancialReportPeriod> {
     const row = mapToReportRow(formData);
 
@@ -166,12 +166,12 @@ export const financialReportService = {
     return data
       ? castFinancialReportPeriod(data)
       : ({} as FinancialReportPeriod);
-  },
+  }
 };
 
 // ==================== Money on Etsy ====================
 
-export const moneyOnEtsyServiceApi = {
+export const moneyOnEtsyService = {
   async getByReportPeriod(reportPeriodId: number): Promise<MoneyOnEtsy[]> {
     const { data, error } = await moneyOnEtsyTable()
       .select("*")
@@ -190,7 +190,7 @@ export const moneyOnEtsyServiceApi = {
           item.date !== undefined &&
           item.description !== undefined &&
           item.report_period_id !== undefined &&
-          item.type !== undefined,
+          item.type !== undefined
       )
       .map((item) => ({
         report_period_id: item.report_period_id,
@@ -198,7 +198,7 @@ export const moneyOnEtsyServiceApi = {
         description: item.description,
         amount: item.amount,
         currency: item.currency || "USD",
-        type: item.type,
+        type: item.type
       }));
 
     const { data, error } = await moneyOnEtsyTable()
@@ -221,12 +221,12 @@ export const moneyOnEtsyServiceApi = {
       .eq("report_period_id", reportPeriodId);
 
     if (error) throw error;
-  },
+  }
 };
 
 // ==================== Incoming Money ====================
 
-export const incomingMoneyServiceApi = {
+export const incomingMoneyService = {
   async getByReportPeriod(reportPeriodId: number): Promise<IncomingMoney[]> {
     const { data, error } = await incomingMoneyTable()
       .select("*")
@@ -244,7 +244,7 @@ export const incomingMoneyServiceApi = {
           item.amount !== undefined &&
           item.date !== undefined &&
           item.description !== undefined &&
-          item.report_period_id !== undefined,
+          item.report_period_id !== undefined
       )
       .map((item) => ({
         report_period_id: item.report_period_id,
@@ -254,7 +254,7 @@ export const incomingMoneyServiceApi = {
         currency: item.currency || "USD",
         order_id: item.order_id,
         expected_date: item.expected_date,
-        status: item.status,
+        status: item.status
       }));
 
     const { data, error } = await incomingMoneyTable()
@@ -277,12 +277,12 @@ export const incomingMoneyServiceApi = {
       .eq("report_period_id", reportPeriodId);
 
     if (error) throw error;
-  },
+  }
 };
 
 // ==================== Received Money ====================
 
-export const receivedMoneyServiceApi = {
+export const receivedMoneyService = {
   async getByReportPeriod(reportPeriodId: number): Promise<ReceivedMoney[]> {
     const { data, error } = await receivedMoneyTable()
       .select("*")
@@ -300,7 +300,7 @@ export const receivedMoneyServiceApi = {
           item.amount !== undefined &&
           item.date !== undefined &&
           item.description !== undefined &&
-          item.report_period_id !== undefined,
+          item.report_period_id !== undefined
       )
       .map((item) => ({
         report_period_id: item.report_period_id,
@@ -310,7 +310,7 @@ export const receivedMoneyServiceApi = {
         currency: item.currency || "USD",
         order_id: item.order_id,
         received_date: item.received_date,
-        payment_method: item.payment_method,
+        payment_method: item.payment_method
       }));
 
     const { data, error } = await receivedMoneyTable()
@@ -333,12 +333,12 @@ export const receivedMoneyServiceApi = {
       .eq("report_period_id", reportPeriodId);
 
     if (error) throw error;
-  },
+  }
 };
 
 // ==================== Expenses ====================
 
-export const expensesServiceApi = {
+export const expensesService = {
   async getByReportPeriod(reportPeriodId: number): Promise<Expense[]> {
     const { data, error } = await expensesTable()
       .select("*")
@@ -357,7 +357,7 @@ export const expensesServiceApi = {
           item.date !== undefined &&
           item.description !== undefined &&
           item.category !== undefined &&
-          item.report_period_id !== undefined,
+          item.report_period_id !== undefined
       )
       .map((item) => ({
         report_period_id: item.report_period_id,
@@ -367,7 +367,7 @@ export const expensesServiceApi = {
         amount: item.amount,
         currency: item.currency || "USD",
         payment_method: item.payment_method,
-        receipt_url: item.receipt_url,
+        receipt_url: item.receipt_url
       }));
 
     const { data, error } = await expensesTable()
@@ -390,12 +390,12 @@ export const expensesServiceApi = {
       .eq("report_period_id", reportPeriodId);
 
     if (error) throw error;
-  },
+  }
 };
 
 // ==================== Transferred Money ====================
 
-export const transferredMoneyServiceApi = {
+export const transferredMoneyService = {
   async getByReportPeriod(reportPeriodId: number): Promise<TransferredMoney[]> {
     const { data, error } = await transferredMoneyTable()
       .select("*")
@@ -407,7 +407,7 @@ export const transferredMoneyServiceApi = {
   },
 
   async create(
-    items: Partial<TransferredMoney>[],
+    items: Partial<TransferredMoney>[]
   ): Promise<TransferredMoney[]> {
     const validItems = items
       .filter(
@@ -416,7 +416,7 @@ export const transferredMoneyServiceApi = {
           item.date !== undefined &&
           item.description !== undefined &&
           item.transfer_date !== undefined &&
-          item.report_period_id !== undefined,
+          item.report_period_id !== undefined
       )
       .map((item) => ({
         report_period_id: item.report_period_id,
@@ -426,7 +426,7 @@ export const transferredMoneyServiceApi = {
         currency: item.currency || "USD",
         transfer_date: item.transfer_date,
         bank_account: item.bank_account,
-        reference_number: item.reference_number,
+        reference_number: item.reference_number
       }));
 
     const { data, error } = await transferredMoneyTable()
@@ -449,7 +449,7 @@ export const transferredMoneyServiceApi = {
       .eq("report_period_id", reportPeriodId);
 
     if (error) throw error;
-  },
+  }
 };
 
 // ==================== Excel Parsing ====================
@@ -472,13 +472,13 @@ export const excelParserService = {
               totalSales: 0,
               totalFees: 0,
               netProfit: 0,
-              marketingFees: 0,
+              marketingFees: 0
             },
             moneyOnEtsy: [],
             incomingMoney: [],
             receivedMoney: [],
             expenses: [],
-            transferredMoney: [],
+            transferredMoney: []
           };
 
           // Parse each sheet
@@ -529,7 +529,7 @@ export const excelParserService = {
       totalSales: 62953.8673,
       totalFees: 9988.2913,
       netProfit: 44091.4844,
-      marketingFees: 3174.0923,
+      marketingFees: 3174.0923
     };
   },
 
@@ -544,7 +544,7 @@ export const excelParserService = {
           description: String((row as unknown[])[1] || ""),
           amount: parseFloat(String((row as unknown[])[2])) || 0,
           currency: String((row as unknown[])[3] || "USD"),
-          type: "balance",
+          type: "balance"
         });
       }
     }
@@ -562,7 +562,7 @@ export const excelParserService = {
           description: String((row as unknown[])[2] || ""),
           amount: parseFloat(String((row as unknown[])[3])) || 0,
           currency: String((row as unknown[])[4] || "USD"),
-          expectedDate: String((row as unknown[])[5]) || undefined,
+          expectedDate: String((row as unknown[])[5]) || undefined
         });
       }
     }
@@ -581,7 +581,7 @@ export const excelParserService = {
           amount: parseFloat(String((row as unknown[])[3])) || 0,
           currency: String((row as unknown[])[4] || "USD"),
           receivedDate: String((row as unknown[])[5] || (row as unknown[])[0]),
-          paymentMethod: String((row as unknown[])[6]) || undefined,
+          paymentMethod: String((row as unknown[])[6]) || undefined
         });
       }
     }
@@ -599,7 +599,7 @@ export const excelParserService = {
           description: String((row as unknown[])[2] || ""),
           amount: parseFloat(String((row as unknown[])[3])) || 0,
           currency: String((row as unknown[])[4] || "USD"),
-          paymentMethod: String((row as unknown[])[5]) || undefined,
+          paymentMethod: String((row as unknown[])[5]) || undefined
         });
       }
     }
@@ -607,7 +607,7 @@ export const excelParserService = {
   },
 
   parseTransferredMoneySheet(
-    data: unknown[],
+    data: unknown[]
   ): ExcelUploadData["transferredMoney"] {
     const result: ExcelUploadData["transferredMoney"] = [];
     for (let i = 1; i < (data as unknown[]).length; i++) {
@@ -620,10 +620,10 @@ export const excelParserService = {
           currency: String((row as unknown[])[3] || "USD"),
           transferDate: String((row as unknown[])[4] || (row as unknown[])[0]),
           bankAccount: String((row as unknown[])[5]) || undefined,
-          referenceNumber: String((row as unknown[])[6]) || undefined,
+          referenceNumber: String((row as unknown[])[6]) || undefined
         });
       }
     }
     return result;
-  },
+  }
 };

@@ -1,16 +1,15 @@
 // src/features/reports/components/ReportFilters.tsx
 
-import { Select } from "@/components/ui/Select";
+import { Select } from "@components/ui";
 import {
   MONTH_OPTIONS,
-  REPORT_STATUS_OPTIONS,
-  YEAR_OPTIONS,
   objectsToOptions,
-} from "@/constants";
-import type { FinancialReportFilters } from "@/types/financialReport";
-import type { Shop } from "@/types/shop";
-import { FiFilter, FiX } from "react-icons/fi";
+  REPORT_STATUS_OPTIONS,
+  YEAR_OPTIONS
+} from "@constants";
+import type { FinancialReportFilters, Shop } from "@types";
 import React from "react";
+import { FiFilter, FiX } from "react-icons/fi";
 
 interface ReportFiltersProps {
   filters: FinancialReportFilters;
@@ -19,10 +18,10 @@ interface ReportFiltersProps {
 }
 
 export const ReportFilters: React.FC<ReportFiltersProps> = ({
-  filters,
-  onFiltersChange,
-  shops,
-}) => {
+                                                              filters,
+                                                              onFiltersChange,
+                                                              shops
+                                                            }) => {
   const shopOptions = objectsToOptions(shops, "id", "name");
 
   const handleClearFilters = () => {
@@ -61,7 +60,7 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({
             onChange={(value) =>
               onFiltersChange({
                 ...filters,
-                shopId: value ? Number(value) : undefined,
+                shopId: value ? Number(value) : undefined
               })
             }
             options={shopOptions}
@@ -80,7 +79,7 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({
             onChange={(value) =>
               onFiltersChange({
                 ...filters,
-                year: value ? Number(value) : undefined,
+                year: value ? Number(value) : undefined
               })
             }
             options={YEAR_OPTIONS}
@@ -99,7 +98,7 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({
             onChange={(value) =>
               onFiltersChange({
                 ...filters,
-                month: value ? Number(value) : undefined,
+                month: value ? Number(value) : undefined
               })
             }
             options={MONTH_OPTIONS}

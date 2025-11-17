@@ -1,12 +1,13 @@
+// src/features/auth/pages/NotificationSettingsPage.tsx
 // features/auth/pages/NotificationSettingsPage.tsx
 
+import { useAuthStore } from "@features/auth";
+import type { NotificationConfig } from "@services";
+import React, { useEffect, useState } from "react";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FiAlertCircle, FiBell, FiCopy, FiSave } from "react-icons/fi";
 import { IoArrowBack } from "react-icons/io5";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/useAuthStore";
-import type { NotificationConfig } from "@/services/notificationService.ts";
 
 export const NotificationSettingsPage = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ export const NotificationSettingsPage = () => {
 
   const [config, setConfig] = useState<NotificationConfig>({
     telegram_chat_id: import.meta.env.VITE_TELEGRAM_CHAT_ID || "",
-    telegram_token: import.meta.env.VITE_TELEGRAM_BOT_TOKEN || "",
+    telegram_token: import.meta.env.VITE_TELEGRAM_BOT_TOKEN || ""
   });
 
   // Redirect if not authenticated
@@ -32,17 +33,17 @@ export const NotificationSettingsPage = () => {
   useEffect(() => {
     setConfig({
       telegram_chat_id: import.meta.env.VITE_TELEGRAM_CHAT_ID || "",
-      telegram_token: import.meta.env.VITE_TELEGRAM_BOT_TOKEN || "",
+      telegram_token: import.meta.env.VITE_TELEGRAM_BOT_TOKEN || ""
     });
   }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setConfig((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }));
   };
 
@@ -110,7 +111,8 @@ export const NotificationSettingsPage = () => {
 
         {success && (
           <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
-            <div className="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center text-white text-xs flex-shrink-0 mt-0.5">
+            <div
+              className="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center text-white text-xs flex-shrink-0 mt-0.5">
               ✓
             </div>
             <p className="text-sm text-green-800">Lưu cài đặt thành công!</p>

@@ -1,11 +1,11 @@
-// features/auth/components/EditProfileForm.tsx
+// src/features/auth/components/EditProfileForm.tsx
 
-import { FiAlertCircle, FiSave, FiX } from "react-icons/fi";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { useEmployeeStore } from "@features/auth";
+import { supabase } from "@lib";
+import type { Employee } from "@types";
 import { useState } from "react";
-import type { Employee } from "@/types/employee";
-import { useEmployeeStore } from "../store/useEmployeeStore";
-import { supabase } from "@/lib/supabase";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { FiAlertCircle, FiSave, FiX } from "react-icons/fi";
 
 interface EditProfileFormProps {
   employee: Employee;
@@ -14,10 +14,10 @@ interface EditProfileFormProps {
 }
 
 export const EditProfileForm = ({
-  employee,
-  onCancel,
-  onSuccess,
-}: EditProfileFormProps) => {
+                                  employee,
+                                  onCancel,
+                                  onSuccess
+                                }: EditProfileFormProps) => {
   const { loading: storeLoading } = useEmployeeStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,11 +29,11 @@ export const EditProfileForm = ({
     role: employee.role,
     avatar: employee.avatar,
     base_salary: employee.base_salary || 0,
-    sales_commission_rate: employee.sales_commission_rate || 3.0,
+    sales_commission_rate: employee.sales_commission_rate || 3.0
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -41,7 +41,7 @@ export const EditProfileForm = ({
       [name]:
         name === "base_salary" || name === "sales_commission_rate"
           ? parseFloat(value) || 0
-          : value,
+          : value
     }));
   };
 
@@ -60,7 +60,7 @@ export const EditProfileForm = ({
           avatar: formData.avatar,
           base_salary: formData.base_salary,
           sales_commission_rate: formData.sales_commission_rate,
-          updated_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         })
         .eq("id", employee.id);
 
@@ -92,7 +92,8 @@ export const EditProfileForm = ({
 
       {success && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
-          <div className="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center text-white text-xs flex-shrink-0 mt-0.5">
+          <div
+            className="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center text-white text-xs flex-shrink-0 mt-0.5">
             ✓
           </div>
           <p className="text-sm text-green-800">Cập nhật hồ sơ thành công!</p>

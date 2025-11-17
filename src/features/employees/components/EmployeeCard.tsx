@@ -1,9 +1,10 @@
+// src/features/employees/components/EmployeeCard.tsx
 // features/employees/components/EmployeeCard.tsx
 
-import { Button } from "@/components/ui/Button";
-import { useEmployeeStore } from "../store/useEmployeeStore";
-import { cn } from "@/lib/utils";
-import { type Employee, getEmployeeInitials } from "@/types/employee";
+import { Button } from "@components/ui";
+import { useEmployeeStore } from "@features/employees";
+import { cn } from "@lib";
+import { type Employee, getEmployeeInitials } from "@types";
 import React from "react";
 import { Link } from "react-router-dom";
 
@@ -13,9 +14,9 @@ interface EmployeeCardProps {
 }
 
 export const EmployeeCard: React.FC<EmployeeCardProps> = ({
-  employee,
-  onSelect,
-}) => {
+                                                            employee,
+                                                            onSelect
+                                                          }) => {
   const { selectedEmployee, setSelectedEmployee } = useEmployeeStore();
   const isSelected = selectedEmployee?.id === employee.id;
 
@@ -28,7 +29,7 @@ export const EmployeeCard: React.FC<EmployeeCardProps> = ({
     <div
       className={cn(
         "bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden",
-        isSelected && "ring-2 ring-blue-500",
+        isSelected && "ring-2 ring-blue-500"
       )}
     >
       {/* Header với avatar */}
@@ -40,7 +41,8 @@ export const EmployeeCard: React.FC<EmployeeCardProps> = ({
             className="w-20 h-20 rounded-full border-4 border-white object-cover"
           />
         ) : (
-          <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center text-2xl font-bold text-purple-600">
+          <div
+            className="w-20 h-20 rounded-full bg-white flex items-center justify-center text-2xl font-bold text-purple-600">
             {getEmployeeInitials(employee.name)}
           </div>
         )}
@@ -52,7 +54,7 @@ export const EmployeeCard: React.FC<EmployeeCardProps> = ({
               "px-2 py-1 rounded-full text-xs font-semibold",
               employee.is_active === true
                 ? "bg-green-100 text-green-700"
-                : "bg-gray-100 text-gray-700",
+                : "bg-gray-100 text-gray-700"
             )}
           >
             {employee.is_active === true ? "Hoạt động" : "Tạm ngưng"}

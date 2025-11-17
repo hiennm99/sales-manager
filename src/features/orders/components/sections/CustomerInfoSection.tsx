@@ -4,10 +4,10 @@
  * Simple section component for customer information
  */
 
-import { FiMail, FiMapPin, FiMessageSquare, FiPhone, FiUser } from "react-icons/fi";
+import { SectionCard, TextBox } from "@components/common";
+import type { OrderFormData } from "@types";
 import React from "react";
-import { SectionCard, TextBox } from "../../../../components/common";
-import type { OrderFormData } from "../../../../types/order";
+import { FiMail, FiMapPin, FiMessageSquare, FiPhone, FiUser } from "react-icons/fi";
 
 interface CustomerInfoSectionProps {
   formData: OrderFormData;
@@ -15,7 +15,7 @@ interface CustomerInfoSectionProps {
   onChange: (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
+    >
   ) => void;
 }
 
@@ -36,17 +36,17 @@ const CustomerIcon = (
 );
 
 export const CustomerInfoSection: React.FC<CustomerInfoSectionProps> = ({
-  formData,
-  errors = {},
-  onChange,
-}) => {
+                                                                          formData,
+                                                                          errors = {},
+                                                                          onChange
+                                                                        }) => {
   // Convert TextBox onChange to standard form event
   const handleChange = (
     name: string,
-    value: string | number | React.ReactNode | undefined,
+    value: string | number | React.ReactNode | undefined
   ) => {
     const fakeEvent = {
-      target: { name, value },
+      target: { name, value }
     } as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>;
     onChange(fakeEvent);
   };

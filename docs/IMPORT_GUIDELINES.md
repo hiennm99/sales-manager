@@ -5,6 +5,7 @@
 Organize imports in the following order for consistency across the codebase:
 
 ### 1. React & Core Libraries
+
 ```typescript
 import React from 'react';
 import { useState, useEffect } from 'react';
@@ -12,24 +13,28 @@ import { Link, useNavigate } from 'react-router-dom';
 ```
 
 ### 2. External Libraries
+
 ```typescript
 import { format } from 'date-fns';
 import { z } from 'zod';
 ```
 
 ### 3. Internal Utilities & Helpers
+
 ```typescript
 import { cn } from '@/lib/utils';
 import { formatUSD, formatVND } from '@/lib/utils';
 ```
 
 ### 4. UI Components (Common/Shared)
+
 ```typescript
 import { Button } from '@/components/ui/Button';
 import { TextBox, OptionBox } from '@/components/common';
 ```
 
 ### 5. Types
+
 ```typescript
 import type { Employee } from '@/types/employee';
 import type { Order } from '@/types/order';
@@ -41,12 +46,14 @@ import {
 ```
 
 ### 6. Feature-Specific Imports
+
 ```typescript
 import { useEmployeeStore } from '@/features/employees';
 import { useOrderStore } from '@/features/orders';
 ```
 
 ### 7. Relative Imports (Local)
+
 ```typescript
 import { EmployeeCard } from './EmployeeCard';
 import { OrderSummary } from '../components/OrderSummary';
@@ -93,6 +100,7 @@ Use the following aliases instead of relative paths:
 ## Best Practices
 
 ### ✅ DO:
+
 ```typescript
 import { Button } from '@/components/ui/Button';
 import { useEmployeeStore } from '@/features/employees';
@@ -100,9 +108,10 @@ import type { Employee } from '@/types/employee';
 ```
 
 ### ❌ DON'T:
+
 ```typescript
 import { Button } from '../../../components/ui/Button';
-import { useEmployeeStore } from '../store/useEmployeeStore';
+import { useEmployeeStore } from '../stores/useEmployeeStore';
 import type { Employee } from '../../../types/employee';
 ```
 
@@ -114,10 +123,11 @@ Each feature should have an `index.ts` that exports public APIs:
 // features/employees/index.ts
 export { EmployeeList } from './pages/EmployeeList';
 export { EmployeeCreate } from './pages/EmployeeCreate';
-export { useEmployeeStore } from './store/useEmployeeStore';
+export { useEmployeeStore } from './stores/useEmployeeStore';
 ```
 
 This allows clean imports:
+
 ```typescript
 import { EmployeeList, useEmployeeStore } from '@/features/employees';
 ```

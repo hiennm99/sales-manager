@@ -1,8 +1,8 @@
 // src/features/employees/services/employeeCommissionService.ts
 
+import { handleSupabaseError, supabase } from "@lib";
+import type { EmployeeCommission } from "@types";
 import { endOfMonth, format } from "date-fns";
-import { handleSupabaseError, supabase } from "../../../lib/supabase";
-import type { EmployeeCommission } from "../../../types/employee";
 
 /**
  * Employee Commission Service API
@@ -20,7 +20,7 @@ export const employeeCommissionService = {
       as_seller?: boolean; // Filter by seller_employee_id
       start_date?: string;
       end_date?: string;
-    },
+    }
   ): Promise<EmployeeCommission[]> {
     let query = supabase.from("employee_commission").select("*");
 
@@ -32,7 +32,7 @@ export const employeeCommissionService = {
     } else {
       // Both roles
       query = query.or(
-        `artist_employee_id.eq.${employee_id},seller_employee_id.eq.${employee_id}`,
+        `artist_employee_id.eq.${employee_id},seller_employee_id.eq.${employee_id}`
       );
     }
 
@@ -77,7 +77,7 @@ export const employeeCommissionService = {
    * Get commission for a specific order
    */
   async getCommissionByOrder(
-    order_id: number,
+    order_id: number
   ): Promise<EmployeeCommission | null> {
     const { data, error } = await supabase
       .from("employee_commission")
@@ -109,7 +109,7 @@ export const employeeCommissionService = {
       profit_vnd: data.profit_vnd,
       order_earnings_vnd: data.order_earnings_vnd,
       created_at: data.created_at ? new Date(data.created_at) : new Date(),
-      updated_at: data.updated_at ? new Date(data.updated_at) : (data.created_at ? new Date(data.created_at) : new Date()),
+      updated_at: data.updated_at ? new Date(data.updated_at) : (data.created_at ? new Date(data.created_at) : new Date())
     };
   },
 
@@ -119,7 +119,7 @@ export const employeeCommissionService = {
   async getCommissionsByPeriod(
     year: number,
     month?: number,
-    employee_id?: number,
+    employee_id?: number
   ): Promise<EmployeeCommission[]> {
     let query = supabase.from("employee_commission").select("*");
 
@@ -145,7 +145,7 @@ export const employeeCommissionService = {
     // Filter by employee if provided
     if (employee_id) {
       query = query.or(
-        `artist_employee_id.eq.${employee_id},seller_employee_id.eq.${employee_id}`,
+        `artist_employee_id.eq.${employee_id},seller_employee_id.eq.${employee_id}`
       );
     }
 
@@ -174,7 +174,7 @@ export const employeeCommissionService = {
       profit_vnd: row.profit_vnd,
       order_earnings_vnd: row.order_earnings_vnd,
       created_at: row.created_at ? new Date(row.created_at) : new Date(),
-      updated_at: row.updated_at ? new Date(row.updated_at) : (row.created_at ? new Date(row.created_at) : new Date()),
+      updated_at: row.updated_at ? new Date(row.updated_at) : (row.created_at ? new Date(row.created_at) : new Date())
     }));
   },
 
@@ -184,7 +184,7 @@ export const employeeCommissionService = {
   async getCommissionSummary(
     employee_id: number,
     year: number,
-    month?: number,
+    month?: number
   ): Promise<{
     artist_total: number;
     artist_count: number;
@@ -196,35 +196,35 @@ export const employeeCommissionService = {
     const commissions = await this.getCommissionsByPeriod(
       year,
       month,
-      employee_id,
+      employee_id
     );
 
     const artistCommissions = commissions.filter(
-      (c) => c.artist_employee_id === employee_id,
+      (c) => c.artist_employee_id === employee_id
     );
     const sellerCommissions = commissions.filter(
-      (c) => c.seller_employee_id === employee_id,
+      (c) => c.seller_employee_id === employee_id
     );
 
     return {
       artist_total: artistCommissions.reduce(
         (sum, c) => sum + (c.artist_commission_amount_vnd ?? 0),
-        0,
+        0
       ),
       artist_count: artistCommissions.length,
       seller_total: sellerCommissions.reduce(
         (sum, c) => sum + (c.seller_commission_amount_vnd ?? 0),
-        0,
+        0
       ),
       seller_count: sellerCommissions.length,
       total_profit_vnd: artistCommissions.reduce(
         (sum, c) => sum + (c.profit_vnd ?? 0),
-        0,
+        0
       ),
       total_order_earnings_vnd: sellerCommissions.reduce(
         (sum, c) => sum + (c.order_earnings_vnd ?? 0),
-        0,
-      ),
+        0
+      )
     };
-  },
+  }
 };

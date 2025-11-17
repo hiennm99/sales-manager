@@ -2,47 +2,40 @@
 
 import {
   CreateReportModal,
+  DataTableTab,
+  DocumentsTab,
+  ExpenseForm,
   IncomingMoneyForm,
+  MoneyOnEtsyForm,
+  OverviewTab,
   ReceivedMoneyForm,
   ReportFilters,
   ReportListView,
-  TransferredMoneyForm,
-} from "@/features/reports/components";
+  TransferredMoneyForm
+} from "@features/reports/components";
 import {
-  useShopSelectors,
-  useShopStore,
-} from "@/features/shops/store/useShopStore";
-import type {
-  ExcelUploadData,
-  FinancialReportFilters,
-  FinancialReportPeriod,
-} from "@/types/financialReport";
-import { formatCurrency } from "@/types/financialReport";
+  expensesService,
+  financialReportService,
+  incomingMoneyService,
+  moneyOnEtsyService,
+  receivedMoneyService,
+  transferredMoneyService
+} from "@features/reports/services";
+import { useShopSelectors, useShopStore } from "@features/shops";
+import type { ExcelUploadData, FinancialReportFilters, FinancialReportPeriod } from "@types";
+import { formatCurrency } from "@types";
+import React, { useCallback, useEffect, useState } from "react";
 import {
+  FiCalendar,
+  FiCheckCircle,
+  FiDownload,
   FiFileText,
+  FiImage,
   FiList,
   FiPlus,
   FiUpload,
-  FiCalendar,
-  FiCheckCircle,
-  FiXCircle,
-  FiDownload,
-  FiImage,
+  FiXCircle
 } from "react-icons/fi";
-import React, { useCallback, useEffect, useState } from "react";
-import { DataTableTab } from "../components/DataTableTab";
-import { DocumentsTab } from "../components/DocumentsTab";
-import { ExpenseForm } from "../components/ExpenseForm";
-import { MoneyOnEtsyForm } from "../components/MoneyOnEtsyForm";
-import { OverviewTab } from "../components/OverviewTab";
-import {
-  expensesServiceApi,
-  financialReportService,
-  incomingMoneyServiceApi,
-  moneyOnEtsyServiceApi,
-  receivedMoneyServiceApi,
-  transferredMoneyServiceApi,
-} from "../services/financialReportService.ts";
 
 type TabType =
   | "overview"
@@ -57,7 +50,7 @@ export const FinancialReportsPage: React.FC = () => {
   const [viewMode, setViewMode] = useState<"list" | "detail">("list");
   const [activeTab, setActiveTab] = useState<TabType>("overview");
   const [uploadedData, setUploadedData] = useState<ExcelUploadData | null>(
-    null,
+    null
   );
   const [currentReport, setCurrentReport] =
     useState<FinancialReportPeriod | null>(null);
@@ -95,12 +88,12 @@ export const FinancialReportsPage: React.FC = () => {
     fetchShops();
     loadReports();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadReports]); // fetchShops is stable from Zustand store
+  }, [loadReports]); // fetchShops is stable from Zustand stores
 
   const handleCreateNewReport = async (
     shopId: number,
     year: number,
-    month: number,
+    month: number
   ) => {
     const periodStart = new Date(year, month - 1, 1)
       .toISOString()
@@ -118,7 +111,7 @@ export const FinancialReportsPage: React.FC = () => {
         totalFees: 0,
         netProfit: 0,
         marketingFees: 0,
-        status: "draft",
+        status: "draft"
       });
 
       setCurrentReport(newReport);
@@ -142,7 +135,7 @@ export const FinancialReportsPage: React.FC = () => {
           totalFees: currentReport.total_fees,
           netProfit: currentReport.net_profit,
           marketingFees: currentReport.marketing_fees,
-          status: "draft",
+          status: "draft"
         });
         alert("Đã lưu báo cáo thành công!");
         await loadReports();
@@ -161,26 +154,26 @@ export const FinancialReportsPage: React.FC = () => {
           totalFees: currentReport.total_fees,
           netProfit: currentReport.net_profit,
           marketingFees: currentReport.marketing_fees,
-          status: "draft",
+          status: "draft"
         });
 
         // Save all related data from uploaded Excel
         if (uploadedData) {
           if (uploadedData.moneyOnEtsy.length > 0) {
-            await moneyOnEtsyServiceApi.create(
+            await moneyOnEtsyService.create(
               uploadedData.moneyOnEtsy.map((item) => ({
                 report_period_id: savedReport.id,
                 date: item.date,
                 description: item.description,
                 amount: item.amount,
                 currency: item.currency,
-                type: item.type as any,
-              })),
+                type: item.type as any
+              }))
             );
           }
 
           if (uploadedData.incomingMoney.length > 0) {
-            await incomingMoneyServiceApi.create(
+            await incomingMoneyService.create(
               uploadedData.incomingMoney.map((item) => ({
                 report_period_id: savedReport.id,
                 date: item.date,
@@ -189,13 +182,13 @@ export const FinancialReportsPage: React.FC = () => {
                 amount: item.amount,
                 currency: item.currency,
                 expected_date: item.expectedDate,
-                status: "pending",
-              })),
+                status: "pending"
+              }))
             );
           }
 
           if (uploadedData.receivedMoney.length > 0) {
-            await receivedMoneyServiceApi.create(
+            await receivedMoneyService.create(
               uploadedData.receivedMoney.map((item) => ({
                 report_period_id: savedReport.id,
                 date: item.date,
@@ -204,13 +197,13 @@ export const FinancialReportsPage: React.FC = () => {
                 amount: item.amount,
                 currency: item.currency,
                 received_date: item.receivedDate,
-                payment_method: item.paymentMethod,
-              })),
+                payment_method: item.paymentMethod
+              }))
             );
           }
 
           if (uploadedData.expenses.length > 0) {
-            await expensesServiceApi.create(
+            await expensesService.create(
               uploadedData.expenses.map((item) => ({
                 report_period_id: savedReport.id,
                 date: item.date,
@@ -218,13 +211,13 @@ export const FinancialReportsPage: React.FC = () => {
                 description: item.description,
                 amount: item.amount,
                 currency: item.currency,
-                payment_method: item.paymentMethod,
-              })),
+                payment_method: item.paymentMethod
+              }))
             );
           }
 
           if (uploadedData.transferredMoney.length > 0) {
-            await transferredMoneyServiceApi.create(
+            await transferredMoneyService.create(
               uploadedData.transferredMoney.map((item) => ({
                 report_period_id: savedReport.id,
                 date: item.date,
@@ -233,8 +226,8 @@ export const FinancialReportsPage: React.FC = () => {
                 currency: item.currency,
                 transfer_date: item.transferDate,
                 bank_account: item.bankAccount,
-                reference_number: item.referenceNumber,
-              })),
+                reference_number: item.referenceNumber
+              }))
             );
           }
         }
@@ -260,11 +253,11 @@ export const FinancialReportsPage: React.FC = () => {
     try {
       const [moneyOnEtsy, incoming, received, expenses, transferred] =
         await Promise.all([
-          moneyOnEtsyServiceApi.getByReportPeriod(report.id),
-          incomingMoneyServiceApi.getByReportPeriod(report.id),
-          receivedMoneyServiceApi.getByReportPeriod(report.id),
-          expensesServiceApi.getByReportPeriod(report.id),
-          transferredMoneyServiceApi.getByReportPeriod(report.id),
+          moneyOnEtsyService.getByReportPeriod(report.id),
+          incomingMoneyService.getByReportPeriod(report.id),
+          receivedMoneyService.getByReportPeriod(report.id),
+          expensesService.getByReportPeriod(report.id),
+          transferredMoneyService.getByReportPeriod(report.id)
         ]);
       setMoneyOnEtsyData(moneyOnEtsy);
       setIncomingMoneyData(incoming);
@@ -330,13 +323,13 @@ export const FinancialReportsPage: React.FC = () => {
     {
       id: "money-on-etsy" as TabType,
       label: "Tiền Còn Trên Etsy",
-      icon: FiUpload,
+      icon: FiUpload
     },
     { id: "incoming" as TabType, label: "Tiền Đang Về", icon: FiCalendar },
     { id: "received" as TabType, label: "Tiền Đã Về", icon: FiCheckCircle },
     { id: "expenses" as TabType, label: "Các Chi Phí", icon: FiXCircle },
     { id: "transferred" as TabType, label: "Tiền Đã CK", icon: FiDownload },
-    { id: "documents" as TabType, label: "Tài Liệu", icon: FiImage },
+    { id: "documents" as TabType, label: "Tài Liệu", icon: FiImage }
   ];
 
   return (
@@ -434,10 +427,10 @@ export const FinancialReportsPage: React.FC = () => {
                       className={`
                         flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all
                         ${
-                          activeTab === tab.id
-                            ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md"
-                            : "text-gray-700 hover:bg-gray-100"
-                        }
+                        activeTab === tab.id
+                          ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md"
+                          : "text-gray-700 hover:bg-gray-100"
+                      }
                       `}
                     >
                       <Icon className="w-4 h-4" />
@@ -455,15 +448,15 @@ export const FinancialReportsPage: React.FC = () => {
                   report={currentReport}
                   totalReceived={receivedMoneyData.reduce(
                     (sum, item) => sum + (item.amount || 0),
-                    0,
+                    0
                   )}
                   totalTransferred={transferredMoneyData.reduce(
                     (sum, item) => sum + (item.amount || 0),
-                    0,
+                    0
                   )}
                   totalExpenses={expensesData.reduce(
                     (sum, item) => sum + (item.amount || 0),
-                    0,
+                    0
                   )}
                   onUpdateOverviewImage={(url) =>
                     setCurrentReport({ ...currentReport, notes: url })
@@ -484,8 +477,8 @@ export const FinancialReportsPage: React.FC = () => {
                     month={currentReport.month}
                     onAdd={async (item) => {
                       try {
-                        const saved = await moneyOnEtsyServiceApi.create([
-                          item,
+                        const saved = await moneyOnEtsyService.create([
+                          item
                         ]);
                         setMoneyOnEtsyData([...moneyOnEtsyData, ...saved]);
                         // Success feedback (optional)
@@ -502,7 +495,7 @@ export const FinancialReportsPage: React.FC = () => {
                       title="Danh Sách Tiền Trên Etsy"
                       data={moneyOnEtsyData.map((item) => ({
                         ...item,
-                        id: item.id,
+                        id: item.id
                       }))}
                       columns={[
                         { key: "date", label: "Ngày" },
@@ -515,14 +508,14 @@ export const FinancialReportsPage: React.FC = () => {
                             <span className="font-semibold text-indigo-600">
                               {formatCurrency(value)}
                             </span>
-                          ),
-                        },
+                          )
+                        }
                       ]}
                       emptyMessage="Chưa có dữ liệu"
                       onDelete={async (id) => {
-                        await moneyOnEtsyServiceApi.delete(id);
+                        await moneyOnEtsyService.delete(id);
                         setMoneyOnEtsyData(
-                          moneyOnEtsyData.filter((item) => item.id !== id),
+                          moneyOnEtsyData.filter((item) => item.id !== id)
                         );
                       }}
                     />
@@ -539,8 +532,8 @@ export const FinancialReportsPage: React.FC = () => {
                     month={currentReport.month}
                     onAdd={async (item) => {
                       try {
-                        const saved = await incomingMoneyServiceApi.create([
-                          item,
+                        const saved = await incomingMoneyService.create([
+                          item
                         ]);
                         setIncomingMoneyData([...incomingMoneyData, ...saved]);
                       } catch (error) {
@@ -556,13 +549,13 @@ export const FinancialReportsPage: React.FC = () => {
                       data={
                         uploadedData
                           ? uploadedData.incomingMoney.map((item, i) => ({
-                              ...item,
-                              id: i,
-                            }))
+                            ...item,
+                            id: i
+                          }))
                           : incomingMoneyData.map((item) => ({
-                              ...item,
-                              id: item.id,
-                            }))
+                            ...item,
+                            id: item.id
+                          }))
                       }
                       columns={[
                         { key: "date", label: "Ngày" },
@@ -575,20 +568,20 @@ export const FinancialReportsPage: React.FC = () => {
                             <span className="font-semibold text-blue-600">
                               {formatCurrency(value)}
                             </span>
-                          ),
-                        },
+                          )
+                        }
                       ]}
                       emptyMessage="Chưa có dữ liệu"
                       onDelete={
                         !uploadedData
                           ? async (id) => {
-                              await incomingMoneyServiceApi.delete(id);
-                              setIncomingMoneyData(
-                                incomingMoneyData.filter(
-                                  (item) => item.id !== id,
-                                ),
-                              );
-                            }
+                            await incomingMoneyService.delete(id);
+                            setIncomingMoneyData(
+                              incomingMoneyData.filter(
+                                (item) => item.id !== id
+                              )
+                            );
+                          }
                           : undefined
                       }
                     />
@@ -605,8 +598,8 @@ export const FinancialReportsPage: React.FC = () => {
                     month={currentReport.month}
                     onAdd={async (item) => {
                       try {
-                        const saved = await receivedMoneyServiceApi.create([
-                          item,
+                        const saved = await receivedMoneyService.create([
+                          item
                         ]);
                         setReceivedMoneyData([...receivedMoneyData, ...saved]);
                       } catch (error) {
@@ -622,13 +615,13 @@ export const FinancialReportsPage: React.FC = () => {
                       data={
                         uploadedData
                           ? uploadedData.receivedMoney.map((item, i) => ({
-                              ...item,
-                              id: i,
-                            }))
+                            ...item,
+                            id: i
+                          }))
                           : receivedMoneyData.map((item) => ({
-                              ...item,
-                              id: item.id,
-                            }))
+                            ...item,
+                            id: item.id
+                          }))
                       }
                       columns={[
                         { key: "date", label: "Ngày" },
@@ -642,20 +635,20 @@ export const FinancialReportsPage: React.FC = () => {
                             <span className="font-semibold text-green-600">
                               {formatCurrency(value)}
                             </span>
-                          ),
-                        },
+                          )
+                        }
                       ]}
                       emptyMessage="Chưa có dữ liệu"
                       onDelete={
                         !uploadedData
                           ? async (id) => {
-                              await receivedMoneyServiceApi.delete(id);
-                              setReceivedMoneyData(
-                                receivedMoneyData.filter(
-                                  (item) => item.id !== id,
-                                ),
-                              );
-                            }
+                            await receivedMoneyService.delete(id);
+                            setReceivedMoneyData(
+                              receivedMoneyData.filter(
+                                (item) => item.id !== id
+                              )
+                            );
+                          }
                           : undefined
                       }
                     />
@@ -672,7 +665,7 @@ export const FinancialReportsPage: React.FC = () => {
                     month={currentReport.month}
                     onAdd={async (item) => {
                       try {
-                        const saved = await expensesServiceApi.create([item]);
+                        const saved = await expensesService.create([item]);
                         setExpensesData([...expensesData, ...saved]);
                       } catch (error) {
                         console.error("Error saving expense:", error);
@@ -686,7 +679,7 @@ export const FinancialReportsPage: React.FC = () => {
                       title="Danh Sách Chi Phí"
                       data={expensesData.map((item) => ({
                         ...item,
-                        id: item.id,
+                        id: item.id
                       }))}
                       columns={[
                         { key: "date", label: "Ngày" },
@@ -699,14 +692,14 @@ export const FinancialReportsPage: React.FC = () => {
                             <span className="font-semibold text-green-600">
                               {formatCurrency(value)}
                             </span>
-                          ),
-                        },
+                          )
+                        }
                       ]}
                       emptyMessage="Chưa có dữ liệu"
                       onDelete={async (id) => {
-                        await expensesServiceApi.delete(id);
+                        await expensesService.delete(id);
                         setExpensesData(
-                          expensesData.filter((item) => item.id !== id),
+                          expensesData.filter((item) => item.id !== id)
                         );
                       }}
                     />
@@ -723,12 +716,12 @@ export const FinancialReportsPage: React.FC = () => {
                     month={currentReport.month}
                     onAdd={async (item) => {
                       try {
-                        const saved = await transferredMoneyServiceApi.create([
-                          item,
+                        const saved = await transferredMoneyService.create([
+                          item
                         ]);
                         setTransferredMoneyData([
                           ...transferredMoneyData,
-                          ...saved,
+                          ...saved
                         ]);
                       } catch (error) {
                         console.error("Error saving transferred money:", error);
@@ -743,13 +736,13 @@ export const FinancialReportsPage: React.FC = () => {
                       data={
                         uploadedData
                           ? uploadedData.transferredMoney.map((item, i) => ({
-                              ...item,
-                              id: i,
-                            }))
+                            ...item,
+                            id: i
+                          }))
                           : transferredMoneyData.map((item) => ({
-                              ...item,
-                              id: item.id,
-                            }))
+                            ...item,
+                            id: item.id
+                          }))
                       }
                       columns={[
                         { key: "date", label: "Ngày" },
@@ -763,20 +756,20 @@ export const FinancialReportsPage: React.FC = () => {
                             <span className="font-semibold text-green-600">
                               {formatCurrency(value)}
                             </span>
-                          ),
-                        },
+                          )
+                        }
                       ]}
                       emptyMessage="Chưa có dữ liệu"
                       onDelete={
                         !uploadedData
                           ? async (id) => {
-                              await transferredMoneyServiceApi.delete(id);
-                              setTransferredMoneyData(
-                                transferredMoneyData.filter(
-                                  (item) => item.id !== id,
-                                ),
-                              );
-                            }
+                            await transferredMoneyService.delete(id);
+                            setTransferredMoneyData(
+                              transferredMoneyData.filter(
+                                (item) => item.id !== id
+                              )
+                            );
+                          }
                           : undefined
                       }
                     />

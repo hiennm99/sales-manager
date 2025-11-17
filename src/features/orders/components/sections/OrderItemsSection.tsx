@@ -4,11 +4,10 @@
  * Simple section component for order items
  */
 
+import { SectionCard } from "@components/common";
+import { OrderItemInput } from "@features/orders";
+import type { OrderItemFormData, Product } from "@types";
 import React from "react";
-import { SectionCard } from "../../../../components/common";
-import type { OrderItemFormData } from "../../../../types/order";
-import type { Product } from "../../../../types/product";
-import { OrderItemInput } from "./OrderItemInput.tsx";
 
 interface OrderItemsSectionProps {
   items: OrderItemFormData[];
@@ -17,7 +16,7 @@ interface OrderItemsSectionProps {
   onChange: (
     index: number,
     field: keyof OrderItemFormData,
-    value: string | number,
+    value: string | number
   ) => void;
   onAdd: () => void;
   onRemove: (index: number) => void;
@@ -41,14 +40,14 @@ const ProductIcon = (
 );
 
 export const OrderItemsSection: React.FC<OrderItemsSectionProps> = ({
-  items,
-  selectedProducts = [],
-  errors = {},
-  onChange,
-  onAdd,
-  onRemove,
-  onProductSelect,
-}) => {
+                                                                      items,
+                                                                      selectedProducts = [],
+                                                                      errors = {},
+                                                                      onChange,
+                                                                      onAdd,
+                                                                      onRemove,
+                                                                      onProductSelect
+                                                                    }) => {
   return (
     <SectionCard
       title="Danh sách sản phẩm"

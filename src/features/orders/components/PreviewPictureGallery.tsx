@@ -1,9 +1,9 @@
 // src/features/orders/components/PreviewPictureGallery.tsx
 
-import { FiChevronLeft, FiChevronRight, FiDownload, FiTrash2, FiX } from "react-icons/fi";
+import { orderPreviewService } from "@features/orders";
+import type { OrderPreviewPicture } from "@types";
 import React, { useState } from "react";
-import type { OrderPreviewPicture } from "../../../types/orderPreview";
-import { orderPreviewService } from "../services/orderPreviewService.ts";
+import { FiChevronLeft, FiChevronRight, FiDownload, FiTrash2, FiX } from "react-icons/fi";
 
 interface PreviewPictureGalleryProps {
   pictures: OrderPreviewPicture[];
@@ -12,10 +12,10 @@ interface PreviewPictureGalleryProps {
 }
 
 export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
-  pictures,
-  onDeleteSuccess,
-  onDeleteError,
-}) => {
+                                                                              pictures,
+                                                                              onDeleteSuccess,
+                                                                              onDeleteError
+                                                                            }) => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -30,7 +30,7 @@ export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
   const handleDownload = async (picture: OrderPreviewPicture) => {
     try {
       const blob = await orderPreviewService.downloadPreviewPicture(
-        picture.picture_url,
+        picture.picture_url
       );
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -96,11 +96,13 @@ export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
               alt={picture.picture_name}
               className="w-full h-32 object-cover group-hover:opacity-75 transition-opacity"
             />
-            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+            <div
+              className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
               <FiDownload className="w-5 h-5 text-white" />
               <FiTrash2 className="w-5 h-5 text-white" />
             </div>
-            <div className="absolute top-1 right-1 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+            <div
+              className="absolute top-1 right-1 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
               {index + 1}/{pictures.length}
             </div>
           </div>

@@ -14,18 +14,21 @@
 ## TASK 1: CONSOLIDATE CHART LIBRARIES ✅ COMPLETED
 
 ### Problem
+
 - Dự án đang dùng **3 chart libraries** cho cùng mục đích:
-  - Chart.js (~60KB)
-  - Recharts (~150KB) 
-  - React Google Charts (~50KB)
+    - Chart.js (~60KB)
+    - Recharts (~150KB)
+    - React Google Charts (~50KB)
 - Total: **~260KB** + duplicate code
 
 ### Solution Implemented
 
 #### 1. Created `SharedChart` Component
+
 **Location**: `src/components/charts/SharedChart.tsx` (430 lines)
 
 **Features**:
+
 - Generic wrapper cho Recharts
 - Supports: `line`, `area`, `bar`, `pie`, `combo` charts
 - Built-in responsive container
@@ -34,6 +37,7 @@
 - TypeScript safe with full type inference
 
 **Props Interface**:
+
 ```typescript
 interface SharedChartProps {
   data: any[];
@@ -60,12 +64,12 @@ interface SharedChartProps {
 
 **Before vs After**:
 
-| Component | Before | After | Reduction |
-|-----------|--------|-------|-----------|
-| RevenueChart | 301 lines | 166 lines | -135 lines (-45%) |
-| ProfitChart | 365 lines | 220 lines | -145 lines (-40%) |
-| OrdersChart | 327 lines | 200 lines | -127 lines (-39%) |
-| **Total** | **993 lines** | **586 lines** | **-407 lines (-41%)** |
+| Component    | Before        | After         | Reduction             |
+|--------------|---------------|---------------|-----------------------|
+| RevenueChart | 301 lines     | 166 lines     | -135 lines (-45%)     |
+| ProfitChart  | 365 lines     | 220 lines     | -145 lines (-40%)     |
+| OrdersChart  | 327 lines     | 200 lines     | -127 lines (-39%)     |
+| **Total**    | **993 lines** | **586 lines** | **-407 lines (-41%)** |
 
 **Example Migration** (RevenueChart):
 
@@ -102,6 +106,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({...}) => {
 #### 3. Removed Dependencies
 
 **Updated `package.json`**:
+
 ```diff
 - "chart.js": "^4.5.1",
 - "react-chartjs-2": "^5.3.0",
@@ -122,19 +127,20 @@ npm run build
 
 ### Impact Metrics
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| **Chart libraries** | 3 | 1 | -67% |
-| **Chart component LOC** | 993 | 586 | -41% |
-| **Bundle size (est.)** | ~260KB | ~150KB | -110KB |
-| **Maintainability** | Low | High | ⬆️⬆️⬆️ |
-| **Type safety** | Partial | Full | ⬆️⬆️ |
+| Metric                  | Before  | After  | Improvement |
+|-------------------------|---------|--------|-------------|
+| **Chart libraries**     | 3       | 1      | -67%        |
+| **Chart component LOC** | 993     | 586    | -41%        |
+| **Bundle size (est.)**  | ~260KB  | ~150KB | -110KB      |
+| **Maintainability**     | Low     | High   | ⬆️⬆️⬆️      |
+| **Type safety**         | Partial | Full   | ⬆️⬆️        |
 
 ---
 
 ## TASK 2: ZUSTAND SELECTORS 🚧 IN PROGRESS
 
 ### Problem
+
 - Components subscribe to **entire store** → re-render when ANY field changes
 - Example: `const { items, isLoading, error, ...10 more fields } = useOrderStore()`
 - **OrderList.tsx**: 16 hooks/effects, re-renders 10+ times unnecessarily
@@ -142,9 +148,11 @@ npm run build
 ### Solution Implementation
 
 #### 1. Created Selector Utilities
+
 **Location**: `src/hooks/useStoreSelector.ts` (150 lines)
 
 **Utilities**:
+
 ```typescript
 // Shallow equality check
 export function shallowEqual<T>(objA: T, objB: T): boolean
@@ -152,7 +160,7 @@ export function shallowEqual<T>(objA: T, objB: T): boolean
 // Create selector with shallow compare
 export function createShallowSelector<TState, TSelected>(...)
 
-// Create predefined selectors for a store
+// Create predefined selectors for a stores
 export function createStoreSelectors<TState>(useStore)
 
 // Common patterns
@@ -163,9 +171,11 @@ export function useActions<TState, TActions>(...)
 ```
 
 #### 2. Enhanced CRUD Store Factory
+
 **Location**: `src/store/crudStore.ts`
 
 **Added `createCRUDStoreSelectors` function**:
+
 ```typescript
 export function createCRUDStoreSelectors<T, FormData>(
   useStore: ReturnType<typeof createCRUDStore<T, FormData>>
@@ -188,8 +198,9 @@ export function createCRUDStoreSelectors<T, FormData>(
 #### 3. Refactored Components (Example)
 
 **OrderList.tsx** - Before:
+
 ```typescript
-// ❌ BAD: Subscribes to entire store, re-renders on every change
+// ❌ BAD: Subscribes to entire stores, re-renders on every change
 const { 
   orders, 
   deleteOrder, 
@@ -205,6 +216,7 @@ const {
 ```
 
 **OrderList.tsx** - After:
+
 ```typescript
 // ✅ GOOD: Selective subscriptions, only re-renders when used fields change
 const orders = useOrderStore(state => state.orders);
@@ -222,6 +234,7 @@ const actions = selectors.useActions(); // Never re-renders!
 ### Usage Guide
 
 #### Pattern 1: Direct Selective Subscription
+
 ```typescript
 // Only re-render when items change
 const items = useProductStore(state => state.items);
@@ -237,10 +250,11 @@ const { items, isLoading } = useProductStore(
 ```
 
 #### Pattern 2: Using Predefined Selectors
-```typescript
-import { createCRUDStoreSelectors } from '@/store/crud.store.factory';
 
-// Create selectors once (outside component or in store file)
+```typescript
+import { createCRUDStoreSelectors } from '@/stores/crud.stores.factory';
+
+// Create selectors once (outside component or in stores file)
 const productSelectors = createCRUDStoreSelectors(useProductStore);
 
 // In component
@@ -254,6 +268,7 @@ function ProductList() {
 ```
 
 #### Pattern 3: Custom Selectors
+
 ```typescript
 // Complex derived state
 const ordersWithStatus = useOrderStore(
@@ -270,11 +285,13 @@ const totalRevenue = useOrderStore(
 ### Expected Performance Impact
 
 **Re-render Reduction**:
+
 - **OrderList.tsx**: 10+ re-renders → 2-3 re-renders (70% reduction)
 - **EmployeeList.tsx**: 8 re-renders → 2 re-renders (75% reduction)
 - **ProductList.tsx**: 6 re-renders → 1-2 re-renders (67% reduction)
 
 **How to Measure**:
+
 ```typescript
 // Add React DevTools Profiler
 import { Profiler } from 'react';
@@ -287,6 +304,7 @@ import { Profiler } from 'react';
 ### Next Steps for Task 2
 
 **Remaining Work**:
+
 - [ ] Refactor EmployeeList.tsx (4 hooks → selective)
 - [ ] Refactor FinancialReportsPage.tsx (17 hooks → selective)
 - [ ] Refactor DashboardPage.tsx (auto-refresh component)
@@ -298,16 +316,19 @@ import { Profiler } from 'react';
 ## TASKS 3-5: PENDING
 
 ### TASK 3: Generic Data Mapper
+
 **Status**: Not started  
 **Estimated effort**: 3-4 hours  
 **Impact**: ~500 lines reduction, easier maintenance
 
 ### TASK 4: Centralized Error Messages
+
 **Status**: Not started  
 **Estimated effort**: 2 hours  
 **Impact**: Consistent UX, i18n-ready
 
 ### TASK 5: Shared Form Components
+
 **Status**: Not started  
 **Estimated effort**: 4-5 hours  
 **Impact**: ~300 lines reduction, reusable validation
@@ -318,15 +339,15 @@ import { Profiler } from 'react';
 
 ### Completed (Tasks 1-2)
 
-| Category | Metric | Value |
-|----------|--------|-------|
-| **Code Reduction** | Lines removed | ~550+ lines |
-| **Bundle Size** | Dependencies removed | 4 packages (~110KB) |
-| **Components Refactored** | Chart components | 3 (RevenueChart, ProfitChart, OrdersChart) |
-| **Components Refactored** | Page components | 1 (OrderList - partial) |
-| **New Utilities** | Helper hooks | 8 functions |
-| **New Utilities** | Store selectors | 9 predefined selectors |
-| **Build Status** | ✅ Success | No errors |
+| Category                  | Metric               | Value                                      |
+|---------------------------|----------------------|--------------------------------------------|
+| **Code Reduction**        | Lines removed        | ~550+ lines                                |
+| **Bundle Size**           | Dependencies removed | 4 packages (~110KB)                        |
+| **Components Refactored** | Chart components     | 3 (RevenueChart, ProfitChart, OrdersChart) |
+| **Components Refactored** | Page components      | 1 (OrderList - partial)                    |
+| **New Utilities**         | Helper hooks         | 8 functions                                |
+| **New Utilities**         | Store selectors      | 9 predefined selectors                     |
+| **Build Status**          | ✅ Success            | No errors                                  |
 
 ### Overall Progress
 
@@ -341,19 +362,19 @@ import { Profiler } from 'react';
 ### Immediate Next Steps (Priority Order)
 
 1. **Complete Task 2** (High Priority)
-   - Refactor remaining heavy components (EmployeeList, FinancialReportsPage)
-   - Add performance measurements with React Profiler
-   - Document actual re-render reduction
+    - Refactor remaining heavy components (EmployeeList, FinancialReportsPage)
+    - Add performance measurements with React Profiler
+    - Document actual re-render reduction
 
 2. **Start Task 3** (Medium Priority)
-   - Create generic data mapper
-   - High impact on maintainability
-   - Reduces ~500 lines of duplicate code
+    - Create generic data mapper
+    - High impact on maintainability
+    - Reduces ~500 lines of duplicate code
 
 3. **Task 4 & 5** (Lower Priority)
-   - Can be done in parallel
-   - Smaller scope, easier to implement
-   - Good for incremental improvements
+    - Can be done in parallel
+    - Smaller scope, easier to implement
+    - Good for incremental improvements
 
 ### Best Practices Going Forward
 
@@ -373,14 +394,14 @@ import { Profiler } from 'react';
    ```
 
 3. **Measure performance**:
-   - Use React DevTools Profiler
-   - Monitor re-render counts
-   - Test with real data loads
+    - Use React DevTools Profiler
+    - Monitor re-render counts
+    - Test with real data loads
 
 4. **Keep SharedChart generic**:
-   - Don't add feature-specific logic
-   - Extend via props, not modifications
-   - Maintain backward compatibility
+    - Don't add feature-specific logic
+    - Extend via props, not modifications
+    - Maintain backward compatibility
 
 ---
 

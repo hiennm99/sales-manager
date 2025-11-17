@@ -1,11 +1,11 @@
 // src/features/products/pages/ProductDetail.tsx
 
+import { Breadcrumbs } from "@components";
+import { useProductStore } from "@features/products";
+import { cn } from "@lib";
+import { getProductStatusLabel } from "@types";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Breadcrumbs } from "../../../components/layout/Breadcrumbs.tsx";
-import { cn } from "../../../lib/utils";
-import { getProductStatusLabel } from "../../../types/product";
-import { useProductStore } from "../store/useProductStore";
 
 export const ProductDetail: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -15,11 +15,11 @@ export const ProductDetail: React.FC = () => {
     toggleProductStatus,
     deleteProduct,
     selectedProduct,
-    setSelectedProduct,
+    setSelectedProduct
   } = useProductStore();
 
   const [product, setProduct] = useState(
-    productId ? getProductById(productId) : undefined,
+    productId ? getProductById(productId) : undefined
   );
   const [imageError, setImageError] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -100,7 +100,7 @@ export const ProductDetail: React.FC = () => {
       month: "2-digit",
       year: "numeric",
       hour: "2-digit",
-      minute: "2-digit",
+      minute: "2-digit"
     }).format(date);
   };
 
@@ -110,7 +110,7 @@ export const ProductDetail: React.FC = () => {
         items={[
           { label: "Trang chủ", path: "/dashboard" },
           { label: "Sản phẩm", path: "/products" },
-          { label: selectedProduct?.sku },
+          { label: selectedProduct?.sku }
         ]}
       />
       {/* Header */}
@@ -149,7 +149,7 @@ export const ProductDetail: React.FC = () => {
                 "px-4 py-2 rounded-lg font-medium transition-colors",
                 product.is_active
                   ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  : "bg-green-100 text-green-700 hover:bg-green-200",
+                  : "bg-green-100 text-green-700 hover:bg-green-200"
               )}
             >
               {product.is_active ? "Tạm ngưng" : "Kích hoạt"}
@@ -240,7 +240,8 @@ export const ProductDetail: React.FC = () => {
                   SKU
                 </div>
                 <div className="flex-1">
-                  <span className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-800 rounded-md font-mono text-sm">
+                  <span
+                    className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-800 rounded-md font-mono text-sm">
                     {product.sku}
                   </span>
                 </div>
@@ -265,13 +266,13 @@ export const ProductDetail: React.FC = () => {
                       "inline-flex items-center px-3 py-1 text-sm font-medium rounded-full",
                       product.is_active
                         ? "bg-green-100 text-green-800"
-                        : "bg-gray-100 text-gray-800",
+                        : "bg-gray-100 text-gray-800"
                     )}
                   >
                     <span
                       className={cn(
                         "w-2 h-2 rounded-full mr-2",
-                        product.is_active ? "bg-green-500" : "bg-gray-500",
+                        product.is_active ? "bg-green-500" : "bg-gray-500"
                       )}
                     ></span>
                     {getProductStatusLabel(product.is_active)}

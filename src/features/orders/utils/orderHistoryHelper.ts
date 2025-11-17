@@ -1,19 +1,19 @@
 // src/features/orders/utils/orderHistoryHelper.ts
 
-import type { Order, OrderItem } from "../../../types/order";
-import { orderHistoryService } from "../services/orderHistoryService.ts";
+import { orderHistoryService } from "@features/orders";
+import type { Order, OrderItem } from "@types";
 
 /**
  * Helper to track order creation
  */
 export const trackOrderCreated = async (
   orderId: number,
-  employeeId?: number,
+  employeeId?: number
 ): Promise<void> => {
   try {
     await orderHistoryService.createHistoryRecord(orderId, "created", {
       description: "Order created",
-      changedByEmployeeId: employeeId,
+      changedByEmployeeId: employeeId
     });
   } catch (error) {
     console.error("Failed to track order creation:", error);
@@ -28,14 +28,14 @@ export const trackStatusChange = async (
   statusType: "general" | "customer" | "factory" | "delivery",
   oldStatusId: number | null,
   newStatusId: number | null,
-  employeeId?: number,
+  employeeId?: number
 ): Promise<void> => {
   try {
     const statusLabels: Record<string, string> = {
       general: "General Status",
       customer: "Customer Status",
       factory: "Factory Status",
-      delivery: "Delivery Status",
+      delivery: "Delivery Status"
     };
 
     await orderHistoryService.createHistoryRecord(
@@ -46,8 +46,8 @@ export const trackStatusChange = async (
         oldValue: oldStatusId?.toString() || "None",
         newValue: newStatusId?.toString() || "None",
         description: `${statusLabels[statusType]} changed`,
-        changedByEmployeeId: employeeId,
-      },
+        changedByEmployeeId: employeeId
+      }
     );
   } catch (error) {
     console.error("Failed to track status change:", error);
@@ -60,13 +60,13 @@ export const trackStatusChange = async (
 export const trackPictureUpload = async (
   orderId: number,
   pictureName: string,
-  employeeId?: number,
+  employeeId?: number
 ): Promise<void> => {
   try {
     await orderHistoryService.createHistoryRecord(orderId, "picture_added", {
       fieldName: pictureName,
       description: `Preview picture uploaded: ${pictureName}`,
-      changedByEmployeeId: employeeId,
+      changedByEmployeeId: employeeId
     });
   } catch (error) {
     console.error("Failed to track picture upload:", error);
@@ -77,7 +77,7 @@ export const trackPictureUpload = async (
         message: (error as any).message,
         code: (error as any).code,
         details: (error as any).details,
-        hint: (error as any).hint,
+        hint: (error as any).hint
       });
     }
     throw error; // Re-throw to see the actual error
@@ -90,13 +90,13 @@ export const trackPictureUpload = async (
 export const trackPictureDelete = async (
   orderId: number,
   pictureName: string,
-  employeeId?: number,
+  employeeId?: number
 ): Promise<void> => {
   try {
     await orderHistoryService.createHistoryRecord(orderId, "updated", {
       fieldName: pictureName,
       description: `Preview picture deleted: ${pictureName}`,
-      changedByEmployeeId: employeeId,
+      changedByEmployeeId: employeeId
     });
   } catch (error) {
     console.error("Failed to track picture deletion:", error);
@@ -109,14 +109,14 @@ export const trackPictureDelete = async (
 export const trackOrderShipped = async (
   orderId: number,
   trackingNumber?: string,
-  employeeId?: number,
+  employeeId?: number
 ): Promise<void> => {
   try {
     await orderHistoryService.createHistoryRecord(orderId, "shipped", {
       description: trackingNumber
         ? `Order shipped with tracking: ${trackingNumber}`
         : "Order marked as shipped",
-      changedByEmployeeId: employeeId,
+      changedByEmployeeId: employeeId
     });
   } catch (error) {
     console.error("Failed to track order shipment:", error);
@@ -128,12 +128,12 @@ export const trackOrderShipped = async (
  */
 export const trackOrderDelivered = async (
   orderId: number,
-  employeeId?: number,
+  employeeId?: number
 ): Promise<void> => {
   try {
     await orderHistoryService.createHistoryRecord(orderId, "delivered", {
       description: "Order marked as delivered",
-      changedByEmployeeId: employeeId,
+      changedByEmployeeId: employeeId
     });
   } catch (error) {
     console.error("Failed to track order delivery:", error);
@@ -146,14 +146,14 @@ export const trackOrderDelivered = async (
 export const trackRefund = async (
   orderId: number,
   refundAmount?: number,
-  employeeId?: number,
+  employeeId?: number
 ): Promise<void> => {
   try {
     await orderHistoryService.createHistoryRecord(orderId, "refunded", {
       description: refundAmount
         ? `Refund processed: $${refundAmount}`
         : "Refund processed",
-      changedByEmployeeId: employeeId,
+      changedByEmployeeId: employeeId
     });
   } catch (error) {
     console.error("Failed to track refund:", error);
@@ -168,7 +168,7 @@ export const trackFieldUpdate = async (
   fieldName: string,
   oldValue: string | number | null,
   newValue: string | number | null,
-  employeeId?: number,
+  employeeId?: number
 ): Promise<void> => {
   try {
     await orderHistoryService.createHistoryRecord(orderId, "updated", {
@@ -176,7 +176,7 @@ export const trackFieldUpdate = async (
       oldValue: oldValue?.toString() || "None",
       newValue: newValue?.toString() || "None",
       description: `${fieldName} updated`,
-      changedByEmployeeId: employeeId,
+      changedByEmployeeId: employeeId
     });
   } catch (error) {
     console.error("Failed to track field update:", error);
@@ -190,7 +190,7 @@ export const trackOrderChanges = async (
   orderId: number,
   oldOrder: Partial<Order>,
   newOrder: Partial<Order>,
-  employeeId?: number,
+  employeeId?: number
 ): Promise<void> => {
   const fieldsToTrack = [
     // Basic order info
@@ -259,7 +259,7 @@ export const trackOrderChanges = async (
     "general_status_id",
     "customer_status_id",
     "factory_status_id",
-    "delivery_status_id",
+    "delivery_status_id"
   ];
 
   for (const field of fieldsToTrack) {
@@ -283,7 +283,7 @@ export const trackOrderChanges = async (
         fieldLabel,
         oldValueForHistory as string | number | null,
         newValueForHistory as string | number | null,
-        employeeId,
+        employeeId
       );
     }
   }
@@ -296,7 +296,7 @@ export const trackOrderItemsUpdate = async (
   orderId: number,
   oldItems: OrderItem[],
   newItems: OrderItem[],
-  employeeId?: number,
+  employeeId?: number
 ): Promise<void> => {
   try {
     // Create a summary of the changes
@@ -317,7 +317,7 @@ export const trackOrderItemsUpdate = async (
     // Create a simple summary of the new items
     const itemsSummary = newItems
       .map(
-        (item) => `${item.sku} (${item.size}, ${item.type}) x${item.quantity}`,
+        (item) => `${item.sku} (${item.size}, ${item.type}) x${item.quantity}`
       )
       .join("; ");
 
@@ -326,7 +326,7 @@ export const trackOrderItemsUpdate = async (
       oldValue: `${oldItemsCount} items`,
       newValue: `${newItemsCount} items: ${itemsSummary}`,
       description,
-      changedByEmployeeId: employeeId,
+      changedByEmployeeId: employeeId
     });
   } catch (error) {
     console.error("Failed to track order items update:", error);

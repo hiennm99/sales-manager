@@ -1,12 +1,14 @@
+// src/components/layout/Navbar.tsx
 // components/layout/Navbar.tsx
 
-import { FiBell, FiMenu, FiSearch } from "react-icons/fi";
+import { useAppStore } from "@stores/useAppStore";
 import React, { useState } from "react";
+import { FiBell, FiMenu, FiSearch } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
+
 import { useAuthStore } from "../../features/auth/store/useAuthStore";
 import { useEmployeeStore } from "../../features/auth/store/useEmployeeStore";
 import { cn } from "../../lib/utils";
-import { useAppStore } from "../../store/useAppStore";
 import { Button } from "../ui/Button";
 
 export const Navbar: React.FC = () => {
@@ -30,7 +32,7 @@ export const Navbar: React.FC = () => {
     <nav
       className={cn(
         "fixed top-0 right-0 h-16 bg-white border-b border-gray-200 transition-all duration-300 z-30",
-        isSidebarCollapsed ? "left-20" : "left-64",
+        isSidebarCollapsed ? "left-20" : "left-64"
       )}
     >
       <div className="h-full px-4 flex items-center justify-between">
@@ -79,7 +81,8 @@ export const Navbar: React.FC = () => {
                   className="w-8 h-8 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                <div
+                  className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                   {currentUser ? getInitials(currentUser.name) : "A"}
                 </div>
               )}
@@ -113,7 +116,8 @@ export const Navbar: React.FC = () => {
                   className="fixed inset-0 z-40"
                   onClick={() => setShowUserMenu(false)}
                 />
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                <div
+                  className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                   <button
                     onClick={() => {
                       navigate("/profile");
