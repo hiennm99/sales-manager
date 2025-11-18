@@ -2,7 +2,7 @@
 import { orderHistoryService, trackPictureDelete, trackPictureUpload } from "@features/orders";
 import { handleSupabaseError, supabase } from "@lib";
 import { databaseService, imageService } from "@services";
-import type { Database, OrderPreviewPicture, OrderPreviewPictureFormData } from "@types";
+import type { Database, OrderPreview, OrderPreviewFormData, OrderPreviewPicture, OrderPreviewPictureFormData } from "@types";
 
 /**
  * Storage configuration
@@ -25,6 +25,29 @@ const mapToPreviewPictureRow = (
     mime_type: data.mime_type,
     uploaded_by_employee_id: data.uploaded_by_employee_id,
     description: data.description,
+    created_at: new Date(data.created_at),
+    updated_at: new Date(data.updated_at)
+  };
+};
+
+/**
+ * Helper function to map database row to OrderPreview type
+ */
+const mapToPreviewRow = (data: any): OrderPreview => {
+  return {
+    id: data.id,
+    order_id: data.order_id,
+    picture_url: data.picture_url,
+    picture_name: data.picture_name,
+    file_size: data.file_size,
+    mime_type: data.mime_type,
+    customer_feedback: data.customer_feedback,
+    customer_confirmed: data.customer_confirmed,
+    confirmed_at: data.confirmed_at,
+    internal_notes: data.internal_notes,
+    version_number: data.version_number,
+    uploaded_by_employee_id: data.uploaded_by_employee_id,
+    created_by_employee_id: data.created_by_employee_id,
     created_at: new Date(data.created_at),
     updated_at: new Date(data.updated_at)
   };
@@ -405,5 +428,166 @@ export const orderPreviewService = {
         }
       }
     }
-  }
+  },
+
+  /**
+   * Get all previews for an order
+   */
+  async getPreviewsByOrderId(orderId: number): Promise<OrderPreview[]> {
+    const { data, error } = await supabase
+      .from("order_previews")
+      .select("*")
+      .eq("order_id", orderId)
+      .order("version_number", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching previews:", error);
+      throw new Error(handleSupabaseError(error));
+    }
+
+    if (!data || data.length === 0) return [];
+
+    return data.map(mapToPreviewRow);
+  },
+
+  /**
+   * Create a new preview record with image
+   */
+  async createPreview(
+    formData: OrderPreviewFormData,
+    employeeId?: number
+  ): Promise<OrderPreview> {
+    // Get the next version number
+    const { data: lastPreview } = await supabase
+      .from("order_previews")
+      .select("version_number")
+      .eq("order_id", formData.orderId)
+      .order("version_number", { ascending: false })
+      .limit(1)
+      .single();
+
+    const nextVersion = (lastPreview?.version_number || 0) + 1;
+
+    const insertData = {
+      order_id: formData.orderId,
+      picture_url: formData.pictureUrl,
+      picture_name: formData.pictureName,
+      file_size: formData.fileSize || null,
+      mime_type: formData.mimeType || null,
+      customer_feedback: formData.customerFeedback || null,
+      customer_confirmed: formData.customerConfirmed || false,
+      internal_notes: formData.internalNotes || null,
+      version_number: nextVersion,
+      uploaded_by_employee_id: employeeId || null,
+      created_by_employee_id: employeeId || null
+    };
+
+    const { data, error } = await supabase
+      .from("order_previews")
+      .insert(insertData)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error creating preview:", error);
+      throw new Error(handleSupabaseError(error));
+    }
+
+    if (!data) throw new Error("Failed to create preview");
+
+    return mapToPreviewRow(data);
+  },
+
+  /**
+   * Update a preview record
+   */
+  async updatePreview(
+    id: number,
+    updates: Partial<OrderPreviewFormData>
+  ): Promise<OrderPreview> {
+    const updateData: Record<string, unknown> = {};
+
+    if (updates.customerFeedback !== undefined)
+      updateData.customer_feedback = updates.customerFeedback;
+    if (updates.customerConfirmed !== undefined) {
+      updateData.customer_confirmed = updates.customerConfirmed;
+      if (updates.customerConfirmed) {
+        updateData.confirmed_at = new Date().toISOString();
+      } else {
+        updateData.confirmed_at = null;
+      }
+    }
+    if (updates.internalNotes !== undefined)
+      updateData.internal_notes = updates.internalNotes;
+
+    const { data, error } = await supabase
+      .from("order_previews")
+      .update(updateData)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error updating preview:", error);
+      throw new Error(handleSupabaseError(error));
+    }
+
+    if (!data) throw new Error("Failed to update preview");
+
+    return mapToPreviewRow(data);
+  },
+
+  /**
+   * Delete a preview record
+   */
+  async deletePreview(id: number): Promise<void> {
+    const { error } = await supabase
+      .from("order_previews")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error deleting preview:", error);
+      throw new Error(handleSupabaseError(error));
+    }
+  },
+
+  /**
+   * Get preview with related picture data
+   * Note: In consolidated schema, picture data is part of OrderPreview
+   */
+  async getPreviewWithPicture(
+    previewId: number
+  ): Promise<{ preview: OrderPreview; picture?: OrderPreviewPicture }> {
+    const { data: previewData, error: previewError } = await supabase
+      .from("order_previews")
+      .select("*")
+      .eq("id", previewId)
+      .single();
+
+    if (previewError) {
+      console.error("Error fetching preview:", previewError);
+      throw new Error(handleSupabaseError(previewError));
+    }
+
+    if (!previewData) throw new Error("Preview not found");
+
+    const preview = mapToPreviewRow(previewData);
+
+    // Create picture object from preview data for backward compatibility
+    const picture: OrderPreviewPicture = {
+      id: preview.id,
+      order_id: preview.order_id,
+      picture_url: preview.picture_url,
+      picture_name: preview.picture_name,
+      file_size: preview.file_size,
+      mime_type: preview.mime_type,
+      uploaded_by_employee_id: preview.uploaded_by_employee_id,
+      description: preview.internal_notes,
+      created_at: preview.created_at,
+      updated_at: preview.updated_at,
+    };
+
+    return { preview, picture };
+  },
 };

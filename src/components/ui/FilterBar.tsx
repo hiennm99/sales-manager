@@ -8,8 +8,8 @@ interface FilterBarProps {
 
 export const FilterBar: React.FC<FilterBarProps> = ({ children }) => {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
         {children}
       </div>
     </div>

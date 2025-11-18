@@ -4,7 +4,7 @@ import { ActionButtons } from "@components/common";
 import { ConfirmModal } from "@components/modals";
 import { DEFAULTS } from "@constants";
 import { useEmployeeStore } from "@features/employees";
-import { ORDER_DEFAULT_VALUES, useOrderCalculations, useOrderStore } from "@features/orders";
+import { ORDER_DEFAULT_VALUES, PreviewSection, useOrderCalculations, useOrderStore } from "@features/orders";
 import { useProductStore } from "@features/products";
 import { useShopStore } from "@features/shops";
 import { useStatusStore } from "@features/statuses";
@@ -13,20 +13,21 @@ import { useExchangeRateStore } from "@stores";
 import type { Order, OrderItem, OrderItemFormData, Product } from "@types";
 import { populateEmployeeName } from "@types";
 import React, { useEffect, useState } from "react";
-import { FiDollarSign, FiFileText, FiPackage, FiTrash2, FiTruck, FiUser } from "react-icons/fi";
+import { FiClock, FiDollarSign, FiFileText, FiImage, FiPackage, FiTrash2, FiTruck, FiUser } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 import {
-  CustomerInfoSection,
-  FinancialInputSection,
-  FinancialSummaryCard,
-  OrderHeader,
-  OrderInfoSection,
-  OrderItemsSection,
-  OrderStatusSection,
-  ShippingInfoSection,
-  type Tab,
-  TabNavigation
+    CustomerInfoSection,
+    FinancialInputSection,
+    FinancialSummaryCard,
+    OrderHeader,
+    OrderHistorySection,
+    OrderInfoSection,
+    OrderItemsSection,
+    OrderStatusSection,
+    ShippingInfoSection,
+    type Tab,
+    TabNavigation
 } from "./index";
 
 interface OrderFormProps {
@@ -36,12 +37,16 @@ interface OrderFormProps {
     updatedOrderItems: OrderItem[]
   ) => Promise<void>;
   onDelete?: () => void;
+  children?: React.ReactNode;
+  orderId?: number;
 }
 
 export const OrderForm: React.FC<OrderFormProps> = ({
                                                       mode,
                                                       onSubmit,
-                                                      onDelete
+                                                      onDelete,
+                                                      children,
+                                                      orderId
                                                     }) => {
   const navigate = useNavigate();
 
@@ -178,6 +183,16 @@ export const OrderForm: React.FC<OrderFormProps> = ({
           id: "financial",
           label: "Tài chính",
           icon: <FiDollarSign className="w-5 h-5" />
+        },
+        {
+          id: "preview",
+          label: "Xem trước",
+          icon: <FiImage className="w-5 h-5" />
+        },
+        {
+          id: "history",
+          label: "Lịch sử đơn",
+          icon: <FiClock className="w-5 h-5" />
         }
       ];
 
@@ -495,14 +510,18 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-6">
+    <div className="min-h-screen bg-slate-50">
+      <div className="max-w-15xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-10">
+        {/*
+         * HEADER SECTION
+         * Stacks on mobile, splits on desktop.
+         */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
           <OrderHeader
             title={
               mode === "create"
                 ? "Tạo đơn hàng mới"
-                : `Chỉnh sửa đơn hàng ${draftOrder.orderId}`
+                : `Chỉnh sửa ${draftOrder.orderId}`
             }
             subtitle={
               mode === "create"
@@ -517,7 +536,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
             <button
               type="button"
               onClick={handleDeleteClick}
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl hover:from-red-700 hover:to-rose-700 shadow-lg hover:shadow-xl transition-all duration-200 font-medium"
+              className="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl hover:from-red-700 hover:to-rose-700 shadow-lg hover:shadow-xl transition-all duration-200 font-medium"
             >
               <FiTrash2 className="w-5 h-5" />
               Xóa đơn hàng
@@ -525,25 +544,66 @@ export const OrderForm: React.FC<OrderFormProps> = ({
           )}
         </div>
 
-        <div className="mb-6">
-          <TabNavigation
-            tabs={tabs}
-            activeTab={activeTab}
-            onChange={setActiveTab}
-          />
+        {/*
+         * TABS SECTION
+         * Wraps in a bordered container and allows horizontal scrolling on mobile.
+         */}
+        <div className="mb-6 sm:mb-8 border-b border-gray-200">
+          <div className="w-full overflow-x-auto">
+            <TabNavigation
+              tabs={tabs}
+              activeTab={activeTab}
+              onChange={setActiveTab}
+            />
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6">
+          {/*
+           * MAIN LAYOUT GRID
+           * Mobile: Summary (1st), Form (2nd)
+           * Desktop: Form (1st col), Summary (2nd col, sticky)
+           */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+            {/* --- FINANCIAL SUMMARY (MOBILE: 1ST, DESKTOP: 2ND) --- */}
+            <div className="lg:col-span-1 lg:order-2">
+              <div className="lg:sticky lg:top-8">
+                <FinancialSummaryCard
+                  itemTotal={calculations.itemTotalUsd}
+                  itemTotalVND={calculations.itemTotalVnd}
+                  discountRate={draftOrder.discountRate || 0}
+                  buyerPaidUSD={draftOrder.buyerPaidUsd || 0}
+                  buyerPaidVND={calculations.buyerPaidVnd}
+                  orderEarnings={draftOrder.orderEarningsUsd || 0}
+                  orderEarningsVND={calculations.orderEarningsVnd}
+                  exchangeRate={effectiveExchangeRate}
+                  shippingFeeUsd={draftOrder.shippingFeeUsd || 0}
+                  shippingExchangeRate={effectiveShippingRate}
+                  refundFeeUsd={draftOrder.refundFeeUsd || 0}
+                  refundFeeExchangeRate={effectiveRefundRate}
+                  otherFeeUsd={draftOrder.otherFeeUsd || 0}
+                  otherFeeExchangeRate={effectiveOtherFeeRate}
+                  otherBonusUsd={draftOrder.otherBonusUsd || 0}
+                  otherBonusExchangeRate={effectiveBonusRate}
+                />
+              </div>
+            </div>
+
+            {/* --- FORM CONTENT (MOBILE: 2ND, DESKTOP: 1ST) --- */}
+            <div className="lg:col-span-2 lg:order-1 space-y-6">
+              {/*
+               * Each tab's content is wrapped in a modern card for a
+               * clean, contained, and modern appearance.
+               */}
               {activeTab === "order-info" && (
-                <>
+                <div className="bg-white shadow-xl rounded-2xl p-6 sm:p-8 space-y-6">
                   <OrderInfoSection
                     formData={draftOrder}
                     shopName={selectedShop?.name}
                     errors={errors}
                     onChange={handleChange}
                   />
+                  <hr className="border-gray-200" />
                   <OrderStatusSection
                     statusValues={draftStatusValues}
                     statusOptions={{
@@ -554,67 +614,66 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                     }}
                     onStatusChange={handleStatusChange}
                   />
-                </>
+                </div>
               )}
               {activeTab === "customer" && (
-                <CustomerInfoSection
-                  formData={draftOrder}
-                  errors={errors}
-                  onChange={handleChange}
-                />
+                <div className="bg-white shadow-xl rounded-2xl p-6 sm:p-8">
+                  <CustomerInfoSection
+                    formData={draftOrder}
+                    errors={errors}
+                    onChange={handleChange}
+                  />
+                </div>
               )}
               {activeTab === "shipping" && mode === "edit" && (
-                <ShippingInfoSection
-                  formData={draftOrder}
-                  errors={errors}
-                  onChange={handleChange}
-                />
+                <div className="bg-white shadow-xl rounded-2xl p-6 sm:p-8">
+                  <ShippingInfoSection
+                    formData={draftOrder}
+                    errors={errors}
+                    onChange={handleChange}
+                  />
+                </div>
               )}
               {activeTab === "products" && (
-                <OrderItemsSection
-                  items={draftItems}
-                  selectedProducts={selectedProducts}
-                  errors={errors}
-                  onChange={handleItemChange}
-                  onAdd={handleAddItem}
-                  onRemove={handleRemoveItem}
-                  onProductSelect={handleProductSelect}
-                />
+                <div className="bg-white shadow-xl rounded-2xl p-6 sm:p-8">
+                  <OrderItemsSection
+                    items={draftItems}
+                    selectedProducts={selectedProducts}
+                    errors={errors}
+                    onChange={handleItemChange}
+                    onAdd={handleAddItem}
+                    onRemove={handleRemoveItem}
+                    onProductSelect={handleProductSelect}
+                  />
+                </div>
+              )}
+              {activeTab === "preview" && mode === "edit" && orderId && (
+                <div className="bg-white shadow-xl rounded-2xl p-6 sm:p-8">
+                  <PreviewSection
+                    orderId={orderId}
+                    employeeId={draftOrder.employeeId || undefined}
+                  />
+                </div>
               )}
               {activeTab === "financial" && (
-                <FinancialInputSection
-                  formData={{
-                    ...draftOrder,
-                    itemTotalUsd: calculations.itemTotalUsd
-                  }}
-                  errors={errors}
-                  onChange={handleChange}
-                />
+                <div className="bg-white shadow-xl rounded-2xl p-6 sm:p-8">
+                  <FinancialInputSection
+                    formData={{
+                      ...draftOrder,
+                      itemTotalUsd: calculations.itemTotalUsd
+                    }}
+                    errors={errors}
+                    onChange={handleChange}
+                  />
+                </div>
               )}
-            </div>
-
-            <div className="lg:col-span-1">
-              <FinancialSummaryCard
-                itemTotal={calculations.itemTotalUsd}
-                itemTotalVND={calculations.itemTotalVnd}
-                discountRate={draftOrder.discountRate || 0}
-                buyerPaidUSD={draftOrder.buyerPaidUsd || 0}
-                buyerPaidVND={calculations.buyerPaidVnd}
-                orderEarnings={draftOrder.orderEarningsUsd || 0}
-                orderEarningsVND={calculations.orderEarningsVnd}
-                exchangeRate={effectiveExchangeRate}
-                shippingFeeUsd={draftOrder.shippingFeeUsd || 0}
-                shippingExchangeRate={effectiveShippingRate}
-                refundFeeUsd={draftOrder.refundFeeUsd || 0}
-                refundFeeExchangeRate={effectiveRefundRate}
-                otherFeeUsd={draftOrder.otherFeeUsd || 0}
-                otherFeeExchangeRate={effectiveOtherFeeRate}
-                otherBonusUsd={draftOrder.otherBonusUsd || 0}
-                otherBonusExchangeRate={effectiveBonusRate}
-              />
+              {activeTab === "history" && mode === "edit" && orderId && (
+                <OrderHistorySection orderId={orderId} />
+              )}
             </div>
           </div>
 
+          {/* --- FORM ACTIONS --- */}
           <ActionButtons
             mode={mode}
             isLoading={isLoading}
@@ -632,6 +691,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
           message={confirmModal.modalConfig?.message || ""}
           confirmText={confirmModal.modalConfig?.confirmText}
           cancelText={confirmModal.modalConfig?.cancelText}
+
           variant={confirmModal.modalConfig?.variant}
           isLoading={confirmModal.isLoading}
         />

@@ -653,6 +653,82 @@ export type Database = {
         }
         Relationships: []
       }
+      order_previews: {
+        Row: {
+          confirmed_at: string | null
+          created_at: string
+          created_by_employee_id: number | null
+          customer_confirmed: boolean
+          customer_feedback: string | null
+          file_size: number | null
+          id: number
+          internal_notes: string | null
+          mime_type: string | null
+          order_id: number
+          picture_name: string
+          picture_url: string
+          updated_at: string
+          uploaded_by_employee_id: number | null
+          version_number: number
+        }
+        Insert: {
+          confirmed_at?: string | null
+          created_at?: string
+          created_by_employee_id?: number | null
+          customer_confirmed?: boolean
+          customer_feedback?: string | null
+          file_size?: number | null
+          id?: number
+          internal_notes?: string | null
+          mime_type?: string | null
+          order_id: number
+          picture_name: string
+          picture_url: string
+          updated_at?: string
+          uploaded_by_employee_id?: number | null
+          version_number?: number
+        }
+        Update: {
+          confirmed_at?: string | null
+          created_at?: string
+          created_by_employee_id?: number | null
+          customer_confirmed?: boolean
+          customer_feedback?: string | null
+          file_size?: number | null
+          id?: number
+          internal_notes?: string | null
+          mime_type?: string | null
+          order_id?: number
+          picture_name?: string
+          picture_url?: string
+          updated_at?: string
+          uploaded_by_employee_id?: number | null
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_previews_created_by_fkey"
+            columns: ["created_by_employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_previews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_previews_uploaded_by_fkey"
+            columns: ["uploaded_by_employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           actual_ship_date: string | null

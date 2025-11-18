@@ -1,7 +1,7 @@
 // src/components/ui/StatCard.tsx
 
-import { FiTrendingDown, FiTrendingUp } from "react-icons/fi";
 import React from "react";
+import { FiTrendingDown, FiTrendingUp } from "react-icons/fi";
 
 // Định nghĩa props cho component
 interface StatCardProps {
@@ -81,7 +81,7 @@ export const StatCard: React.FC<StatCardProps> = ({
 
   return (
     <div
-      className={`group relative bg-white rounded-xl border border-gray-200/70 p-6 shadow-sm hover:shadow-lg ${styles.hoverBorder} ${styles.hoverShadow} transition-all duration-300 overflow-hidden`}
+      className={`group relative bg-white rounded-xl border border-gray-200/70 p-4 sm:p-6 shadow-sm hover:shadow-lg ${styles.hoverBorder} ${styles.hoverShadow} transition-all duration-300 overflow-hidden`}
     >
       {/* Gradient overlay với màu theo variant */}
       <div
@@ -94,7 +94,7 @@ export const StatCard: React.FC<StatCardProps> = ({
       <div className="relative z-10">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
-            <p className="text-gray-600 text-sm font-semibold uppercase tracking-wide mb-1">
+            <p className="text-gray-600 text-xs sm:text-sm font-semibold uppercase tracking-wide mb-1">
               {title}
             </p>
 
@@ -130,7 +130,7 @@ export const StatCard: React.FC<StatCardProps> = ({
         {/* Value with animation */}
         <div className="flex items-baseline gap-2">
           <p
-            className={`text-4xl font-extrabold ${className} tracking-tight group-hover:scale-105 transition-transform duration-300 origin-left`}
+            className={`text-2xl sm:text-4xl font-extrabold ${className} tracking-tight group-hover:scale-105 transition-transform duration-300 origin-left`}
           >
             {value}
           </p>
@@ -158,7 +158,7 @@ interface StatGridProps {
 
 export const StatGrid: React.FC<StatGridProps> = ({ children }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5 mb-6">
       {children}
     </div>
   );

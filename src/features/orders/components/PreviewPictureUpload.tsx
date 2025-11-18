@@ -1,7 +1,7 @@
 // src/features/orders/components/PreviewPictureUpload.tsx
 
-import { orderPreviewService } from "@features/orders";
-import type { OrderPreviewPicture } from "@types";
+import { usePreviewUpload } from "@features/orders/hooks";
+import type { OrderPreview } from "@types";
 import React, { useRef, useState } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FiUpload, FiX } from "react-icons/fi";
@@ -9,7 +9,7 @@ import { FiUpload, FiX } from "react-icons/fi";
 interface PreviewPictureUploadProps {
   orderId: number;
   employeeId?: number;
-  onUploadSuccess?: (picture: OrderPreviewPicture) => void;
+  onUploadSuccess?: (preview: OrderPreview) => void;
   onUploadError?: (error: Error) => void;
 }
 
@@ -20,10 +20,14 @@ export const PreviewPictureUpload: React.FC<PreviewPictureUploadProps> = ({
                                                                             onUploadError
                                                                           }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [description, setDescription] = useState("");
   const [dragActive, setDragActive] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  
+  const { uploadPreview, isUploading, error, setError } = usePreviewUpload({
+    orderId,
+    employeeId,
+    onSuccess: onUploadSuccess,
+    onError: onUploadError
+  });
 
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -46,42 +50,16 @@ export const PreviewPictureUpload: React.FC<PreviewPictureUploadProps> = ({
   };
 
   const handleFile = async (file: File) => {
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
-      setError("Please select an image file");
-      return;
-    }
-
-    // Validate file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      setError("File size must be less than 10MB");
-      return;
-    }
-
     setError(null);
-    setIsUploading(true);
-
+    
     try {
-      const picture = await orderPreviewService.uploadPreviewPicture(
-        orderId,
-        file,
-        employeeId,
-        description || undefined
-      );
-
-      setDescription("");
+      await uploadPreview(file);
+      
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-
-      onUploadSuccess?.(picture);
     } catch (err) {
-      const errorMsg =
-        err instanceof Error ? err.message : "Failed to upload picture";
-      setError(errorMsg);
-      onUploadError?.(err instanceof Error ? err : new Error(errorMsg));
-    } finally {
-      setIsUploading(false);
+      console.error("Upload failed:", err);
     }
   };
 
@@ -136,21 +114,6 @@ export const PreviewPictureUpload: React.FC<PreviewPictureUploadProps> = ({
             </>
           )}
         </div>
-      </div>
-
-      {/* Description field */}
-      <div className="mt-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Description (Optional)
-        </label>
-        <input
-          type="text"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="e.g., Final draft, Customer approved, etc."
-          disabled={isUploading}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-        />
       </div>
 
       {/* Error message */}

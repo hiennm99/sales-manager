@@ -1,8 +1,9 @@
 // src/features/orders/pages/OrderDetail.tsx
 
-import { OrderDetailTabs, OrderForm, orderService, useOrderStore } from "@features/orders";
+import { OrderForm, orderService, useOrderStore } from "@features/orders";
 import type { Order, OrderItem } from "@types";
 import React, { useEffect, useRef, useState } from "react";
+import { FiAlertTriangle, FiFileText } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
 
 /**
@@ -112,10 +113,10 @@ export const OrderDetail: React.FC = () => {
   // Loading state
   if ((isLoading && !order) || (dbLoading && !order)) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Đang tải đơn hàng...</p>
+          <p className="text-lg font-medium text-gray-700">Đang tải đơn hàng...</p>
         </div>
       </div>
     );
@@ -124,14 +125,18 @@ export const OrderDetail: React.FC = () => {
   // Error state
   if (dbError && !order) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 text-lg mb-4">{dbError}</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+        <div className="bg-white shadow-xl rounded-2xl p-8 max-w-md text-center">
+          <FiAlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-gray-800 mb-2">
+            Không thể tải đơn hàng
+          </h2>
+          <p className="text-red-600 text-sm mb-6">{dbError}</p>
           <button
             onClick={() => navigate("/orders")}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors focus:ring-4 focus:ring-blue-200"
           >
-            Quay lại danh sách đơn hàng
+            Quay lại danh sách
           </button>
         </div>
       </div>
@@ -141,14 +146,20 @@ export const OrderDetail: React.FC = () => {
   // Order not found
   if (!order) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 text-lg mb-4">Không tìm thấy đơn hàng</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+        <div className="bg-white shadow-xl rounded-2xl p-8 max-w-md text-center">
+          <FiFileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-gray-800 mb-2">
+            Không tìm thấy đơn hàng
+          </h2>
+          <p className="text-gray-600 text-sm mb-6">
+            Đơn hàng bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.
+          </p>
           <button
             onClick={() => navigate("/orders")}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-5 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors focus:ring-4 focus:ring-blue-200"
           >
-            Quay lại danh sách đơn hàng
+            Quay lại danh sách
           </button>
         </div>
       </div>
@@ -156,12 +167,7 @@ export const OrderDetail: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <OrderForm mode="edit" onSubmit={handleSubmit} onDelete={handleDelete} />
-      <OrderDetailTabs
-        orderId={order.id}
-        employeeId={order.artist_employee_id || undefined}
-      />
-    </div>
+    <OrderForm mode="edit" onSubmit={handleSubmit} onDelete={handleDelete} orderId={order.id}>
+    </OrderForm>
   );
 };

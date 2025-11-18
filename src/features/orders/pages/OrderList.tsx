@@ -12,6 +12,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { FiDollarSign, FiPackage } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
+import { useDebounce } from "@hooks";
 import { formatUSD, formatVND } from "../../../lib/utils.ts";
 import { useShopStore } from "../../shops/store/useShopStore";
 import { useStatusSelectors, useStatusStore } from "../../statuses/store/useStatusStore";
@@ -46,6 +47,7 @@ export const OrderList: React.FC = () => {
   const fetchAllStatuses = useStatusStore((state) => state.fetchAllStatuses);
 
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [filterGeneralStatus, setFilterGeneralStatus] = useState<
     number | "all"
   >("all");
@@ -87,9 +89,9 @@ export const OrderList: React.FC = () => {
       filtered = filtered.filter((order) => order.shop_id === selectedShop.id);
     }
 
-    // Filter by search term
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
+    // Filter by search term (using debounced value)
+    if (debouncedSearchTerm) {
+      const term = debouncedSearchTerm.toLowerCase();
       filtered = filtered.filter(
         (order) =>
           order.order_id.toLowerCase().includes(term) ||
@@ -152,7 +154,7 @@ export const OrderList: React.FC = () => {
     return filtered;
   }, [
     orders,
-    searchTerm,
+    debouncedSearchTerm,
     filterGeneralStatus,
     filterCustomerStatus,
     filterFactoryStatus,
@@ -255,174 +257,205 @@ export const OrderList: React.FC = () => {
   };
 
   return (
-    <div className="max-w-10xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Danh sách đơn hàng
-          </h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      <div className="max-w-15xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+        {/* Header Section */}
+        <div className="mb-8 sm:mb-10">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+                Danh sách đơn hàng
+              </h1>
+              <p className="text-gray-600 text-sm sm:text-base">
+                Quản lý và theo dõi tất cả đơn hàng của bạn
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/orders/create")}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              <span>Tạo đơn hàng</span>
+            </button>
+          </div>
         </div>
-        <button
-          onClick={() => navigate("/orders/create")}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
+
+        {/* Stats Cards */}
+        <div className="mb-8 sm:mb-10">
+          <StatGrid>
+            <StatCard
+              title="Tổng đơn hàng"
+              value={totals.orders}
+              icon={<FiPackage />}
             />
-          </svg>
-          Tạo đơn hàng
-        </button>
+            <StatCard
+              title="Tổng thu nhập (USD)"
+              value={formatUSD(totals.earnings_usd)}
+              icon={<FiDollarSign />}
+              className="text-green-600"
+            />
+            <StatCard
+              title="Tổng thu nhập (VND)"
+              value={formatVND(totals.earnings_vnd)}
+              icon={<FiDollarSign />}
+              className="text-green-600 text-2xl"
+            />
+          </StatGrid>
+        </div>
+
+        {/* Filters */}
+        <div className="mb-8 sm:mb-10">
+          <FilterBar>
+            <SelectFilter
+              label="Trạng thái tổng quan"
+              value={filterGeneralStatus}
+              onChange={(val) =>
+                setFilterGeneralStatus(
+                  val === "all" ? "all" : parseInt(val as string)
+                )
+              }
+              options={generalStatuses.map((s) => ({
+                value: s.id,
+                label: s.name_vi
+              }))}
+            />
+
+            <SelectFilter
+              label="Trạng thái khách hàng"
+              value={filterCustomerStatus}
+              onChange={(val) =>
+                setFilterCustomerStatus(
+                  val === "all" ? "all" : parseInt(val as string)
+                )
+              }
+              options={customerStatuses.map((s) => ({
+                value: s.id,
+                label: s.name_vi
+              }))}
+            />
+
+            <SelectFilter
+              label="Trạng thái nhà máy"
+              value={filterFactoryStatus}
+              onChange={(val) =>
+                setFilterFactoryStatus(
+                  val === "all" ? "all" : parseInt(val as string)
+                )
+              }
+              options={factoryStatuses.map((s) => ({
+                value: s.id,
+                label: s.name_vi
+              }))}
+            />
+
+            <SelectFilter
+              label="Trạng thái giao hàng"
+              value={filterDeliveryStatus}
+              onChange={(val) =>
+                setFilterDeliveryStatus(
+                  val === "all" ? "all" : parseInt(val as string)
+                )
+              }
+              options={deliveryStatuses.map((s) => ({
+                value: s.id,
+                label: s.name_vi
+              }))}
+            />
+
+            <SelectFilter
+              label="Sắp xếp"
+              value={sortBy}
+              onChange={(val) => setSortBy(val as string)}
+              options={sortOptions}
+            />
+          </FilterBar>
+        </div>
+
+          {/* Search */}
+        <div className="mb-6 sm:mb-8">
+          <div className="relative">
+            <SearchInput
+              placeholder="Tìm kiếm theo mã đơn, tên khách, SĐT..."
+              value={searchTerm}
+              onChange={setSearchTerm}
+              className="w-full"
+            />
+            <svg
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+        </div>
+
+        {/* Order View - Table or Card */}
+        <div className="mb-8">
+          {viewMode === "table" ? (
+            <OrderTable
+              orders={filteredOrders}
+              selectedOrders={selectedOrders}
+              onSelectOrder={handleSelectOrder}
+              onSelectAll={handleSelectAll}
+              onDeleteOrder={handleDeleteOrder}
+              getStatusBadge={getStatusBadge}
+            />
+          ) : (
+            <OrderCardView
+              orders={filteredOrders}
+              selectedOrders={selectedOrders}
+              onSelectOrder={handleSelectOrder}
+              onSelectAll={handleSelectAll}
+              onDeleteOrder={handleDeleteOrder}
+              getStatusBadge={getStatusBadge}
+            />
+          )}
+        </div>
+
+        {/* Delete Confirmation Modal */}
+        <ConfirmModal
+          isOpen={showDeleteConfirm}
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
+          isLoading={isDeleting}
+          variant="delete"
+          title={
+            deleteTarget === "bulk"
+              ? "Xác nhận xóa nhiều đơn hàng"
+              : "Xác nhận xóa đơn hàng"
+          }
+          message={
+            deleteTarget === "bulk"
+              ? `Bạn có chắc chắn muốn xóa ${selectedOrders.length} đơn hàng đã chọn? Hành động này không thể hoàn tác.`
+              : "Bạn có chắc chắn muốn xóa đơn hàng này? Hành động này không thể hoàn tác."
+          }
+          confirmText={
+            deleteTarget === "bulk"
+              ? `Xóa ${selectedOrders.length} đơn hàng`
+              : "Xóa"
+          }
+          cancelText="Hủy"
+        />
       </div>
-
-      {/* Stats Cards */}
-      <StatGrid>
-        <StatCard
-          title="Tổng đơn hàng"
-          value={totals.orders}
-          icon={<FiPackage />}
-        />
-        <StatCard
-          title="Tổng thu nhập (USD)"
-          value={formatUSD(totals.earnings_usd)}
-          icon={<FiDollarSign />}
-          className="text-green-600"
-        />
-        <StatCard
-          title="Tổng thu nhập (VND)"
-          value={formatVND(totals.earnings_vnd)}
-          icon={<FiDollarSign />}
-          className="text-green-600 text-2xl"
-        />
-      </StatGrid>
-
-      {/* Filters and Search */}
-      <FilterBar>
-        <SearchInput
-          placeholder="Tìm kiếm theo mã đơn, tên khách, SĐT..."
-          value={searchTerm}
-          onChange={setSearchTerm}
-          className="lg:col-span-3"
-        />
-
-        <SelectFilter
-          label="Trạng thái tổng quan"
-          value={filterGeneralStatus}
-          onChange={(val) =>
-            setFilterGeneralStatus(
-              val === "all" ? "all" : parseInt(val as string)
-            )
-          }
-          options={generalStatuses.map((s) => ({
-            value: s.id,
-            label: s.name_vi
-          }))}
-        />
-
-        <SelectFilter
-          label="Trạng thái khách hàng"
-          value={filterCustomerStatus}
-          onChange={(val) =>
-            setFilterCustomerStatus(
-              val === "all" ? "all" : parseInt(val as string)
-            )
-          }
-          options={customerStatuses.map((s) => ({
-            value: s.id,
-            label: s.name_vi
-          }))}
-        />
-
-        <SelectFilter
-          label="Trạng thái nhà máy"
-          value={filterFactoryStatus}
-          onChange={(val) =>
-            setFilterFactoryStatus(
-              val === "all" ? "all" : parseInt(val as string)
-            )
-          }
-          options={factoryStatuses.map((s) => ({
-            value: s.id,
-            label: s.name_vi
-          }))}
-        />
-
-        <SelectFilter
-          label="Trạng thái giao hàng"
-          value={filterDeliveryStatus}
-          onChange={(val) =>
-            setFilterDeliveryStatus(
-              val === "all" ? "all" : parseInt(val as string)
-            )
-          }
-          options={deliveryStatuses.map((s) => ({
-            value: s.id,
-            label: s.name_vi
-          }))}
-        />
-
-        <SelectFilter
-          label="Sắp xếp"
-          value={sortBy}
-          onChange={(val) => setSortBy(val as string)}
-          options={sortOptions}
-        />
-      </FilterBar>
-
-      {/* Order View - Table or Card */}
-      {viewMode === "table" ? (
-        <OrderTable
-          orders={filteredOrders}
-          selectedOrders={selectedOrders}
-          onSelectOrder={handleSelectOrder}
-          onSelectAll={handleSelectAll}
-          onDeleteOrder={handleDeleteOrder}
-          getStatusBadge={getStatusBadge}
-        />
-      ) : (
-        <OrderCardView
-          orders={filteredOrders}
-          selectedOrders={selectedOrders}
-          onSelectOrder={handleSelectOrder}
-          onSelectAll={handleSelectAll}
-          onDeleteOrder={handleDeleteOrder}
-          getStatusBadge={getStatusBadge}
-        />
-      )}
-
-      {/* Delete Confirmation Modal */}
-      <ConfirmModal
-        isOpen={showDeleteConfirm}
-        onConfirm={confirmDelete}
-        onCancel={cancelDelete}
-        isLoading={isDeleting}
-        variant="delete"
-        title={
-          deleteTarget === "bulk"
-            ? "Xác nhận xóa nhiều đơn hàng"
-            : "Xác nhận xóa đơn hàng"
-        }
-        message={
-          deleteTarget === "bulk"
-            ? `Bạn có chắc chắn muốn xóa ${selectedOrders.length} đơn hàng đã chọn? Hành động này không thể hoàn tác.`
-            : "Bạn có chắc chắn muốn xóa đơn hàng này? Hành động này không thể hoàn tác."
-        }
-        confirmText={
-          deleteTarget === "bulk"
-            ? `Xóa ${selectedOrders.length} đơn hàng`
-            : "Xóa"
-        }
-        cancelText="Hủy"
-      />
     </div>
   );
 };

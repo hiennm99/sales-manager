@@ -5,7 +5,8 @@ import { useState } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { FiAlertCircle, FiLock, FiLogIn, FiMail } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import Icon from '../../../../public/icons/icon-384x384.webp';
+
+import Icon from "../../../../public/icons/icon-384x384.webp";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -31,9 +32,9 @@ export const LoginForm = () => {
       <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
         {/* Header */}
         <div className="text-center mb-8">
-          <img 
-            src={Icon} 
-            alt="TranhArt Sales Manager Logo" 
+          <img
+            src={Icon}
+            alt="TranhArt Sales Manager Logo"
             className="w-20 h-20 mx-auto mb-4 rounded-3xl"
           />
           <h2 className="text-3xl font-bold text-gray-900 mb-2">

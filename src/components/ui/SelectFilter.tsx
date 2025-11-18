@@ -22,11 +22,11 @@ export const SelectFilter: React.FC<SelectFilterProps> = ({
                                                           }) => {
   return (
     <div>
-      <label className="block text-xs text-gray-600 mb-1">{label}</label>
+      <label className="block text-xs text-gray-600 mb-1 truncate">{label}</label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className="w-full px-3 sm:px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       >
         <option value={defaultOptionValue}>{defaultOptionLabel}</option>
         {options.map((option) => (
