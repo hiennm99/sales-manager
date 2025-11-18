@@ -3,22 +3,22 @@
 import type { OrderHistory } from "@types";
 import React, { useState } from "react";
 import {
-  FiAlertCircle,
-  FiCalendar,
-  FiCheckCircle,
-  FiChevronDown,
-  FiChevronRight,
-  FiDollarSign,
-  FiEdit3,
-  FiFileText,
-  FiImage,
-  FiMapPin,
-  FiPackage,
-  FiPlus,
-  FiTrash2,
-  FiTruck,
-  FiUpload,
-  FiUser
+    FiAlertCircle,
+    FiCalendar,
+    FiCheckCircle,
+    FiChevronDown,
+    FiChevronRight,
+    FiDollarSign,
+    FiEdit3,
+    FiFileText,
+    FiImage,
+    FiMapPin,
+    FiPackage,
+    FiPlus,
+    FiTrash2,
+    FiTruck,
+    FiUpload,
+    FiUser
 } from "react-icons/fi";
 
 interface OrderHistoryTreeProps {
@@ -296,16 +296,16 @@ const TreeNode: React.FC<{
       )}
 
       {/* Main node */}
-      <div className="flex gap-3 items-start">
+      <div className="flex gap-3 items-start p-3 rounded-lg hover:bg-gray-50 transition-colors">
         {/* Expand/collapse button for groups */}
         <div className="flex items-center">
           {group.type === "group" ? (
             <button
               onClick={toggleExpanded}
-              className="w-6 h-6 rounded-full bg-white border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+              className="w-6 h-6 rounded-full bg-white border border-gray-300 flex items-center justify-center hover:bg-blue-50 hover:border-blue-400 transition-all"
             >
               {isExpanded ? (
-                <FiChevronDown className="w-3 h-3 text-gray-600" />
+                <FiChevronDown className="w-3 h-3 text-blue-600" />
               ) : (
                 <FiChevronRight className="w-3 h-3 text-gray-600" />
               )}
@@ -319,7 +319,7 @@ const TreeNode: React.FC<{
 
         {/* Icon */}
         <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center ${group.color} flex-shrink-0`}
+          className={`w-8 h-8 rounded-full flex items-center justify-center ${group.color} flex-shrink-0 shadow-sm`}
         >
           {group.icon}
         </div>
@@ -328,27 +328,28 @@ const TreeNode: React.FC<{
         <div className="flex-1 pt-1">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span
-                  className={`inline-block px-2 py-1 rounded text-xs font-medium ${group.color}`}
+                  className={`inline-block px-2.5 py-1 rounded-md text-xs font-semibold ${group.color}`}
                 >
                   {group.title}
                 </span>
                 {group.employee && (
-                  <span className="text-xs text-gray-600">
-                    by {group.employee}
+                  <span className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                    👤 {group.employee}
                   </span>
                 )}
                 {group.type === "group" && (
-                  <span className="text-xs text-gray-500">
-                    ({group.items.length} changes)
+                  <span className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded border border-gray-200">
+                    {group.items.length} thay đổi
                   </span>
                 )}
               </div>
 
               {/* Timestamp */}
-              <p className="text-xs text-gray-500 mt-1">
-                {group.timestamp.toLocaleString()}
+              <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                <FiCalendar className="w-3 h-3" />
+                {group.timestamp.toLocaleString("vi-VN")}
               </p>
             </div>
           </div>
@@ -357,28 +358,38 @@ const TreeNode: React.FC<{
 
       {/* Expanded content for groups */}
       {group.type === "group" && isExpanded && (
-        <div className="ml-9 mt-3 space-y-2">
+        <div className="ml-9 mt-2 space-y-2 p-3 bg-gray-50 rounded-lg border border-gray-100">
           {group.items.map((item) => (
             <div key={item.id} className="flex gap-3 items-start">
               <div className="w-6 h-6 flex items-center justify-center">
-                <div className="w-1 h-1 rounded-full bg-gray-400" />
+                <div className="w-1.5 h-1.5 rounded-full bg-gray-400" />
               </div>
 
               <div className="flex-1">
                 <div className="text-sm text-gray-700">
                   {item.field_name && (
-                    <span className="font-medium text-gray-900">
-                      {item.field_name}:{" "}
+                    <span className="font-semibold text-gray-900">
+                      {item.field_name}
                     </span>
                   )}
-                  {item.description}
+                  {item.description && (
+                    <span className="text-gray-600">
+                      {item.field_name ? ": " : ""}{item.description}
+                    </span>
+                  )}
                 </div>
 
                 {/* Field change details */}
                 {item.old_value && item.new_value && (
-                  <div className="mt-1 p-2 bg-gray-50 rounded text-xs text-gray-600 font-mono">
-                    <div className="text-red-600">- {item.old_value}</div>
-                    <div className="text-green-600">+ {item.new_value}</div>
+                  <div className="mt-2 p-2 bg-white rounded border border-gray-200 text-xs font-mono space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-red-600 font-bold">−</span>
+                      <span className="text-red-600 line-through">{item.old_value}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-green-600 font-bold">+</span>
+                      <span className="text-green-600 font-semibold">{item.new_value}</span>
+                    </div>
                   </div>
                 )}
               </div>
@@ -393,10 +404,14 @@ const TreeNode: React.FC<{
           {group.items[0].field_name &&
             group.items[0].old_value &&
             group.items[0].new_value && (
-              <div className="p-2 bg-gray-50 rounded text-xs text-gray-600 font-mono">
-                <div className="text-red-600">- {group.items[0].old_value}</div>
-                <div className="text-green-600">
-                  + {group.items[0].new_value}
+              <div className="p-3 bg-gray-50 rounded-lg border border-gray-200 text-xs font-mono space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-red-600 font-bold">−</span>
+                  <span className="text-red-600 line-through">{group.items[0].old_value}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-green-600 font-bold">+</span>
+                  <span className="text-green-600 font-semibold">{group.items[0].new_value}</span>
                 </div>
               </div>
             )}
@@ -433,13 +448,24 @@ export const OrderHistoryTree: React.FC<OrderHistoryTreeProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-        <FiFileText className="w-4 h-4" />
-        <span>{history.length} total changes</span>
-        <span className="text-gray-400">•</span>
-        <span>{groups.length} events</span>
+      {/* Stats */}
+      <div className="flex flex-wrap items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-blue-600" />
+          <span className="text-sm font-medium text-gray-700">
+            <span className="font-bold text-blue-600">{history.length}</span> thay đổi
+          </span>
+        </div>
+        <span className="text-gray-300">|</span>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-indigo-600" />
+          <span className="text-sm font-medium text-gray-700">
+            <span className="font-bold text-indigo-600">{groups.length}</span> sự kiện
+          </span>
+        </div>
       </div>
 
+      {/* Timeline */}
       <div className="space-y-4">
         {groups.map((group, index) => (
           <TreeNode

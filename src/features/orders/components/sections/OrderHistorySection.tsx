@@ -1,16 +1,17 @@
 // src/features/orders/components/sections/OrderHistorySection.tsx
 /**
  * OrderHistorySection - Hiển thị lịch sử các thay đổi của đơn hàng
- * Displays order update history timeline with all changes and activities
+ * Displays order update history with tree view and grouping
  */
 
 import { useEmployeeStore } from "@features/employees";
 import {
     orderHistoryService,
-    OrderHistoryTimeline
+    OrderHistoryTree
 } from "@features/orders";
 import type { OrderHistory } from "@types";
 import React, { useEffect, useState } from "react";
+import { FiClock } from "react-icons/fi";
 
 interface OrderHistorySectionProps {
   orderId: number;
@@ -35,7 +36,7 @@ export const OrderHistorySection: React.FC<OrderHistorySectionProps> = ({
         setError(null);
       } catch (err) {
         console.error("Failed to load order history:", err);
-        setError("Failed to load order history");
+        setError("Không thể tải lịch sử đơn hàng");
       } finally {
         setIsLoading(false);
       }
@@ -54,30 +55,18 @@ export const OrderHistorySection: React.FC<OrderHistorySectionProps> = ({
   );
 
   return (
-    <div className="w-full bg-white rounded-lg border border-gray-200">
+    <div className="w-full bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
       {/* Header */}
-      <div className="flex items-center gap-3 p-6 border-b border-gray-200">
-        <div className="p-3 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg">
-          <svg
-            className="w-6 h-6 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+      <div className="flex items-center gap-4 p-6 border-b border-gray-100 bg-gradient-to-r from-slate-50 to-white">
+        <div className="p-3 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg shadow-md">
+          <FiClock className="w-6 h-6 text-white" />
         </div>
-        <div>
+        <div className="flex-1">
           <h2 className="text-lg font-bold text-gray-900">
-            Order History
+            Lịch sử đơn hàng
           </h2>
-          <p className="text-sm text-gray-600">
-            Lịch sử tất cả các thay đổi và hoạt động của đơn hàng
+          <p className="text-sm text-gray-600 mt-0.5">
+            Theo dõi tất cả các thay đổi và hoạt động
           </p>
         </div>
       </div>
@@ -85,23 +74,33 @@ export const OrderHistorySection: React.FC<OrderHistorySectionProps> = ({
       {/* Error message */}
       {error && (
         <div className="p-4 bg-red-50 border-b border-red-200">
-          <p className="text-sm text-red-700">{error}</p>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-red-500" />
+            <p className="text-sm text-red-700">{error}</p>
+          </div>
         </div>
       )}
 
       {/* Content */}
       <div className="p-6">
         {isLoading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-            <p className="text-gray-600 text-sm">Loading history...</p>
+          <div className="text-center py-12">
+            <div className="inline-flex items-center justify-center">
+              <div className="animate-spin rounded-full h-10 w-10 border-3 border-gray-200 border-t-blue-600"></div>
+            </div>
+            <p className="text-gray-600 text-sm mt-4">Đang tải lịch sử...</p>
+          </div>
+        ) : history.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+              <FiClock className="w-8 h-8 text-gray-400" />
+            </div>
+            <p className="text-gray-600 text-sm font-medium">Chưa có lịch sử</p>
+            <p className="text-gray-500 text-xs mt-1">Các thay đổi sẽ xuất hiện ở đây</p>
           </div>
         ) : (
           <>
-            <div className="mb-4 text-sm text-gray-600">
-              Total records: <span className="font-semibold text-gray-900">{history.length}</span>
-            </div>
-            <OrderHistoryTimeline
+            <OrderHistoryTree
               history={history}
               employeeNames={employeeNames}
             />
