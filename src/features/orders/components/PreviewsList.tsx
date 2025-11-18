@@ -4,6 +4,7 @@
  * Displays preview versions side-by-side with images and customer feedback
  */
 
+import { ConfirmModal } from "@components";
 import { ToggleButton } from "@components/common";
 import { orderPreviewService } from "@features/orders";
 import type { OrderPreview, OrderPreviewPicture } from "@types";
@@ -30,6 +31,10 @@ export const PreviewsList: React.FC<PreviewsListProps> = ({
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editFeedback, setEditFeedback] = useState<string>("");
   const [refreshKey] = useState(0);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; previewId: number | null }>({
+    isOpen: false,
+    previewId: null
+  });
 
   // Load previews
   useEffect(() => {
@@ -123,17 +128,21 @@ export const PreviewsList: React.FC<PreviewsListProps> = ({
     }
   };
 
-  const handleDelete = async (previewId: number) => {
-    if (!window.confirm("Are you sure you want to delete this preview?")) {
-      return;
-    }
+  const handleDeleteClick = (previewId: number) => {
+    setDeleteConfirm({ isOpen: true, previewId });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirm.previewId) return;
 
     try {
-      await orderPreviewService.deletePreview(previewId);
-      setPreviews(previews.filter((item) => item.preview.id !== previewId));
+      await orderPreviewService.deletePreview(deleteConfirm.previewId);
+      setPreviews(previews.filter((item) => item.preview.id !== deleteConfirm.previewId));
+      setDeleteConfirm({ isOpen: false, previewId: null });
     } catch (err) {
       console.error("Failed to delete preview:", err);
       setError("Failed to delete preview");
+      setDeleteConfirm({ isOpen: false, previewId: null });
     }
   };
 
@@ -220,7 +229,7 @@ export const PreviewsList: React.FC<PreviewsListProps> = ({
                   size="md"
                 />
                 <button
-                  onClick={() => handleDelete(preview.id)}
+                  onClick={() => handleDeleteClick(preview.id)}
                   className="p-2 hover:bg-red-100 rounded transition-colors text-red-600"
                   title="Delete this preview"
                 >
@@ -344,6 +353,18 @@ export const PreviewsList: React.FC<PreviewsListProps> = ({
           </div>
         );
       })}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        title="Xóa bản preview"
+        message="Bạn có chắc chắn muốn xóa bản preview này không? Hành động này không thể hoàn tác."
+        confirmText="Xóa"
+        cancelText="Hủy"
+        variant="delete"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteConfirm({ isOpen: false, previewId: null })}
+      />
     </div>
   );
 };

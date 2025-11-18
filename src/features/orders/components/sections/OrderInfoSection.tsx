@@ -110,7 +110,6 @@ export const OrderInfoSection: React.FC<OrderInfoSectionProps> = ({
           <EmployeeAutocomplete
             value={formData.employeeName || ""}
             onChange={(value, employeeId) => {
-              console.log("🎨 Họa sĩ selected:", { value, employeeId });
               handleChange("employeeName", value);
               if (employeeId !== undefined) {
                 handleChange("employeeId", employeeId);
@@ -143,10 +142,6 @@ export const OrderInfoSection: React.FC<OrderInfoSectionProps> = ({
           <EmployeeAutocomplete
             value={formData.sellerEmployeeName || ""}
             onChange={(value, sellerEmployeeId) => {
-              console.log("💼 Seller employee selected:", {
-                value,
-                sellerEmployeeId
-              });
               handleChange("sellerEmployeeName", value);
               if (sellerEmployeeId !== undefined) {
                 handleChange("sellerEmployeeId", sellerEmployeeId);

@@ -1,5 +1,6 @@
 // src/features/orders/components/PreviewPictureGallery.tsx
 
+import { ConfirmModal } from "@components/modals";
 import { orderPreviewService } from "@features/orders";
 import type { OrderPreviewPicture } from "@types";
 import React, { useState } from "react";
@@ -18,6 +19,10 @@ export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
                                                                             }) => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; pictureId: number | null }>({
+    isOpen: false,
+    pictureId: null
+  });
 
   if (pictures.length === 0) {
     return (
@@ -45,22 +50,26 @@ export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
     }
   };
 
-  const handleDelete = async (pictureId: number) => {
-    if (!window.confirm("Are you sure you want to delete this picture?")) {
-      return;
-    }
+  const handleDeleteClick = (pictureId: number) => {
+    setDeleteConfirm({ isOpen: true, pictureId });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirm.pictureId) return;
 
     setIsDeleting(true);
     try {
-      await orderPreviewService.deletePreviewPicture(pictureId);
-      onDeleteSuccess?.(pictureId);
+      await orderPreviewService.deletePreviewPicture(deleteConfirm.pictureId);
+      onDeleteSuccess?.(deleteConfirm.pictureId);
       if (selectedIndex !== null) {
         setSelectedIndex(null);
       }
+      setDeleteConfirm({ isOpen: false, pictureId: null });
     } catch (error) {
       const err =
-        error instanceof Error ? error : new Error("Failed to delete picture");
+        error instanceof Error ? error : new Error("Unknown error");
       onDeleteError?.(err);
+      setDeleteConfirm({ isOpen: false, pictureId: null });
     } finally {
       setIsDeleting(false);
     }
@@ -182,7 +191,7 @@ export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
 
                 <button
                   onClick={() =>
-                    selectedPicture.id && handleDelete(selectedPicture.id)
+                    selectedPicture.id && handleDeleteClick(selectedPicture.id)
                   }
                   disabled={isDeleting}
                   className="p-2 hover:bg-red-100 rounded-lg transition-colors flex items-center gap-2 text-sm text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -195,6 +204,18 @@ export const PreviewPictureGallery: React.FC<PreviewPictureGalleryProps> = ({
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteConfirm.isOpen}
+        title="Xóa ảnh preview"
+        message="Bạn có chắc chắn muốn xóa ảnh này không? Hành động này không thể hoàn tác."
+        confirmText="Xóa"
+        cancelText="Hủy"
+        variant="delete"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteConfirm({ isOpen: false, pictureId: null })}
+      />
     </div>
   );
 };

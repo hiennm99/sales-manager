@@ -26,8 +26,6 @@ export const employeeSalaryService = {
   ): Promise<EmployeeSalaryPeriod[]> {
     const { employee_id, year, month } = filters;
 
-    console.log("📊 Calculating salary for:", { employee_id, year, month });
-
     // Fetch ALL active employees (or specific employee if filtered)
     let employeeQuery = employeesTable()
       .select("id, name, code, base_salary, sales_commission_rate, is_active")
@@ -45,11 +43,8 @@ export const employeeSalaryService = {
     }
 
     if (!employees || employees.length === 0) {
-      console.log("📊 No employees found");
       return [];
     }
-
-    console.log("📊 Found employees:", employees.length);
 
     // Build date filter for commissions
     let commissionQuery = employeeCommissionTable().select("*");
@@ -80,8 +75,6 @@ export const employeeSalaryService = {
       console.error("Error fetching commissions:", commissionsError);
       throw new Error(handleSupabaseError(commissionsError));
     }
-
-    console.log("📊 Found commissions:", commissions?.length || 0);
 
     // Calculate salary for each employee
     const salaryData: EmployeeSalaryPeriod[] = [];
@@ -142,14 +135,6 @@ export const employeeSalaryService = {
         bonus -
         other_costs -
         deduction;
-
-      console.log(`📊 Employee ${employee.name}:`, {
-        artist_commission_total,
-        seller_commission_total,
-        artist_orders_count,
-        seller_orders_count,
-        total_salary
-      });
 
       salaryData.push({
         employee_id: employee.id,

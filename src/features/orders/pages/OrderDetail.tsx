@@ -2,7 +2,7 @@
 
 import { OrderForm, orderService, useOrderStore } from "@features/orders";
 import type { Order, OrderItem } from "@types";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FiAlertTriangle, FiFileText } from "react-icons/fi";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -18,13 +18,11 @@ export const OrderDetail: React.FC = () => {
   const [dbLoading, setDbLoading] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
 
-  const {
-    orders,
-    isLoading,
-    initializeDraftForEdit,
-    updateOrder,
-    deleteOrder
-  } = useOrderStore();
+  const orders = useOrderStore((state) => state.orders);
+  const isLoading = useOrderStore((state) => state.isLoading);
+  const initializeDraftForEdit = useOrderStore((state) => state.initializeDraftForEdit);
+  const updateOrder = useOrderStore((state) => state.updateOrder);
+  const deleteOrder = useOrderStore((state) => state.deleteOrder);
 
   // Find order by ID with proper validation
   let order = orderId
@@ -88,27 +86,25 @@ export const OrderDetail: React.FC = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
+    console.log("🗑️ OrderDetail: Deleting order with ID:", orderId);
     if (!orderId) {
-      console.error("Order ID is missing");
+      console.error("🗑️ OrderDetail: Order ID is missing");
       return;
     }
 
-    // Confirm deletion
-    const confirmed = window.confirm(
-      "Bạn có chắc chắn muốn xóa đơn hàng này? Hành động này không thể hoàn tác."
-    );
-
-    if (!confirmed) return;
-
     try {
+      console.log("🗑️ OrderDetail: Starting delete operation for order:", orderId);
       await deleteOrder(orderId);
+      console.log("🗑️ OrderDetail: Delete successful, navigating to /orders");
       navigate("/orders");
     } catch (error) {
-      console.error("Failed to delete order:", error);
-      throw error; // Let OrderForm handle the error display
+      const errorMessage = error instanceof Error ? error.message : "Không thể xóa đơn hàng";
+      console.error("🗑️ OrderDetail: Failed to delete order:", error);
+      // Show error to user
+      alert(`Lỗi xóa đơn hàng: ${errorMessage}`);
     }
-  };
+  }, [orderId, deleteOrder, navigate]);
 
   // Loading state
   if ((isLoading && !order) || (dbLoading && !order)) {

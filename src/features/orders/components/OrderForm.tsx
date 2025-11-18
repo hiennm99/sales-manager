@@ -17,17 +17,17 @@ import { FiClock, FiDollarSign, FiFileText, FiImage, FiPackage, FiTrash2, FiTruc
 import { useNavigate } from "react-router-dom";
 
 import {
-    CustomerInfoSection,
-    FinancialInputSection,
-    FinancialSummaryCard,
-    OrderHeader,
-    OrderHistorySection,
-    OrderInfoSection,
-    OrderItemsSection,
-    OrderStatusSection,
-    ShippingInfoSection,
-    type Tab,
-    TabNavigation
+  CustomerInfoSection,
+  FinancialInputSection,
+  FinancialSummaryCard,
+  OrderHeader,
+  OrderHistorySection,
+  OrderInfoSection,
+  OrderItemsSection,
+  OrderStatusSection,
+  ShippingInfoSection,
+  type Tab,
+  TabNavigation
 } from "./index";
 
 interface OrderFormProps {
@@ -45,7 +45,6 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                                                       mode,
                                                       onSubmit,
                                                       onDelete,
-                                                      children,
                                                       orderId
                                                     }) => {
   const navigate = useNavigate();
@@ -207,14 +206,6 @@ export const OrderForm: React.FC<OrderFormProps> = ({
     // Skip if employees haven't loaded yet
     if (employees.length === 0) return;
 
-    console.log("🔍 Employee population effect:", {
-      employeesLength: employees.length,
-      employeeId: draftOrder.employeeId,
-      employeeName: draftOrder.employeeName,
-      sellerEmployeeId: draftOrder.sellerEmployeeId,
-      sellerEmployeeName: draftOrder.sellerEmployeeName
-    });
-
     // If we have employee IDs but no names, populate them
     const needsArtistName =
       draftOrder.employeeId &&
@@ -225,12 +216,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
         draftOrder.sellerEmployeeName.trim() === "");
 
     if (needsArtistName || needsSellerName) {
-      console.log("📝 Populating employee names");
       const updatedOrder = populateEmployeeName(draftOrder, employees);
-      console.log("✅ Updated order:", {
-        employeeName: updatedOrder.employeeName,
-        sellerEmployeeName: updatedOrder.sellerEmployeeName
-      });
 
       const hasChanges =
         (updatedOrder.employeeName &&
@@ -239,7 +225,6 @@ export const OrderForm: React.FC<OrderFormProps> = ({
           updatedOrder.sellerEmployeeName !== draftOrder.sellerEmployeeName);
 
       if (hasChanges) {
-        console.log("🔄 Updating draft order with employee names");
         updateDraftOrder(updatedOrder);
       }
     }
@@ -307,12 +292,6 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       name === "employeeName" ||
       name === "sellerEmployeeName"
     ) {
-      console.log("👤 Employee field change:", {
-        name,
-        value,
-        finalValue,
-        type: typeof value
-      });
     }
 
     updateDraftOrder({ [name]: finalValue });
@@ -371,13 +350,6 @@ export const OrderForm: React.FC<OrderFormProps> = ({
 
     // ✅ Sử dụng giá trị từ calculations (realtime)
     const calculatedItemTotalUsd = calculations.itemTotalUsd;
-
-    console.log("📋 Form submission - Draft Order:", {
-      employeeId: draftOrder.employeeId,
-      employeeName: draftOrder.employeeName,
-      sellerEmployeeId: draftOrder.sellerEmployeeId,
-      sellerEmployeeName: draftOrder.sellerEmployeeName
-    });
 
     // 1. Chuẩn bị dữ liệu Order (convert camelCase → snake_case)
     const updatedOrder: Partial<Order> = {
@@ -452,11 +424,29 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       await onSubmit(updatedOrder, updatedOrderItems);
 
       if (mode === "edit") {
-        alert("Đã lưu thay đổi thành công!");
+        confirmModal.showConfirm(
+          {
+            title: "Thành công",
+            message: "Đã lưu thay đổi thành công!",
+            confirmText: "Đóng",
+            variant: "success"
+          },
+          () => {
+          }
+        );
       }
     } catch (error) {
       console.error("Failed to save order:", error);
-      alert("Có lỗi xảy ra. Vui lòng thử lại!");
+      confirmModal.showConfirm(
+        {
+          title: "Lỗi",
+          message: "Có lỗi xảy ra. Vui lòng thử lại!",
+          confirmText: "Đóng",
+          variant: "warning"
+        },
+        () => {
+        }
+      );
     }
   };
 

@@ -1,6 +1,7 @@
 // src/features/employees/pages/EmployeeSalaryList.tsx
 
 import { SalaryEditModal, useEmployeeSalaryStore, useEmployeeStore } from "@features/employees";
+import { alert as showAlert } from "@services";
 import type { EmployeeSalary } from "@types";
 import React, { useEffect, useState } from "react";
 import {
@@ -71,7 +72,7 @@ export const EmployeeSalaryList = () => {
 
   const handleCalculateAll = async () => {
     if (!selectedMonth) {
-      alert("Vui lòng chọn tháng để tính lương");
+      showAlert.warning("Vui lòng chọn tháng để tính lương");
       return;
     }
 
@@ -82,10 +83,10 @@ export const EmployeeSalaryList = () => {
     ) {
       try {
         await calculateAndSaveAll(selectedYear, selectedMonth, 1); // TODO: Get current user ID
-        alert("Đã tính lương thành công!");
+        showAlert.success("Đã tính lương thành công!");
       } catch (error) {
-        alert(
-          "Lỗi khi tính lương: " +
+        showAlert.error(
+          "Được lương khi tính lương: " +
           (error instanceof Error ? error.message : "Unknown error")
         );
       }
@@ -100,10 +101,10 @@ export const EmployeeSalaryList = () => {
     if (confirm("Duyệt lương cho nhân viên này?")) {
       try {
         await approveSalary(employee_id, year, month, 1); // TODO: Get current user ID
-        alert("Đã duyệt lương thành công!");
+        showAlert.success("Đã duyệt lương thành công!");
       } catch (error) {
-        alert(
-          "Lỗi khi duyệt lương: " +
+        showAlert.error(
+          "Được khi duyệt lương: " +
           (error instanceof Error ? error.message : "Unknown error")
         );
       }
@@ -121,10 +122,10 @@ export const EmployeeSalaryList = () => {
 
     try {
       await markAsPaid(employee_id, year, month);
-      alert("Đã đánh dấu đã thanh toán!");
+      showAlert.success("Đã đánh dấu đã thanh toán!");
     } catch (error) {
-      alert(
-        "Lỗi: " + (error instanceof Error ? error.message : "Unknown error")
+      showAlert.error(
+        "Được: " + (error instanceof Error ? error.message : "Unknown error")
       );
     }
   };
@@ -148,7 +149,7 @@ export const EmployeeSalaryList = () => {
 
     // Validate that salary_period_month is not null
     if (editingSalary.salary_period_month === null) {
-      alert("Không thể cập nhật lương cho kỳ lương năm (chưa hỗ trợ)");
+      showAlert.error("Không thể cập nhật lương cho kỳ lương năm (chưa hỗ trợ)");
       return;
     }
 
@@ -159,10 +160,10 @@ export const EmployeeSalaryList = () => {
         editingSalary.salary_period_month,
         updates
       );
-      alert("Đã cập nhật lương thành công!");
+      showAlert.success("Đã cập nhật lương thành công!");
     } catch (error) {
-      alert(
-        "Lỗi khi cập nhật: " +
+      showAlert.error(
+        "Được khi cập nhật: " +
         (error instanceof Error ? error.message : "Unknown error")
       );
       throw error;

@@ -61,7 +61,6 @@ export const NotificationSettingsPage = () => {
     try {
       // In a real app, you would save these to .env or a config file
       // For now, just show success message
-      console.log("Config:", config);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {

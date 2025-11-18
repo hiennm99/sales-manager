@@ -206,11 +206,6 @@ export const orderService = {
     items: OrderItemFormData[],
     financialData: Partial<Order>
   ): Promise<Order> {
-    console.log("🚀 Creating order with data:", {
-      formData,
-      items,
-      financialData
-    });
 
     // Convert financial data to snake_case
     const snakeCaseFinancialData = convertToSnakeCase(
@@ -248,7 +243,6 @@ export const orderService = {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const insertData = cleanInsertData(rawInsertData) as any;
-    console.log("📝 Insert data after cleaning:", insertData);
 
     const { data: orderData, error: orderError } = await ordersTable()
       .insert(insertData)
@@ -261,7 +255,6 @@ export const orderService = {
     }
 
     if (!orderData) throw new Error("Failed to create order");
-    console.log("✅ Order created successfully:", orderData);
 
     // Track order creation in history
     try {
@@ -302,9 +295,6 @@ export const orderService = {
           quantity: item.quantity,
           unit_price_usd: item.unit_price_usd || 0
         }));
-
-      console.log("📦 Inserting order items:", itemsData);
-
       const { error: itemsError } = await orderItemsTable().insert(itemsData);
 
       if (itemsError) {
@@ -314,7 +304,6 @@ export const orderService = {
         throw new Error(handleSupabaseError(itemsError));
       }
 
-      console.log("✅ Order items created successfully");
     }
 
     return mapToOrderRow(orderData);
@@ -403,14 +392,6 @@ export const orderService = {
       Object.assign(updateData, snakeCaseFinancialData);
     }
 
-    console.log("📝 Update data:", updateData);
-    console.log("🔍 Employee IDs types:", {
-      artist_employee_id: updateData.artist_employee_id,
-      artist_type: typeof updateData.artist_employee_id,
-      seller_employee_id: updateData.seller_employee_id,
-      seller_type: typeof updateData.seller_employee_id
-    });
-
     // Ensure numeric fields are actually numbers (Supabase type casting issue workaround)
     if (
       updateData.artist_employee_id !== undefined &&
@@ -427,19 +408,6 @@ export const orderService = {
     if (updateData.shop_id !== undefined && updateData.shop_id !== null) {
       updateData.shop_id = Number(updateData.shop_id);
     }
-
-    console.log("🔧 After Number() conversion:", {
-      artist_employee_id: updateData.artist_employee_id,
-      artist_type: typeof updateData.artist_employee_id,
-      seller_employee_id: updateData.seller_employee_id,
-      seller_type: typeof updateData.seller_employee_id
-    });
-
-    // Log the full update data as JSON to see exactly what Supabase receives
-    console.log(
-      "📤 Full update payload (JSON):",
-      JSON.stringify(updateData, null, 2)
-    );
 
     const { data, error } = await ordersTable()
       .update(updateData)
@@ -491,25 +459,11 @@ export const orderService = {
         deliveryStatuses
       };
 
-      console.log("📊 Lookup data loaded:", {
-        employeesCount: employees.length,
-        generalStatusesCount: generalStatuses.length,
-        customerStatusesCount: customerStatuses.length,
-        factoryStatusesCount: factoryStatuses.length,
-        deliveryStatusesCount: deliveryStatuses.length
-      });
-
       const changes = orderService.getOrderChanges(oldOrder, updatedOrder, lookupData);
-      console.log("📝 Detected changes:", changes);
       if (changes.length > 0) {
         // Get current logged-in user info
         const currentUser = getCurrentUserForService();
         const employeeName = currentUser?.employeeName || undefined;
-
-        console.log("📢 Notification - Current User:", {
-          currentUser,
-          employeeName
-        });
 
         const changeDescription = changes.join("\n");
         await notificationService.sendNotification({
@@ -541,7 +495,6 @@ export const orderService = {
     orderId: number,
     items: OrderItemFormData[]
   ): Promise<OrderItem[]> {
-    console.log("🔄 Updating order items for order:", orderId, items);
 
     // Get existing items for history tracking
     const oldItems = await this.getOrderItems(orderId);
@@ -567,8 +520,6 @@ export const orderService = {
         unit_price_usd: item.unit_price_usd || 0
       }));
 
-      console.log("📦 Inserting updated order items:", itemsData);
-
       const { data: insertedData, error: insertError } = await orderItemsTable()
         .insert(itemsData)
         .select();
@@ -578,7 +529,6 @@ export const orderService = {
         throw new Error(handleSupabaseError(insertError));
       }
 
-      console.log("✅ Order items updated successfully");
       const newItems = insertedData?.map(mapToOrderItemRow) || [];
 
       // Track order items changes in history
@@ -611,24 +561,29 @@ export const orderService = {
    */
   async deleteOrder(id: string): Promise<void> {
     const numericId = parseInt(id, 10);
+    console.log("🗑️ Service: Deleting order with ID:", numericId);
 
     // Delete order items first
+    console.log("🗑️ Service: Deleting order items...");
     const { error: itemsError } = await orderItemsTable()
       .delete()
       .eq("order_id", numericId);
 
     if (itemsError) {
-      console.error("Error deleting order items:", itemsError);
+      console.error("🗑️ Service: Error deleting order items:", itemsError);
       throw new Error(handleSupabaseError(itemsError));
     }
+    console.log("🗑️ Service: Order items deleted successfully");
 
     // Then delete the order
+    console.log("🗑️ Service: Deleting order...");
     const { error } = await ordersTable().delete().eq("id", numericId);
 
     if (error) {
-      console.error("Error deleting order:", error);
+      console.error("🗑️ Service: Error deleting order:", error);
       throw new Error(handleSupabaseError(error));
     }
+    console.log("🗑️ Service: Order deleted successfully");
   },
 
   /**

@@ -51,9 +51,6 @@ export const orderHistoryService = {
       changed_by_employee_id: options?.changedByEmployeeId || null,
       description: options?.description || null
     };
-
-    console.log("📝 Creating order history record:", insertData);
-
     const { data, error } = await supabase
       .from("order_history")
       .insert(insertData)
@@ -67,7 +64,6 @@ export const orderHistoryService = {
 
     if (!data) throw new Error("Failed to create history record");
 
-    console.log("✅ History record created successfully");
     return mapToOrderHistoryRow(data);
   },
 

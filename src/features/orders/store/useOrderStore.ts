@@ -416,15 +416,19 @@ export const useOrderStore = create<OrderStore>()(
       },
 
       deleteOrder: async (id: string) => {
+        console.log("🗑️ Store: Deleting order with ID:", id);
         set({ isLoading: true, error: null });
         try {
+          console.log("🗑️ Store: Calling orderService.deleteOrder...");
           await orderService.deleteOrder(id);
+          console.log("🗑️ Store: Delete successful, updating state...");
           const numericId = parseInt(id, 10);
 
           set((state) => {
             const newOrderItems = { ...state.orderItems };
             delete newOrderItems[numericId];
 
+            console.log("🗑️ Store: Removed order", numericId, "from state");
             return {
               orders: state.orders.filter((o) => o.id !== numericId),
               orderItems: newOrderItems,
@@ -435,9 +439,11 @@ export const useOrderStore = create<OrderStore>()(
               isLoading: false
             };
           });
+          console.log("🗑️ Store: Delete completed successfully");
         } catch (error) {
           const errorMessage =
             error instanceof Error ? error.message : "Failed to delete order";
+          console.error("🗑️ Store: Delete failed:", errorMessage, error);
           set({ error: errorMessage, isLoading: false });
           throw error;
         }

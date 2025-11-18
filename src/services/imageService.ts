@@ -153,11 +153,6 @@ export const imageService = {
                   }
                 );
 
-                console.log("✅ Image converted to WebP:", {
-                  original: `${(file.size / 1024).toFixed(2)}KB`,
-                  converted: `${(webpFile.size / 1024).toFixed(2)}KB`,
-                  dimensions: `${width}x${height}`
-                });
 
                 resolve(webpFile);
               },
@@ -257,14 +252,6 @@ export const imageService = {
                     lastModified: Date.now()
                   }
                 );
-
-                console.log("✅ Image converted:", {
-                  format,
-                  original: `${(file.size / 1024).toFixed(2)}KB`,
-                  converted: `${(convertedFile.size / 1024).toFixed(2)}KB`,
-                  dimensions: `${width}x${height}`
-                });
-
                 resolve(convertedFile);
               },
               mimeType,

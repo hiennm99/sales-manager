@@ -43,14 +43,6 @@ export const useUserStore = create<UserStoreState>()(
         const updateCurrentUser = () => {
           const authUser = useAuthStore.getState().user;
           const employee = useEmployeeStore.getState().employee;
-
-          console.log(" UserStore updateCurrentUser:", {
-            authUser: authUser?.id,
-            authEmail: authUser?.email,
-            employeeId: employee?.id,
-            employeeName: employee?.name
-          });
-
           if (authUser) {
             set({
               currentUser: {

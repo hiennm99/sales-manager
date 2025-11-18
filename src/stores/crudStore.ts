@@ -69,10 +69,8 @@ export function createCRUDStore<T extends { id: string | number }, FormData>(
         fetchItems: async () => {
           set({ isLoading: true, error: null });
           try {
-            console.log(`📖 Store: Fetching all ${storeName} items`);
             const items = await service.getAll();
             set({ items, isLoading: false });
-            console.log(`✅ Store: Fetched ${items.length} items`);
           } catch (error) {
             const errorMessage =
               error instanceof Error
@@ -92,7 +90,6 @@ export function createCRUDStore<T extends { id: string | number }, FormData>(
         createItem: async (data: FormData) => {
           set({ isLoading: true, error: null });
           try {
-            console.log(`➕ Store: Creating new ${storeName} item`);
             const newItem = await service.create(data);
 
             set((state) => ({
@@ -101,7 +98,6 @@ export function createCRUDStore<T extends { id: string | number }, FormData>(
               isLoading: false
             }));
 
-            console.log(`✅ Store: Item created`);
             return newItem;
           } catch (error) {
             const errorMessage =
@@ -118,7 +114,6 @@ export function createCRUDStore<T extends { id: string | number }, FormData>(
         updateItem: async (id: string | number, data: Partial<FormData>) => {
           set({ isLoading: true, error: null });
           try {
-            console.log(`✏️ Store: Updating ${storeName} item ${id}`);
             const updatedItem = await service.update(id, data);
 
             if (!updatedItem) throw new Error(`${storeName} not found`);
@@ -134,7 +129,6 @@ export function createCRUDStore<T extends { id: string | number }, FormData>(
               isLoading: false
             }));
 
-            console.log(`✅ Store: Item updated`);
             return updatedItem;
           } catch (error) {
             const errorMessage =
@@ -151,7 +145,6 @@ export function createCRUDStore<T extends { id: string | number }, FormData>(
         deleteItem: async (id: string | number) => {
           set({ isLoading: true, error: null });
           try {
-            console.log(`🗑️ Store: Deleting ${storeName} item ${id}`);
             await service.delete(id);
 
             set((state) => ({
@@ -161,7 +154,6 @@ export function createCRUDStore<T extends { id: string | number }, FormData>(
               isLoading: false
             }));
 
-            console.log(`✅ Store: Item deleted`);
           } catch (error) {
             const errorMessage =
               error instanceof Error
@@ -177,10 +169,8 @@ export function createCRUDStore<T extends { id: string | number }, FormData>(
         searchItems: async (query: string) => {
           set({ isLoading: true, error: null });
           try {
-            console.log(`🔎 Store: Searching ${storeName} for: "${query}"`);
             const items = await service.search(query);
             set({ items, isLoading: false });
-            console.log(`✅ Store: Found ${items.length} items`);
           } catch (error) {
             const errorMessage =
               error instanceof Error
@@ -195,9 +185,6 @@ export function createCRUDStore<T extends { id: string | number }, FormData>(
         bulkDeleteItems: async (ids: (string | number)[]) => {
           set({ isLoading: true, error: null });
           try {
-            console.log(
-              `🗑️ Store: Bulk deleting ${ids.length} ${storeName} items`
-            );
             await service.bulkDelete(ids);
 
             set((state) => ({
@@ -209,7 +196,6 @@ export function createCRUDStore<T extends { id: string | number }, FormData>(
               isLoading: false
             }));
 
-            console.log(`✅ Store: Bulk delete completed`);
           } catch (error) {
             const errorMessage =
               error instanceof Error
@@ -228,9 +214,7 @@ export function createCRUDStore<T extends { id: string | number }, FormData>(
         ) => {
           set({ isLoading: true, error: null });
           try {
-            console.log(
-              `🔄 Store: Bulk updating status for ${ids.length} ${storeName} items`
-            );
+
             await service.bulkUpdateStatus(ids, is_active);
 
             set((state) => ({
@@ -240,7 +224,6 @@ export function createCRUDStore<T extends { id: string | number }, FormData>(
               isLoading: false
             }));
 
-            console.log(`✅ Store: Bulk status update completed`);
           } catch (error) {
             const errorMessage =
               error instanceof Error

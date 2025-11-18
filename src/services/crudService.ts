@@ -64,7 +64,6 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
      */
     async getAll(): Promise<T[]> {
       try {
-        console.log(`📖 Fetching all records from ${tableName}`);
         const { data, error } = await supabase
           .from(tableName as any)
           .select("*")
@@ -72,9 +71,6 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
 
         if (error) handleError(error, `${tableName}.getAll()`);
 
-        console.log(
-          `✅ Fetched ${data?.length || 0} records from ${tableName}`
-        );
         return (data || []) as unknown as T[];
       } catch (error) {
         console.error(`Error in getAll:`, error);
@@ -87,7 +83,6 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
      */
     async getById(id: string | number): Promise<T | null> {
       try {
-        console.log(`🔍 Fetching ${tableName} with ${idColumn}=${id}`);
         const { data, error } = await supabase
           .from(tableName as any)
           .select("*")
@@ -97,13 +92,11 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
         if (error) {
           if (error.code === "PGRST116") {
             // No rows found
-            console.log(`ℹ️ No record found with ${idColumn}=${id}`);
             return null;
           }
           handleError(error, `${tableName}.getById(${id})`);
         }
 
-        console.log(`✅ Record found:`, data);
         return (data || null) as unknown as T | null;
       } catch (error) {
         console.error(`Error in getById:`, error);
@@ -116,7 +109,6 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
      */
     async create(data: FormData): Promise<T> {
       try {
-        console.log(`➕ Creating new ${tableName} record:`, data);
         const row = mappers.toRow(data);
 
         const { data: created, error } = await supabase
@@ -127,7 +119,6 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
 
         if (error) handleError(error, `${tableName}.create()`);
 
-        console.log(`✅ Record created:`, created);
         return created as unknown as T;
       } catch (error) {
         console.error(`Error in create:`, error);
@@ -140,7 +131,6 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
      */
     async update(id: string | number, data: Partial<FormData>): Promise<T> {
       try {
-        console.log(`✏️ Updating ${tableName} with ${idColumn}=${id}:`, data);
         const row = mappers.toRow(data as FormData);
 
         const { data: updated, error } = await supabase
@@ -152,7 +142,6 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
 
         if (error) handleError(error, `${tableName}.update(${id})`);
 
-        console.log(`✅ Record updated:`, updated);
         return updated as unknown as T;
       } catch (error) {
         console.error(`Error in update:`, error);
@@ -165,12 +154,10 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
      */
     async delete(id: string | number): Promise<void> {
       try {
-        console.log(`🗑️ Deleting ${tableName} with ${idColumn}=${id}`);
         const { error } = await supabase.from(tableName as any).delete().eq(idColumn, id);
 
         if (error) handleError(error, `${tableName}.delete(${id})`);
 
-        console.log(`✅ Record deleted`);
       } catch (error) {
         console.error(`Error in delete:`, error);
         throw error;
@@ -186,8 +173,6 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
           console.warn(`⚠️ No search columns configured for ${tableName}`);
           return [];
         }
-
-        console.log(`🔎 Searching ${tableName} for: "${query}"`);
 
         // Build OR conditions for all search columns
         let queryBuilder = supabase.from(tableName as any).select("*");
@@ -207,7 +192,6 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
 
         if (error) handleError(error, `${tableName}.search("${query}")`);
 
-        console.log(`✅ Found ${data?.length || 0} records`);
         return (data || []) as unknown as T[];
       } catch (error) {
         console.error(`Error in search:`, error);
@@ -220,12 +204,10 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
      */
     async bulkDelete(ids: (string | number)[]): Promise<void> {
       try {
-        console.log(`🗑️ Bulk deleting ${ids.length} records from ${tableName}`);
         const { error } = await supabase.from(tableName as any).delete().in(idColumn, ids);
 
         if (error) handleError(error, `${tableName}.bulkDelete()`);
 
-        console.log(`✅ Bulk delete completed`);
       } catch (error) {
         console.error(`Error in bulkDelete:`, error);
         throw error;
@@ -240,9 +222,6 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
       is_active: boolean
     ): Promise<void> {
       try {
-        console.log(
-          `🔄 Bulk updating status for ${ids.length} records in ${tableName}`
-        );
         const { error } = await supabase
           .from(tableName as any)
           .update({ is_active })
@@ -250,7 +229,6 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
 
         if (error) handleError(error, `${tableName}.bulkUpdateStatus()`);
 
-        console.log(`✅ Bulk status update completed`);
       } catch (error) {
         console.error(`Error in bulkUpdateStatus:`, error);
         throw error;
@@ -284,14 +262,12 @@ export function createCRUDService<T extends { id: string | number }, FormData>(
      */
     async count(): Promise<number> {
       try {
-        console.log(`📊 Counting records in ${tableName}`);
         const { count, error } = await supabase
           .from(tableName as any)
           .select("*", { count: "exact", head: true });
 
         if (error) handleError(error, `${tableName}.count()`);
 
-        console.log(`✅ Total records: ${count}`);
         return count || 0;
       } catch (error) {
         console.error(`Error in count:`, error);

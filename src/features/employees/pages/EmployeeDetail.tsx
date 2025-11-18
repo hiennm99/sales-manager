@@ -1,8 +1,9 @@
 // src/features/employees/pages/EmployeeDetail.tsx
 
 import { EmployeeCard, useEmployeeStore } from "@features/employees";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { ConfirmModal } from "../../../components/modals/ConfirmModal";
 
 export const EmployeeDetail: React.FC = () => {
   const { employeeId } = useParams<{ employeeId: string }>();
@@ -23,17 +24,30 @@ export const EmployeeDetail: React.FC = () => {
     navigate(`/employees/${employeeId}/edit`);
   };
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleDelete = async () => {
     if (!employee) return;
+    setShowDeleteModal(true);
+  };
 
-    if (window.confirm("Bạn có chắc chắn muốn xóa nhân viên này?")) {
-      try {
-        await deleteEmployee(Number(employeeId));
-        navigate("/employees");
-      } catch (error) {
-        console.error("Failed to delete employee:", error);
-      }
+  const confirmDelete = async () => {
+    if (!employee) return;
+    
+    try {
+      setIsDeleting(true);
+      await deleteEmployee(Number(employeeId));
+      navigate("/employees");
+    } catch (error) {
+      console.error("Failed to delete employee:", error);
+      setIsDeleting(false);
+      setShowDeleteModal(false);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
   };
 
   const handleBack = () => {
@@ -126,6 +140,20 @@ export const EmployeeDetail: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        variant="delete"
+        title="Xác nhận xóa nhân viên"
+        message="Bạn có chắc chắn muốn xóa nhân viên này? Hành động này không thể hoàn tác."
+        confirmText="Xóa"
+        cancelText="Hủy"
+        isLoading={isDeleting}
+      />
     </div>
   );
 };

@@ -76,7 +76,6 @@ export const utilityService = {
 
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
-        console.log(`🔄 Attempt ${attempt}/${maxAttempts}`);
         return await fn();
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
@@ -84,7 +83,6 @@ export const utilityService = {
 
         if (attempt < maxAttempts) {
           const waitTime = delayMs * Math.pow(backoffMultiplier, attempt - 1);
-          console.log(`⏳ Waiting ${waitTime}ms before retry...`);
           await this.delay(waitTime);
         }
       }
@@ -458,7 +456,6 @@ export const utilityService = {
   async copyToClipboard(text: string): Promise<void> {
     try {
       await navigator.clipboard.writeText(text);
-      console.log("✅ Copied to clipboard");
     } catch (error) {
       console.error("Error copying to clipboard:", error);
       throw error;
@@ -471,7 +468,6 @@ export const utilityService = {
   async readFromClipboard(): Promise<string> {
     try {
       const text = await navigator.clipboard.readText();
-      console.log("✅ Read from clipboard");
       return text;
     } catch (error) {
       console.error("Error reading from clipboard:", error);

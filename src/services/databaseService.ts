@@ -54,7 +54,6 @@ export const databaseService = {
     idColumn: string = "id"
   ): Promise<number | null> {
     try {
-      console.log("🔍 Getting latest ID:", { tableName, idColumn });
 
       const { data, error } = await supabase
         .from(tableName)
@@ -66,14 +65,12 @@ export const databaseService = {
       if (error) {
         if (error.code === "PGRST116") {
           // No rows found
-          console.log(`ℹ️ No records found in table ${tableName}`);
           return null;
         }
         handleDatabaseError(error, `getLatestId(${tableName}, ${idColumn})`);
       }
 
       const latestId = data?.[idColumn as keyof typeof data] as number | null;
-      console.log("✅ Latest ID retrieved:", latestId);
       return latestId;
     } catch (error) {
       console.error("Error in getLatestId:", error);
@@ -91,7 +88,6 @@ export const databaseService = {
     try {
       const latestId = await this.getLatestId(tableName, idColumn);
       const nextId = (latestId ?? 0) + 1;
-      console.log("✅ Next ID calculated:", nextId);
       return nextId;
     } catch (error) {
       console.error("Error in getNextId:", error);
@@ -107,8 +103,6 @@ export const databaseService = {
     filter?: Record<string, unknown>
   ): Promise<number> {
     try {
-      console.log("🔍 Getting record count:", { tableName, filter });
-
       let query = supabase
         .from(tableName)
         .select("*", { count: "exact", head: true });
@@ -125,7 +119,6 @@ export const databaseService = {
         throw new Error(handleSupabaseError(error));
       }
 
-      console.log("✅ Record count retrieved:", count);
       return count ?? 0;
     } catch (error) {
       console.error("Error in getRecordCount:", error);
@@ -141,7 +134,6 @@ export const databaseService = {
     filter: Record<string, unknown>
   ): Promise<boolean> {
     try {
-      console.log("🔍 Checking if record exists:", { tableName, filter });
 
       let query = supabase
         .from(tableName)
@@ -158,7 +150,6 @@ export const databaseService = {
       }
 
       const exists = (count ?? 0) > 0;
-      console.log("✅ Record existence check:", exists);
       return exists;
     } catch (error) {
       console.error("Error in recordExists:", error);
@@ -178,8 +169,6 @@ export const databaseService = {
     filter?: Record<string, unknown>
   ): Promise<number | null> {
     try {
-      console.log(`🔍 Getting max ${columnName} from ${tableName}`, { filter });
-
       let query = supabase
         .from(tableName)
         .select(columnName)
@@ -203,7 +192,6 @@ export const databaseService = {
       }
 
       const maxValue = data?.[columnName as keyof typeof data] as number | null;
-      console.log("✅ Max column value retrieved:", maxValue);
       return maxValue;
     } catch (error) {
       console.error(`Error in getMaxColumnValue:`, error);
@@ -223,7 +211,6 @@ export const databaseService = {
     filter?: Record<string, unknown>
   ): Promise<number | null> {
     try {
-      console.log(`🔍 Getting min ${columnName} from ${tableName}`, { filter });
 
       let query = supabase
         .from(tableName)
@@ -248,7 +235,6 @@ export const databaseService = {
       }
 
       const minValue = data?.[columnName as keyof typeof data] as number | null;
-      console.log("✅ Min column value retrieved:", minValue);
       return minValue;
     } catch (error) {
       console.error("Error in getMinColumnValue:", error);
@@ -265,11 +251,6 @@ export const databaseService = {
     limit?: number
   ): Promise<unknown[]> {
     try {
-      console.log("🔍 Getting distinct values:", {
-        tableName,
-        columnName,
-        limit
-      });
 
       let query = supabase
         .from(tableName)
@@ -291,7 +272,6 @@ export const databaseService = {
           ?.map((row) => row[columnName as keyof typeof row])
           .filter((value, index, self) => self.indexOf(value) === index) ?? [];
 
-      console.log("✅ Distinct values retrieved:", distinctValues.length);
       return distinctValues;
     } catch (error) {
       console.error("Error in getDistinctValues:", error);
@@ -311,10 +291,7 @@ export const databaseService = {
         return [];
       }
 
-      console.log("📝 Batch inserting records:", {
-        tableName,
-        count: records.length
-      });
+
 
       const { data, error } = await supabase
         .from(tableName)
@@ -325,7 +302,6 @@ export const databaseService = {
         throw new Error(handleSupabaseError(error));
       }
 
-      console.log("✅ Batch insert completed:", data?.length);
       return (data as unknown as Database["public"]["Tables"][N]["Row"][]) ?? [];
     } catch (error) {
       console.error("Error in batchInsert:", error);
@@ -345,11 +321,6 @@ export const databaseService = {
         return [];
       }
 
-      console.log("✏️ Batch updating records:", {
-        tableName,
-        count: records.length
-      });
-
       const updates = records.map((record) => {
         const { id, ...data } = record;
         return { id, ...data };
@@ -364,7 +335,6 @@ export const databaseService = {
         throw new Error(handleSupabaseError(error));
       }
 
-      console.log("✅ Batch update completed:", data?.length);
       return (data as unknown as Database["public"]["Tables"][N]["Row"][]) ?? [];
     } catch (error) {
       console.error("Error in batchUpdate:", error);
@@ -384,18 +354,12 @@ export const databaseService = {
         return;
       }
 
-      console.log("🗑️ Batch deleting records:", {
-        tableName,
-        count: ids.length
-      });
-
       const { error } = await supabase.from(tableName).delete().in("id" as any, ids);
 
       if (error) {
         throw new Error(handleSupabaseError(error));
       }
 
-      console.log("✅ Batch delete completed");
     } catch (error) {
       console.error("Error in batchDelete:", error);
       throw error;
@@ -407,7 +371,6 @@ export const databaseService = {
    */
   async truncateTable<T extends TableName>(tableName: T): Promise<void> {
     try {
-      console.log("⚠️ Truncating table:", tableName);
 
       const { error } = await supabase.from(tableName).delete().gt("id", 0);
 
@@ -415,7 +378,6 @@ export const databaseService = {
         throw new Error(handleSupabaseError(error));
       }
 
-      console.log("✅ Table truncated");
     } catch (error) {
       console.error("Error in truncateTable:", error);
       throw error;

@@ -239,7 +239,6 @@ export const EmployeeList: React.FC = () => {
                             )
                           ) {
                             // TODO: Implement delete
-                            console.log("Delete employee:", employee.id);
                           }
                         }}
                         className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"

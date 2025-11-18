@@ -65,6 +65,10 @@ export const OrderList: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [viewMode] = useState<"table" | "card">("table");
+  const [errorModal, setErrorModal] = useState<{ isOpen: boolean; message: string }>({
+    isOpen: false,
+    message: ""
+  });
 
   useEffect(() => {
     fetchAllStatuses();
@@ -225,7 +229,10 @@ export const OrderList: React.FC = () => {
         setDeleteTarget(null);
       } catch (error) {
         console.error("Failed to delete order:", error);
-        alert("Có lỗi xảy ra khi xóa đơn hàng!");
+        setErrorModal({
+          isOpen: true,
+          message: "Có lỗi xảy ra khi xóa đơn hàng!"
+        });
       }
     }
   };
@@ -454,6 +461,17 @@ export const OrderList: React.FC = () => {
               : "Xóa"
           }
           cancelText="Hủy"
+        />
+
+        {/* Error Modal */}
+        <ConfirmModal
+          isOpen={errorModal.isOpen}
+          title="Lỗi"
+          message={errorModal.message}
+          confirmText="Đóng"
+          variant="warning"
+          onConfirm={() => setErrorModal({ isOpen: false, message: "" })}
+          onCancel={() => setErrorModal({ isOpen: false, message: "" })}
         />
       </div>
     </div>

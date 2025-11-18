@@ -254,7 +254,6 @@ export const StatusList: React.FC = () => {
                                 `Bạn có chắc muốn xóa trạng thái "${status.name_vi}"?`
                               )
                             ) {
-                              console.log("Delete status:", status.id);
                             }
                           }}
                           className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"

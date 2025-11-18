@@ -12,15 +12,11 @@ function App() {
 
   // Initialize auth, user stores, and fetch exchange rate on app mount
   useEffect(() => {
-    console.log("[App] Mounting, initializing auth, user stores, and fetching exchange rate...");
     initialize();
     initializeUser();
     useExchangeRateStore.getState().fetchExchangeRate();
   }, [initialize, initializeUser]);
-
-  const exchangeRate = useExchangeRateStore((state) => state.exchangeRate);
-  console.log("[App] Current exchange rate:", exchangeRate);
-
+  
   return <RouterProvider router={router} />;
 }
 

@@ -135,7 +135,6 @@ export const StatusCreate: React.FC = () => {
     setIsSubmitting(true);
     try {
       // TODO: Implement create/update status API
-      console.log("Save status:", formData);
       alert("Chức năng lưu trạng thái sẽ được cập nhật sau");
       navigate("/statuses");
     } catch (error) {

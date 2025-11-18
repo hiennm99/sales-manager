@@ -22,10 +22,7 @@ interface ExchangeRateState {
 export const useExchangeRateStore = create<ExchangeRateState>()(
   persist(
     (set) => {
-      console.log(
-        "[Store] Initial DEFAULTS.EXCHANGE_RATE:",
-        DEFAULTS.EXCHANGE_RATE
-      );
+
       return {
         // Initial state
         exchangeRate: DEFAULTS.EXCHANGE_RATE,
@@ -39,11 +36,9 @@ export const useExchangeRateStore = create<ExchangeRateState>()(
 
         // Fetch from API
         fetchExchangeRate: async () => {
-          console.log("[Store] fetchExchangeRate called");
           set({ isLoading: true, error: null });
           try {
             const rate = await exchangeRateService.getExchangeRate();
-            console.log("[Store] Exchange rate fetched:", rate);
             set({
               exchangeRate: rate,
               lastUpdated: Date.now(),
@@ -72,13 +67,7 @@ export const useExchangeRateStore = create<ExchangeRateState>()(
       partialize: (state) => ({
         exchangeRate: state.exchangeRate,
         lastUpdated: state.lastUpdated
-      }),
-      onRehydrateStorage: () => (state) => {
-        console.log(
-          "[Store] Rehydrated from localStorage:",
-          state?.exchangeRate
-        );
-      }
+      })
     }
   )
 );

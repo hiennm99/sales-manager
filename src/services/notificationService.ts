@@ -88,7 +88,6 @@ class NotificationService {
         throw new Error(`Telegram API failed: ${error}`);
       }
 
-      console.log("✅ Telegram notification sent");
     } catch (error) {
       console.error("❌ Failed to send Telegram notification:", error);
       throw error;

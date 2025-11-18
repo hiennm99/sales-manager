@@ -37,13 +37,6 @@ export const storageService = {
         upsert = false
       } = options;
 
-      console.log("📤 Uploading file:", {
-        bucket,
-        path,
-        size: file.size,
-        type: file.type
-      });
-
       // Upload file to Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from(bucket)
@@ -65,10 +58,6 @@ export const storageService = {
       const { data: urlData } = supabase.storage
         .from(bucket)
         .getPublicUrl(path);
-
-      console.log("✅ File uploaded successfully:", {
-        publicUrl: urlData.publicUrl
-      });
 
       return {
         path: uploadData.path,
@@ -119,7 +108,6 @@ export const storageService = {
    */
   async deleteFile(bucket: string, path: string): Promise<void> {
     try {
-      console.log("🗑️ Deleting file:", { bucket, path });
 
       const { error } = await supabase.storage.from(bucket).remove([path]);
 
@@ -128,7 +116,6 @@ export const storageService = {
         throw new Error(`Failed to delete file: ${error.message}`);
       }
 
-      console.log("✅ File deleted successfully");
     } catch (error) {
       console.error("Error in deleteFile:", error);
       throw error;
@@ -142,10 +129,6 @@ export const storageService = {
     if (paths.length === 0) return;
 
     try {
-      console.log("🗑️ Deleting multiple files:", {
-        bucket,
-        count: paths.length
-      });
 
       const { error } = await supabase.storage.from(bucket).remove(paths);
 
@@ -154,7 +137,6 @@ export const storageService = {
         throw new Error(`Failed to delete files: ${error.message}`);
       }
 
-      console.log("✅ Files deleted successfully");
     } catch (error) {
       console.error("Error in deleteMultipleFiles:", error);
       throw error;
@@ -166,7 +148,6 @@ export const storageService = {
    */
   async downloadFile(publicUrl: string): Promise<Blob> {
     try {
-      console.log("📥 Downloading file:", { url: publicUrl });
 
       const response = await fetch(publicUrl);
       if (!response.ok) {
@@ -174,7 +155,6 @@ export const storageService = {
       }
 
       const blob = await response.blob();
-      console.log("✅ File downloaded successfully");
       return blob;
     } catch (error) {
       console.error("Error in downloadFile:", error);

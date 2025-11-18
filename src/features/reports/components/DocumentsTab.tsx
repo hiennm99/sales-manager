@@ -38,7 +38,6 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({ report }) => {
     setCsvFiles(files);
     // TODO: Save to database via API
     // For now, we'll stores in notes field as JSON
-    console.log("CSV files updated:", files);
   };
 
   return (

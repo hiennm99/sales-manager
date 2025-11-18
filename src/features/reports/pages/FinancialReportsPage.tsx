@@ -78,7 +78,6 @@ export const FinancialReportsPage: React.FC = () => {
       setAllReports(reports);
     } catch (error) {
       console.error("Error loading reports:", error);
-      alert("Lỗi khi tải danh sách báo cáo");
     } finally {
       setIsLoading(false);
     }
@@ -119,7 +118,6 @@ export const FinancialReportsPage: React.FC = () => {
       await loadReports();
     } catch (error) {
       console.error("Error creating report:", error);
-      alert("Lỗi khi tạo báo cáo. Vui lòng thử lại.");
     }
   };
 
@@ -137,7 +135,6 @@ export const FinancialReportsPage: React.FC = () => {
           marketingFees: currentReport.marketing_fees,
           status: "draft"
         });
-        alert("Đã lưu báo cáo thành công!");
         await loadReports();
         setViewMode("list");
         setCurrentReport(null);
@@ -232,7 +229,6 @@ export const FinancialReportsPage: React.FC = () => {
           }
         }
 
-        alert("Đã lưu báo cáo thành công!");
         await loadReports();
         setViewMode("list");
         setCurrentReport(null);
@@ -240,7 +236,6 @@ export const FinancialReportsPage: React.FC = () => {
       }
     } catch (error) {
       console.error("Error saving report:", error);
-      alert("Lỗi khi lưu báo cáo. Vui lòng thử lại.");
     } finally {
       setIsSaving(false);
     }
@@ -277,10 +272,8 @@ export const FinancialReportsPage: React.FC = () => {
         setCurrentReport(null);
         setViewMode("list");
       }
-      alert("Đã xóa báo cáo thành công!");
     } catch (error) {
       console.error("Error deleting report:", error);
-      alert("Lỗi khi xóa báo cáo");
     }
   };
 
@@ -291,10 +284,8 @@ export const FinancialReportsPage: React.FC = () => {
       if (currentReport?.id === id) {
         setCurrentReport(updatedReport);
       }
-      alert("Báo cáo đã được duyệt!");
     } catch (error) {
       console.error("Error approving report:", error);
-      alert("Lỗi khi duyệt báo cáo");
     }
   };
 
@@ -305,10 +296,8 @@ export const FinancialReportsPage: React.FC = () => {
       if (currentReport?.id === id) {
         setCurrentReport(updatedReport);
       }
-      alert("Báo cáo đã được hoàn tất!");
     } catch (error) {
       console.error("Error finalizing report:", error);
-      alert("Lỗi khi hoàn tất báo cáo");
     }
   };
 
@@ -482,10 +471,8 @@ export const FinancialReportsPage: React.FC = () => {
                         ]);
                         setMoneyOnEtsyData([...moneyOnEtsyData, ...saved]);
                         // Success feedback (optional)
-                        console.log("Data saved successfully");
                       } catch (error) {
                         console.error("Error saving money on etsy:", error);
-                        alert("Lỗi khi lưu dữ liệu");
                       }
                     }}
                   />
@@ -538,7 +525,6 @@ export const FinancialReportsPage: React.FC = () => {
                         setIncomingMoneyData([...incomingMoneyData, ...saved]);
                       } catch (error) {
                         console.error("Error saving incoming money:", error);
-                        alert("Lỗi khi lưu dữ liệu");
                       }
                     }}
                   />
@@ -604,7 +590,6 @@ export const FinancialReportsPage: React.FC = () => {
                         setReceivedMoneyData([...receivedMoneyData, ...saved]);
                       } catch (error) {
                         console.error("Error saving received money:", error);
-                        alert("Lỗi khi lưu dữ liệu");
                       }
                     }}
                   />
@@ -669,7 +654,6 @@ export const FinancialReportsPage: React.FC = () => {
                         setExpensesData([...expensesData, ...saved]);
                       } catch (error) {
                         console.error("Error saving expense:", error);
-                        alert("Lỗi khi lưu dữ liệu");
                       }
                     }}
                   />
@@ -725,7 +709,6 @@ export const FinancialReportsPage: React.FC = () => {
                         ]);
                       } catch (error) {
                         console.error("Error saving transferred money:", error);
-                        alert("Lỗi khi lưu dữ liệu");
                       }
                     }}
                   />

@@ -205,7 +205,6 @@ export const ShopListAdmin: React.FC = () => {
                             )
                           ) {
                             // TODO: Implement delete
-                            console.log("Delete shop:", shop.id);
                           }
                         }}
                         className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"

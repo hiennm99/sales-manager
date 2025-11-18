@@ -22,18 +22,14 @@ class ExchangeRateService {
    */
   async getExchangeRate(): Promise<number> {
     try {
-      console.log("[ExchangeRate] Getting exchange rate...");
       // Check if cache is still valid
       const cachedRate = this.getCachedRate();
       if (cachedRate !== null) {
-        console.log("[ExchangeRate] Using cached rate:", cachedRate);
         return cachedRate;
       }
 
       // Fetch from API
-      console.log("[ExchangeRate] Fetching from API...");
       const rate = await this.fetchFromAPI();
-      console.log("[ExchangeRate] Got rate from API:", rate);
       this.setCachedRate(rate);
       return rate;
     } catch (error) {
@@ -61,7 +57,6 @@ class ExchangeRateService {
    * Fetch exchange rate from external API
    */
   private async fetchFromAPI(): Promise<number> {
-    console.log("[ExchangeRate] Calling API:", API_ENDPOINTS.EXCHANGE_RATE_API);
     const response = await fetch(API_ENDPOINTS.EXCHANGE_RATE_API);
 
     if (!response.ok) {
@@ -69,7 +64,6 @@ class ExchangeRateService {
     }
 
     const data: ExchangeRateResponse = await response.json();
-    console.log("[ExchangeRate] API response:", data);
     const rate = data.rates?.VND;
 
     if (!rate || typeof rate !== "number") {
