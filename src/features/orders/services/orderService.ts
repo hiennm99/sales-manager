@@ -4,7 +4,7 @@ import { employeeService } from "@features/employees";
 import { trackOrderChanges, trackOrderCreated, trackOrderItemsUpdate, trackStatusChange } from "@features/orders";
 import { statusServiceApi } from "@features/statuses";
 import { cleanInsertData, handleSupabaseError, supabase } from "@lib";
-import { databaseService, notificationService } from "@services";
+import { databaseService, NotificationService } from "@services";
 import { getCurrentUserForService } from "@stores";
 import type { Database, Order, OrderFormData, OrderItem, OrderItemFormData } from "@types";
 import { detectOrderChanges, formatChangesForNotification, type LookupData } from "@utils";
@@ -268,17 +268,9 @@ export const orderService = {
 
     // Send notification
     try {
-      await notificationService.sendNotification({
-        type: "order_created",
-        title: "🎉 Đơn hàng mới",
-        description: `Đơn hàng #${orderData.order_id} từ ${formData.customerName} vừa được tạo`,
-        orderId: orderData.id,
-        orderCode: orderData.order_id,
-        data: {
-          customer: formData.customerName,
-          amount: orderData.item_total_vnd
-        }
-      });
+      NotificationService.success(
+        `🎉 Đơn hàng #${orderData.order_id} từ ${formData.customerName} vừa được tạo`
+      );
     } catch (error) {
       console.error("Failed to send notification:", error);
       // Don't fail the order creation if notification fails
@@ -461,24 +453,10 @@ export const orderService = {
 
       const changes = orderService.getOrderChanges(oldOrder, updatedOrder, lookupData);
       if (changes.length > 0) {
-        // Get current logged-in user info
-        const currentUser = getCurrentUserForService();
-        const employeeName = currentUser?.employeeName || undefined;
-
         const changeDescription = changes.join("\n");
-        await notificationService.sendNotification({
-          type: "order_updated",
-          title: "📝 Đơn hàng được cập nhật",
-          description: `Đơn hàng #${updatedOrder.order_id}:\n${changeDescription}`,
-          orderId: updatedOrder.id,
-          orderCode: updatedOrder.order_id,
-          data: {
-            customer: updatedOrder.customer_name,
-            amount: updatedOrder.item_total_vnd,
-            changes: changes,
-            updatedBy: employeeName
-          }
-        });
+        NotificationService.info(
+          `📝 Đơn hàng #${updatedOrder.order_id}:\n${changeDescription}`
+        );
       }
     } catch (error) {
       console.error("Failed to send notification:", error);

@@ -290,7 +290,7 @@ export const trackOrderChanges = async (
 };
 
 /**
- * Helper to track order items changes
+ * Helper to track order items changes - logs each field change separately
  */
 export const trackOrderItemsUpdate = async (
   orderId: number,
@@ -299,35 +299,129 @@ export const trackOrderItemsUpdate = async (
   employeeId?: number
 ): Promise<void> => {
   try {
-    // Create a summary of the changes
+    // Check if items actually changed
+    const itemsChanged = oldItems.length !== newItems.length ||
+      oldItems.some((item, idx) => {
+        const newItem = newItems[idx];
+        return !newItem ||
+          item.sku !== newItem.sku ||
+          item.size !== newItem.size ||
+          item.type !== newItem.type ||
+          item.quantity !== newItem.quantity ||
+          item.unit_price_usd !== newItem.unit_price_usd;
+      });
+
+    // Don't create history if nothing changed
+    if (!itemsChanged) {
+      return;
+    }
+
+    // Track each item change separately
     const oldItemsCount = oldItems.length;
     const newItemsCount = newItems.length;
 
-    let description = `Order items updated: ${oldItemsCount} → ${newItemsCount} items`;
-
-    // Add details about specific changes if helpful
+    // 1. Track item count changes (added/removed)
     if (oldItemsCount !== newItemsCount) {
-      if (newItemsCount > oldItemsCount) {
-        description += ` (${newItemsCount - oldItemsCount} items added)`;
-      } else {
-        description += ` (${oldItemsCount - newItemsCount} items removed)`;
-      }
+      await orderHistoryService.createHistoryRecord(orderId, "updated", {
+        fieldName: "Order Items Count",
+        oldValue: `${oldItemsCount} items`,
+        newValue: `${newItemsCount} items`,
+        description: `Order items count changed: ${oldItemsCount} → ${newItemsCount} items`,
+        changedByEmployeeId: employeeId
+      });
     }
 
-    // Create a simple summary of the new items
-    const itemsSummary = newItems
-      .map(
-        (item) => `${item.sku} (${item.size}, ${item.type}) x${item.quantity}`
-      )
-      .join("; ");
+    // 2. Track changes in existing items
+    const maxItems = Math.max(oldItemsCount, newItemsCount);
+    
+    for (let idx = 0; idx < maxItems; idx++) {
+      const oldItem = oldItems[idx];
+      const newItem = newItems[idx];
 
-    await orderHistoryService.createHistoryRecord(orderId, "updated", {
-      fieldName: "Order Items",
-      oldValue: `${oldItemsCount} items`,
-      newValue: `${newItemsCount} items: ${itemsSummary}`,
-      description,
-      changedByEmployeeId: employeeId
-    });
+      // Item was removed
+      if (oldItem && !newItem) {
+        const oldSummary = `${oldItem.sku} (${oldItem.size}, ${oldItem.type}) x${oldItem.quantity}`;
+        await orderHistoryService.createHistoryRecord(orderId, "updated", {
+          fieldName: `Order Item #${idx + 1}`,
+          oldValue: oldSummary,
+          newValue: "(removed)",
+          description: `Item removed: ${oldSummary}`,
+          changedByEmployeeId: employeeId
+        });
+        continue;
+      }
+
+      // Item was added
+      if (!oldItem && newItem) {
+        const newSummary = `${newItem.sku} (${newItem.size}, ${newItem.type}) x${newItem.quantity}`;
+        await orderHistoryService.createHistoryRecord(orderId, "updated", {
+          fieldName: `Order Item #${idx + 1}`,
+          oldValue: "(new)",
+          newValue: newSummary,
+          description: `Item added: ${newSummary}`,
+          changedByEmployeeId: employeeId
+        });
+        continue;
+      }
+
+      // Item was modified
+      if (oldItem && newItem) {
+        // Track SKU change
+        if (oldItem.sku !== newItem.sku) {
+          await orderHistoryService.createHistoryRecord(orderId, "updated", {
+            fieldName: `Item #${idx + 1} - SKU`,
+            oldValue: oldItem.sku,
+            newValue: newItem.sku,
+            description: `SKU changed: ${oldItem.sku} → ${newItem.sku}`,
+            changedByEmployeeId: employeeId
+          });
+        }
+
+        // Track Size change
+        if (oldItem.size !== newItem.size) {
+          await orderHistoryService.createHistoryRecord(orderId, "updated", {
+            fieldName: `Item #${idx + 1} - Size`,
+            oldValue: oldItem.size,
+            newValue: newItem.size,
+            description: `Size changed: ${oldItem.size} → ${newItem.size}`,
+            changedByEmployeeId: employeeId
+          });
+        }
+
+        // Track Type change
+        if (oldItem.type !== newItem.type) {
+          await orderHistoryService.createHistoryRecord(orderId, "updated", {
+            fieldName: `Item #${idx + 1} - Type`,
+            oldValue: oldItem.type,
+            newValue: newItem.type,
+            description: `Type changed: ${oldItem.type} → ${newItem.type}`,
+            changedByEmployeeId: employeeId
+          });
+        }
+
+        // Track Quantity change
+        if (oldItem.quantity !== newItem.quantity) {
+          await orderHistoryService.createHistoryRecord(orderId, "updated", {
+            fieldName: `Item #${idx + 1} - Quantity`,
+            oldValue: `${oldItem.quantity}`,
+            newValue: `${newItem.quantity}`,
+            description: `Quantity changed: ${oldItem.quantity} → ${newItem.quantity}`,
+            changedByEmployeeId: employeeId
+          });
+        }
+
+        // Track Price change
+        if (oldItem.unit_price_usd !== newItem.unit_price_usd) {
+          await orderHistoryService.createHistoryRecord(orderId, "updated", {
+            fieldName: `Item #${idx + 1} - Unit Price USD`,
+            oldValue: `$${oldItem.unit_price_usd}`,
+            newValue: `$${newItem.unit_price_usd}`,
+            description: `Unit price changed: $${oldItem.unit_price_usd} → $${newItem.unit_price_usd}`,
+            changedByEmployeeId: employeeId
+          });
+        }
+      }
+    }
   } catch (error) {
     console.error("Failed to track order items update:", error);
   }

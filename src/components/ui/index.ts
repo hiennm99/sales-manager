@@ -9,4 +9,5 @@ export * from "./Select";
 export * from "./SelectFilter";
 export * from "./Selector";
 export * from "./StatCard";
+export * from "./ThemeProvider";
 

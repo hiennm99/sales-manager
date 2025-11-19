@@ -1,131 +1,83 @@
-// src/services/notificationService.ts
+import { useNotificationStore } from "@stores";
+import type { Notification } from "@types";
+import { NotificationType } from "@types";
+import { v4 as uuidv4 } from "uuid";
 
-export interface NotificationPayload {
-  type: "order_created" | "order_updated" | "order_status_changed";
-  title: string;
-  description: string;
-  orderId?: number;
-  orderCode?: string;
-  data?: Record<string, unknown>;
-}
-
-export interface NotificationConfig {
-  telegram_chat_id?: string;
-  telegram_token?: string;
-}
-
-class NotificationService {
-
+export const NotificationService = {
   /**
-   * Send notification to Telegram via Bot API with inline keyboard
+   * Create and add a new notification
+   * @param message Notification message
+   * @param type Notification type
+   * @param duration Optional duration (default 5 seconds)
+   * @returns Notification ID
    */
-  async sendTelegramNotification(
-    botToken: string,
-    chatId: string,
-    payload: NotificationPayload
-  ): Promise<void> {
-    try {
-      const timestamp = new Date().toLocaleString("vi-VN");
-
-      // Build message with cleaner format - only show changes
-      let message = `Đơn hàng 📦 <u><b>${payload.orderCode || "N/A"}</b></u> có cập nhật mới\n\n`;
-
-      // Changes section - only if there are changes
-      if (Array.isArray(payload.data?.changes) && payload.data.changes.length > 0) {
-        message += `🔄 <b>Thay đổi:</b>\n`;
-        (payload.data.changes as string[]).forEach((change) => {
-          message += `  - ${change}\n`;
-        });
-      } else {
-        message += `${payload.description}\n`;
-      }
-
-      // Add updated by information if available
-      if (payload.data?.updatedBy) {
-        message += `\n👤 <b>Người cập nhật:</b> ${payload.data.updatedBy}`;
-      }
-
-      message += `\n<i>${timestamp}</i>`;
-
-      // Create inline keyboard with buttons (only if HTTPS URL is available)
-      const appUrl = import.meta.env.VITE_APP_URL;
-      const keyboard = appUrl && appUrl.startsWith("https://")
-        ? {
-          inline_keyboard: [
-            [
-              {
-                text: "🔍 Xem Chi Tiết",
-                url: `${appUrl}/orders/${payload.orderId}`
-              },
-              {
-                text: "✍️ Chỉnh Sửa",
-                url: `${appUrl}/orders/${payload.orderId}/edit`
-              }
-            ]
-          ]
-        }
-        : undefined;
-
-      // Send directly to Telegram API
-      const response = await fetch(
-        `https://api.telegram.org/bot${botToken}/sendMessage`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            chat_id: chatId,
-            text: message,
-            parse_mode: "HTML",
-            ...(keyboard && { reply_markup: keyboard })
-          })
-        }
-      );
-
-      if (!response.ok) {
-        const error = await response.text();
-        throw new Error(`Telegram API failed: ${error}`);
-      }
-
-    } catch (error) {
-      console.error("❌ Failed to send Telegram notification:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Send notification using environment config
-   */
-  async sendNotification(payload: NotificationPayload): Promise<void> {
-    try {
-      const config = this.getConfig();
-
-      if (config.telegram_chat_id && config.telegram_token) {
-        await this.sendTelegramNotification(
-          config.telegram_token,
-          config.telegram_chat_id,
-          payload
-        );
-      } else {
-        console.warn("⚠️ Telegram notification service not configured");
-      }
-    } catch (error) {
-      console.error("Failed to send notification:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get notification config from environment variables
-   */
-  private getConfig(): NotificationConfig {
-    return {
-      telegram_chat_id: import.meta.env.VITE_TELEGRAM_CHAT_ID,
-      telegram_token: import.meta.env.VITE_TELEGRAM_BOT_TOKEN
+  create(
+    message: string,
+    type: NotificationType = NotificationType.INFO,
+    duration: number = 5000
+  ): string {
+    const id = uuidv4();
+    const notification: Notification = {
+      id,
+      message,
+      type,
+      duration,
+      timestamp: new Date()
     };
+
+    // Add to store
+    const notificationStore = useNotificationStore.getState();
+    notificationStore.add(notification);
+
+    // Auto-remove after duration
+    setTimeout(() => {
+      notificationStore.remove(id);
+    }, duration);
+
+    return id;
+  },
+
+  /**
+   * Create an info notification
+   */
+  info(message: string, duration?: number) {
+    return this.create(message, NotificationType.INFO, duration);
+  },
+
+  /**
+   * Create a success notification
+   */
+  success(message: string, duration?: number) {
+    return this.create(message, NotificationType.SUCCESS, duration);
+  },
+
+  /**
+   * Create a warning notification
+   */
+  warning(message: string, duration?: number) {
+    return this.create(message, NotificationType.WARNING, duration);
+  },
+
+  /**
+   * Create an error notification
+   */
+  error(message: string, duration?: number) {
+    return this.create(message, NotificationType.ERROR, duration);
+  },
+
+  /**
+   * Remove a specific notification
+   */
+  remove(id: string) {
+    const notificationStore = useNotificationStore.getState();
+    notificationStore.remove(id);
+  },
+
+  /**
+   * Clear all notifications
+   */
+  clear() {
+    const notificationStore = useNotificationStore.getState();
+    notificationStore.clear();
   }
-
-}
-
-export const notificationService = new NotificationService();
+};

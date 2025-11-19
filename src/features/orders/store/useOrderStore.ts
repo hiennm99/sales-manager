@@ -391,8 +391,43 @@ export const useOrderStore = create<OrderStore>()(
             financialData
           );
 
-          // 2. Cập nhật Order Items
-          await get().updateOrderItems(numericId, updatedOrderItems);
+          // 2. Cập nhật Order Items (chỉ nếu items thay đổi)
+          const currentItems = get().orderItems[numericId] || [];
+          
+          // Deep compare items to detect any changes
+          const itemsChanged = currentItems.length !== updatedOrderItems.length ||
+            currentItems.some((item: OrderItem, idx: number) => {
+              const newItem = updatedOrderItems[idx];
+              if (!newItem) return true;
+              
+              // Compare all relevant fields
+              return (
+                item.id !== newItem.id ||
+                item.sku !== newItem.sku ||
+                item.size !== newItem.size ||
+                item.type !== newItem.type ||
+                item.quantity !== newItem.quantity ||
+                item.unit_price_usd !== newItem.unit_price_usd
+              );
+            }) ||
+            // Also check if new items have different properties than old ones
+            updatedOrderItems.some((newItem: OrderItem, idx: number) => {
+              const oldItem = currentItems[idx];
+              if (!oldItem) return true;
+              
+              return (
+                oldItem.id !== newItem.id ||
+                oldItem.sku !== newItem.sku ||
+                oldItem.size !== newItem.size ||
+                oldItem.type !== newItem.type ||
+                oldItem.quantity !== newItem.quantity ||
+                oldItem.unit_price_usd !== newItem.unit_price_usd
+              );
+            });
+
+          if (itemsChanged) {
+            await get().updateOrderItems(numericId, updatedOrderItems);
+          }
 
           // 3. Cập nhật state Orders (thông tin chính)
           set((state) => ({
