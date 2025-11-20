@@ -9,8 +9,9 @@ import { useProductStore } from "@features/products";
 import { useShopStore } from "@features/shops";
 import { useStatusStore } from "@features/statuses";
 import { useConfirmModal } from "@hooks";
+import { addressVerificationService, NotificationService } from "@services";
 import { useExchangeRateStore } from "@stores";
-import type { Order, OrderItem, OrderItemFormData, Product } from "@types";
+import type { Order, OrderFormData, OrderItem, OrderItemFormData, Product } from "@types";
 import { populateEmployeeName } from "@types";
 import React, { useEffect, useState } from "react";
 import { FiClock, FiDollarSign, FiFileText, FiImage, FiPackage, FiTrash2, FiTruck, FiUser } from "react-icons/fi";
@@ -29,6 +30,11 @@ import {
   type Tab,
   TabNavigation
 } from "./index";
+
+type VerificationState = {
+  status: "idle" | "pending" | "success" | "error";
+  message?: string;
+};
 
 interface OrderFormProps {
   mode: "create" | "edit";
@@ -75,6 +81,13 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   const confirmModal = useConfirmModal();
   const [activeTab, setActiveTab] = useState<string>("order-info");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [addressVerificationState, setAddressVerificationState] =
+    useState<VerificationState>(() => ({
+      status: draftOrder.isVerifiedAddress ? "success" : "idle",
+      message: draftOrder.isVerifiedAddress
+        ? "Địa chỉ đã được xác thực"
+        : undefined
+    }));
 
   // State này vẫn cần thiết cho UI để hiển thị thông tin sản phẩm đã chọn
   const [selectedProducts, setSelectedProducts] = useState<(Product | null)[]>(
@@ -230,6 +243,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
     }
   }, [
     employees.length,
+    draftOrder,
     draftOrder.employeeId,
     draftOrder.sellerEmployeeId,
     draftOrder.employeeName,
@@ -237,6 +251,22 @@ export const OrderForm: React.FC<OrderFormProps> = ({
     employees,
     updateDraftOrder
   ]);
+
+  const isAddressVerified = draftOrder.isVerifiedAddress;
+
+  useEffect(() => {
+    setAddressVerificationState((prev) => {
+      if (isAddressVerified) {
+        if (prev.status === "success") return prev;
+        return {
+          status: "success",
+          message: prev.message || "Địa chỉ đã được xác thực"
+        };
+      }
+      if (prev.status === "pending") return prev;
+      return { status: "idle" };
+    });
+  }, [isAddressVerified]);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -286,20 +316,70 @@ export const OrderForm: React.FC<OrderFormProps> = ({
 
     const finalValue = isNumericField ? Number(value) || 0 : value;
 
-    if (
-      name === "employeeId" ||
-      name === "sellerEmployeeId" ||
-      name === "employeeName" ||
-      name === "sellerEmployeeName"
-    ) {
+    const updates: Partial<OrderFormData> = { [name]: finalValue } as Partial<OrderFormData>;
+
+    if (name === "customerAddress") {
+      updates.isVerifiedAddress = false;
+      updates.verifiedCustomerAddress = "";
+      setAddressVerificationState({ status: "idle" });
     }
 
-    updateDraftOrder({ [name]: finalValue });
+    updateDraftOrder(updates);
 
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
+
+  const handleVerifyAddress = async () => {
+    if (!draftOrder.customerAddress?.trim()) {
+      setAddressVerificationState({
+        status: "error",
+        message: "Vui lòng nhập địa chỉ trước khi xác thực"
+      });
+      return;
+    }
+
+    setAddressVerificationState({ status: "pending" });
+
+    try {
+      const result = await addressVerificationService.verify(
+        draftOrder.customerAddress
+      );
+
+      const confidenceValue =
+        typeof result.confidence === "number" ? result.confidence : 0;
+      const normalizedConfidence =
+        confidenceValue > 1
+          ? Math.min(100, Math.round(confidenceValue))
+          : Math.min(100, Math.round(confidenceValue * 100));
+
+      updateDraftOrder({
+        verifiedCustomerAddress: result.formattedAddress,
+        isVerifiedAddress: true
+      });
+
+      setAddressVerificationState({
+        status: "success",
+        message: `Độ tin cậy ~${normalizedConfidence}%`
+      });
+
+      NotificationService.success("Đã xác thực địa chỉ khách hàng");
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Không thể xác thực địa chỉ";
+      setAddressVerificationState({
+        status: "error",
+        message
+      });
+      updateDraftOrder({ isVerifiedAddress: false, verifiedCustomerAddress: "" });
+      NotificationService.error(`Xác thực địa chỉ thất bại: ${message}`);
+    }
+  };
+
+  const isVerifyingAddress = addressVerificationState.status === "pending";
 
   const handleStatusChange = (
     type: "general" | "customer" | "factory" | "delivery",
@@ -362,9 +442,11 @@ export const OrderForm: React.FC<OrderFormProps> = ({
       // Customer info
       customer_name: draftOrder.customerName,
       customer_address: draftOrder.customerAddress,
+      verified_customer_address: draftOrder.verifiedCustomerAddress || null,
       customer_phone: draftOrder.customerPhone || null,
       customer_email: draftOrder.customerEmail || null,
       customer_notes: draftOrder.customerNotes || null,
+      is_verified_address: draftOrder.isVerifiedAddress ?? false,
 
       // Artist Employee
       artist_employee_id: draftOrder.employeeId || null,
@@ -526,7 +608,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
             <button
               type="button"
               onClick={handleDeleteClick}
-              className="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl hover:from-red-700 hover:to-rose-700 shadow-lg hover:shadow-xl transition-all duration-200 font-medium"
+              className="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-linear-to-r from-red-600 to-rose-600 text-white rounded-xl hover:from-red-700 hover:to-rose-700 shadow-lg hover:shadow-xl transition-all duration-200 font-medium"
             >
               <FiTrash2 className="w-5 h-5" />
               Xóa đơn hàng
@@ -612,6 +694,10 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                     formData={draftOrder}
                     errors={errors}
                     onChange={handleChange}
+                    onVerifyAddress={handleVerifyAddress}
+                    verificationState={addressVerificationState}
+                    isAddressVerified={!!draftOrder.isVerifiedAddress}
+                    isVerifyingAddress={isVerifyingAddress}
                   />
                 </div>
               )}

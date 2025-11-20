@@ -11,6 +11,8 @@ export interface Order extends BaseEntity {
   // Customer info
   customer_name: string;
   customer_address: string;
+  verified_customer_address: string | null;
+  is_verified_address: boolean;
   customer_phone: string | null;
   customer_email: string | null;
   customer_notes: string | null;
@@ -98,6 +100,8 @@ export interface OrderFormData {
   // Customer info
   customerName: string;
   customerAddress: string;
+  verifiedCustomerAddress?: string;
+  isVerifiedAddress?: boolean;
   customerPhone?: string;
   customerEmail?: string;
   customerNotes?: string;
@@ -166,6 +170,8 @@ export const orderToFormData = (order: Order): OrderFormData => {
     scheduledShipDate: order.scheduled_ship_date || "",
     customerName: order.customer_name,
     customerAddress: order.customer_address,
+    verifiedCustomerAddress: order.verified_customer_address || "",
+    isVerifiedAddress: order.is_verified_address,
     customerPhone: order.customer_phone || "",
     customerEmail: order.customer_email || "",
     customerNotes: order.customer_notes || "",

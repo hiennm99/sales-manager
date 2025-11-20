@@ -77,6 +77,8 @@ function extractFormData(order: Partial<Order>) {
     scheduledShipDate: order.scheduled_ship_date || "",
     customerName: order.customer_name || "",
     customerAddress: order.customer_address || "",
+    verifiedCustomerAddress: order.verified_customer_address || "",
+    isVerifiedAddress: order.is_verified_address ?? false,
     customerPhone: order.customer_phone || "",
     customerEmail: order.customer_email || "",
     customerNotes: order.customer_notes || "",

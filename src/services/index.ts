@@ -1,4 +1,5 @@
 // src/services/index.ts
+export * from "./addressVerificationService";
 export * from "./alertService";
 export * from "./crudService";
 export * from "./databaseService";

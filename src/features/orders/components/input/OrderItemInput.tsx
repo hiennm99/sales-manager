@@ -207,7 +207,7 @@ export const OrderItemInput: React.FC<OrderItemProps> = ({
         />
 
         <TextBox
-          label="Giá đơn vị (USD)"
+          label="Giá gốc (USD)"
           name={`unit_price_usd_${index}`}
           type="number"
           value={unitPriceValue}

@@ -13,9 +13,9 @@ const LoginPage = lazyLoad(() =>
 const SignUpPage = lazyLoad(() =>
   import("@features/auth").then((m) => ({ default: m.SignUpPage }))
 );
-const NotificationSettingsPage = lazyLoad(() =>
-  import("@features/auth").then((m) => ({ default: m.NotificationSettingsPage }))
-);
+// const NotificationSettingsPage = lazyLoad(() =>
+//   import("@features/auth").then((m) => ({ default: m.NotificationSettingsPage }))
+// );
 const ProfilePage = lazyLoad(() =>
   import("@features/auth").then((m) => ({ default: m.ProfilePage }))
 );
@@ -87,10 +87,10 @@ export const router = createBrowserRouter([
     path: "/profile",
     element: <ProtectedRoute><ProfilePage /></ProtectedRoute>
   },
-  {
-    path: "/notification-settings",
-    element: <ProtectedRoute><NotificationSettingsPage /></ProtectedRoute>
-  },
+  // {
+  //   path: "/notification-settings",
+  //   element: <ProtectedRoute><NotificationSettingsPage /></ProtectedRoute>
+  // },
   {
     path: "/",
     element: (

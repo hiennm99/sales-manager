@@ -313,6 +313,10 @@ export const useOrderStore = create<OrderStore>()(
             formData.customerEmail = updatedOrder.customer_email ?? undefined;
           if (updatedOrder.customer_notes !== undefined)
             formData.customerNotes = updatedOrder.customer_notes ?? undefined;
+          if (updatedOrder.verified_customer_address !== undefined)
+            formData.verifiedCustomerAddress = updatedOrder.verified_customer_address ?? undefined;
+          if (updatedOrder.is_verified_address !== undefined)
+            formData.isVerifiedAddress = updatedOrder.is_verified_address ?? undefined;
           if (updatedOrder.artist_employee_id !== undefined)
             formData.employeeId = updatedOrder.artist_employee_id ?? undefined;
           if (updatedOrder.seller_employee_id !== undefined)

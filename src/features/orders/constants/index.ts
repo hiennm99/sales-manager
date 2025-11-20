@@ -34,6 +34,8 @@ export const INITIAL_ORDER: OrderFormData = {
 
   customerName: "",
   customerAddress: "",
+  verifiedCustomerAddress: "",
+  isVerifiedAddress: false,
   customerPhone: "",
   customerEmail: "",
   customerNotes: "",

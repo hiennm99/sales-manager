@@ -752,6 +752,8 @@ export type Database = {
           general_status_id: number | null
           id: number
           internal_tracking_number: string | null
+          is_verified_address: boolean
+          verified_customer_address: string | null
           item_total_usd: number
           item_total_vnd: number
           order_date: string
@@ -803,6 +805,8 @@ export type Database = {
           general_status_id?: number | null
           id?: number
           internal_tracking_number?: string | null
+          is_verified_address?: boolean
+          verified_customer_address?: string | null
           item_total_usd?: number
           item_total_vnd?: number
           order_date: string
@@ -854,6 +858,8 @@ export type Database = {
           general_status_id?: number | null
           id?: number
           internal_tracking_number?: string | null
+          is_verified_address?: boolean
+          verified_customer_address?: string | null
           item_total_usd?: number
           item_total_vnd?: number
           order_date?: string

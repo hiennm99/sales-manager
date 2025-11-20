@@ -20,6 +20,7 @@ interface TextBoxProps {
   className?: string;
   min?: number;
   max?: number;
+  inputClassName?: string;
   onChange?: (name: string, value: string | number) => void;
   onBlur?: () => void;
   icon?: React.JSX.Element;
@@ -38,6 +39,7 @@ export const TextBox: React.FC<TextBoxProps> = ({
   className = "",
   min,
   max,
+  inputClassName = "",
   displayValue,
   onChange,
   onBlur,
@@ -164,9 +166,9 @@ export const TextBox: React.FC<TextBoxProps> = ({
   }
 
   // Edit mode (always editable or inline editing active)
-  const inputClassName = `w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+  const computedInputClassName = `w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
     disabled ? "bg-gray-50 cursor-not-allowed" : "bg-white"
-  } ${error ? "border-red-500" : "border-gray-300"}`;
+  } ${error ? "border-red-500" : "border-gray-300"} ${inputClassName}`.trim();
 
   return (
     <div className={className}>
@@ -185,7 +187,7 @@ export const TextBox: React.FC<TextBoxProps> = ({
           onBlur={onBlur ? handleBlur : undefined}
           disabled={disabled}
           placeholder={placeholder}
-          className={inputClassName}
+          className={computedInputClassName}
           rows={3}
           autoFocus={isEditing}
         />
@@ -199,7 +201,7 @@ export const TextBox: React.FC<TextBoxProps> = ({
           onBlur={onBlur ? handleBlur : undefined}
           disabled={disabled}
           placeholder={placeholder}
-          className={inputClassName}
+          className={computedInputClassName}
           autoFocus={isEditing}
           min={min}
           max={max}

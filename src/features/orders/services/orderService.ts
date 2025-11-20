@@ -70,6 +70,8 @@ const mapToOrderRow = (
     customer_name: data.customer_name,
     customer_address: data.customer_address,
     customer_phone: data.customer_phone,
+    is_verified_address: data.is_verified_address ?? false,
+    verified_customer_address: data.verified_customer_address,
     customer_notes: data.customer_notes,
     item_total_usd: data.item_total_usd,
     discount_rate: data.discount_rate,
@@ -235,9 +237,11 @@ export const orderService = {
       customer_phone: formData.customerPhone,
       customer_email: formData.customerEmail,
       customer_notes: formData.customerNotes,
+      verified_customer_address: formData.verifiedCustomerAddress || null,
       artist_employee_id: employeeIdNum,
       seller_employee_id: sellerEmployeeIdNum,
       artist_commission_rate: formData.artistCommissionRate || 0,
+      is_verified_address: formData.isVerifiedAddress ?? false,
       ...snakeCaseFinancialData
     };
 
@@ -335,6 +339,11 @@ export const orderService = {
       updateData.customer_email = formData.customerEmail;
     if (formData.customerNotes !== undefined)
       updateData.customer_notes = formData.customerNotes;
+    if (formData.verifiedCustomerAddress !== undefined)
+      updateData.verified_customer_address =
+        formData.verifiedCustomerAddress || null;
+    if (formData.isVerifiedAddress !== undefined)
+      updateData.is_verified_address = formData.isVerifiedAddress;
     if (formData.employeeId !== undefined) {
       // Ensure employeeId is a number, not a string
       const employeeIdNum =

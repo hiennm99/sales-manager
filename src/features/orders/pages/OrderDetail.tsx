@@ -80,6 +80,11 @@ export const OrderDetail: React.FC = () => {
 
     try {
       await updateOrder(orderId, updatedOrder, updatedOrderItems);
+      
+      // Refresh order data from database to ensure UI is in sync
+      const refreshedOrder = await orderService.getOrderById(Number(orderId));
+      setDbOrder(refreshedOrder);
+      initializeRef.current = false; // Reset ref to re-initialize draft with fresh data
     } catch (error) {
       console.error("Failed to update order:", error);
       throw error; // Let OrderForm handle the error display
